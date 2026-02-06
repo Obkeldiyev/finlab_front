@@ -307,7 +307,7 @@ export default function AdminNews() {
                           <div className="relative h-48">
                             {newsItem.medias[0].type === 'image' ? (
                               <img
-                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:9000'}${newsItem.medias[0].url}`}
+                                src={`${import.meta.env.VITE_API_URL || '/api'}${newsItem.medias[0].url}`}
                                 alt="News media"
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -316,7 +316,7 @@ export default function AdminNews() {
                               />
                             ) : newsItem.medias[0].type === 'video' ? (
                               <video
-                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:9000'}${newsItem.medias[0].url}`}
+                                src={`${import.meta.env.VITE_API_URL || '/api'}${newsItem.medias[0].url}`}
                                 className="w-full h-full object-cover"
                                 muted
                                 preload="metadata"

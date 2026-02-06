@@ -51,7 +51,7 @@ export default function News() {
   };
 
   const renderMedia = (media: NewsItem['medias'][0]) => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:9000';
+    const baseUrl = import.meta.env.VITE_API_URL || '/api';
     const fullUrl = `${baseUrl}${media.url}`;
 
     if (media.type === 'image') {

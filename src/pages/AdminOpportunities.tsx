@@ -312,7 +312,7 @@ export default function AdminOpportunities() {
                           <div className="relative h-48">
                             {opportunity.medias[0].type === 'image' ? (
                               <img
-                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:9000'}${opportunity.medias[0].url}`}
+                                src={`${import.meta.env.VITE_API_URL || '/api'}${opportunity.medias[0].url}`}
                                 alt="Opportunity media"
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -321,7 +321,7 @@ export default function AdminOpportunities() {
                               />
                             ) : opportunity.medias[0].type === 'video' ? (
                               <video
-                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:9000'}${opportunity.medias[0].url}`}
+                                src={`${import.meta.env.VITE_API_URL || '/api'}${opportunity.medias[0].url}`}
                                 className="w-full h-full object-cover"
                                 muted
                                 preload="metadata"
