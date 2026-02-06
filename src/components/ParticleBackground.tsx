@@ -6,6 +6,9 @@ interface Particle {
   vx: number;
   vy: number;
   radius: number;
+  opacity: number;
+  pulseSpeed: number;
+  pulsePhase: number;
 }
 
 export function ParticleBackground() {
@@ -13,6 +16,7 @@ export function ParticleBackground() {
   const mouseRef = useRef({ x: 0, y: 0 });
   const particlesRef = useRef<Particle[]>([]);
   const animationRef = useRef<number>();
+  const timeRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,70 +31,99 @@ export function ParticleBackground() {
     };
 
     const createParticles = () => {
-      const particleCount = Math.floor((canvas.width * canvas.height) / 15000);
+      // More particles for better visibility
+      const particleCount = Math.floor((canvas.width * canvas.height) / 8000); // Increased density
       particlesRef.current = [];
 
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          radius: Math.random() * 2 + 1,
+          vx: (Math.random() - 0.5) * 1.2, // Faster movement
+          vy: (Math.random() - 0.5) * 1.2, // Faster movement
+          radius: Math.random() * 2.5 + 1, // Larger particles
+          opacity: Math.random() * 0.6 + 0.3, // Higher opacity for visibility
+          pulseSpeed: Math.random() * 0.03 + 0.015, // Faster pulsing
+          pulsePhase: Math.random() * Math.PI * 2,
         });
       }
     };
 
     const drawParticles = () => {
+      timeRef.current += 0.016; // ~60fps
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const particles = particlesRef.current;
       const mouse = mouseRef.current;
-      const connectionDistance = 150;
-      const mouseInfluenceRadius = 200;
+      const connectionDistance = 140; // Increased connection distance
+      const mouseInfluenceRadius = 180; // Increased mouse influence
 
       // Draw connections and particles
       for (let i = 0; i < particles.length; i++) {
         const particle = particles[i];
 
-        // Mouse influence
+        // Mouse influence - more responsive
         const dx = mouse.x - particle.x;
         const dy = mouse.y - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance < mouseInfluenceRadius && distance > 0) {
           const force = (mouseInfluenceRadius - distance) / mouseInfluenceRadius;
-          particle.vx -= (dx / distance) * force * 0.02;
+          particle.vx -= (dx / distance) * force * 0.02; // Stronger force
           particle.vy -= (dy / distance) * force * 0.02;
         }
+
+        // Gentle random movement
+        particle.vx += (Math.random() - 0.5) * 0.01;
+        particle.vy += (Math.random() - 0.5) * 0.01;
 
         // Update position
         particle.x += particle.vx;
         particle.y += particle.vy;
 
-        // Boundary check
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+        // Boundary check with gentle bounce
+        if (particle.x < 0 || particle.x > canvas.width) {
+          particle.vx *= -0.6;
+          particle.x = Math.max(0, Math.min(canvas.width, particle.x));
+        }
+        if (particle.y < 0 || particle.y > canvas.height) {
+          particle.vy *= -0.6;
+          particle.y = Math.max(0, Math.min(canvas.height, particle.y));
+        }
 
-        // Keep in bounds
-        particle.x = Math.max(0, Math.min(canvas.width, particle.x));
-        particle.y = Math.max(0, Math.min(canvas.height, particle.y));
-
-        // Apply friction
+        // Friction for controlled movement
         particle.vx *= 0.99;
         particle.vy *= 0.99;
 
-        // Minimum velocity
-        if (Math.abs(particle.vx) < 0.1) particle.vx = (Math.random() - 0.5) * 0.5;
-        if (Math.abs(particle.vy) < 0.1) particle.vy = (Math.random() - 0.5) * 0.5;
+        // Maintain minimal velocity
+        if (Math.abs(particle.vx) < 0.1) particle.vx += (Math.random() - 0.5) * 0.2;
+        if (Math.abs(particle.vy) < 0.1) particle.vy += (Math.random() - 0.5) * 0.2;
 
-        // Draw particle
+        // Maximum velocity limit
+        const maxVel = 1.2;
+        if (Math.abs(particle.vx) > maxVel) particle.vx = Math.sign(particle.vx) * maxVel;
+        if (Math.abs(particle.vy) > maxVel) particle.vy = Math.sign(particle.vy) * maxVel;
+
+        // Enhanced pulsing effect
+        const pulseOpacity = particle.opacity + Math.sin(timeRef.current * particle.pulseSpeed + particle.pulsePhase) * 0.15;
+        const pulseRadius = particle.radius + Math.sin(timeRef.current * particle.pulseSpeed * 2 + particle.pulsePhase) * 0.3;
+
+        // Draw particle with medium-dark blue color
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(39, 85, 161, 0.6)';
+        ctx.arc(particle.x, particle.y, Math.max(0.8, pulseRadius), 0, Math.PI * 2);
+        // Medium-dark blue: rgb(59, 130, 246) - darker than light blue
+        ctx.fillStyle = `rgba(59, 130, 246, ${Math.max(0.2, Math.min(0.8, pulseOpacity))})`;
         ctx.fill();
 
-        // Draw connections
+        // Enhanced glow effect
+        if (particle.radius > 1.5) {
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, pulseRadius * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(59, 130, 246, ${Math.max(0.1, pulseOpacity * 0.3)})`;
+          ctx.fill();
+        }
+
+        // Draw enhanced connections
         for (let j = i + 1; j < particles.length; j++) {
           const other = particles[j];
           const connDx = particle.x - other.x;
@@ -98,12 +131,14 @@ export function ParticleBackground() {
           const connDistance = Math.sqrt(connDx * connDx + connDy * connDy);
 
           if (connDistance < connectionDistance) {
-            const opacity = (1 - connDistance / connectionDistance) * 0.3;
+            const opacity = (1 - connDistance / connectionDistance) * 0.4; // Higher opacity
+            
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(other.x, other.y);
-            ctx.strokeStyle = `rgba(39, 85, 161, ${opacity})`;
-            ctx.lineWidth = 1;
+            // Medium-dark blue connections: rgb(59, 130, 246)
+            ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
+            ctx.lineWidth = 1.2; // Thicker lines
             ctx.stroke();
           }
         }
@@ -148,7 +183,7 @@ export function ParticleBackground() {
         width: '100%', 
         height: '100%', 
         pointerEvents: 'none',
-        zIndex: 0 
+        zIndex: 1
       }}
     />
   );

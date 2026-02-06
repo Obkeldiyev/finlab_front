@@ -1,35 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Phone, Mail, User, Building, ChevronRight } from 'lucide-react';
-import { useLanguage, getLocalizedField } from '@/contexts/LanguageContext';
+import { ArrowLeft, Phone, Mail, User } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { toast } from 'sonner';
-import logo from '@/assets/logo.svg';
+import { api } from '@/services/api';
 
-// Mock data for directions and courses (in real app, fetch from API)
-const mockDirections = [
-  { id: 1, title_uz: "Maktabgacha ta'lim", title_ru: 'Дошкольное образование', title_en: 'Preschool Education' },
-  { id: 2, title_uz: "Umumiy o'rta ta'lim", title_ru: 'Общее среднее образование', title_en: 'General Secondary Education' },
-  { id: 3, title_uz: "Oliy ta'lim", title_ru: 'Высшее образование', title_en: 'Higher Education' },
-];
-
-const mockCourses = [
-  { id: 1, direction_id: 1, title_uz: '288 soatlik malaka oshirish', title_ru: '288-часовое повышение квалификации', title_en: '288-hour Professional Development' },
-  { id: 2, direction_id: 1, title_uz: '72 soatlik qisqa muddatli', title_ru: '72-часовой краткосрочный', title_en: '72-hour Short-term' },
-  { id: 3, direction_id: 2, title_uz: '288 soatlik malaka oshirish', title_ru: '288-часовое повышение квалификации', title_en: '288-hour Professional Development' },
-  { id: 4, direction_id: 2, title_uz: '36 soatlik boshlang\'ich', title_ru: '36-часовой начальный', title_en: '36-hour Introductory' },
-  { id: 5, direction_id: 3, title_uz: '288 soatlik malaka oshirish', title_ru: '288-часовое повышение квалификации', title_en: '288-hour Professional Development' },
-  { id: 6, direction_id: 3, title_uz: '72 soatlik qisqa muddatli', title_ru: '72-часовой краткосрочный', title_en: '72-hour Short-term' },
-];
-
-type Step = 'phone' | 'verify' | 'details' | 'selection';
+type Step = 'phone' | 'verify' | 'details';
 
 export default function Register() {
   const { t, language } = useLanguage();
@@ -47,37 +30,81 @@ export default function Register() {
     middle_name: '',
     email: '',
   });
-  const [directionId, setDirectionId] = useState<string>('');
-  const [courseId, setCourseId] = useState<string>('');
 
-  const filteredCourses = mockCourses.filter(c => c.direction_id === Number(directionId));
+  // Handle phone number input - fixed +998 prefix with exactly 9 digits
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Always keep +998 prefix
+    if (!value.startsWith('+998')) {
+      return;
+    }
+    
+    // Extract only the numbers after +998
+    const numbers = value.slice(4).replace(/\D/g, '');
+    
+    // Limit to exactly 9 digits after +998
+    if (numbers.length <= 9) {
+      setPhoneNumber('+998' + numbers);
+    }
+  };
+
+  // Format phone number for backend (remove + and keep 998XXXXXXXXX format)
+  const formatPhoneForBackend = (phone: string) => {
+    return phone.replace('+', ''); // +998901234567 -> 998901234567
+  };
 
   const handleRequestCode = async () => {
-    if (!phoneNumber || phoneNumber.length < 9) {
-      toast.error(language === 'uz' ? 'Telefon raqamini kiriting' : 'Введите номер телефона');
+    if (phoneNumber.length !== 13) {
+      toast.error(language === 'uz' ? 'Telefon raqamini to\'liq kiriting' : 'Введите полный номер телефона');
       return;
     }
     
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      const response = await api.registerRequestCode(formatPhoneForBackend(phoneNumber));
+      
+      if (response.success) {
+        setStep('verify');
+        toast.success(language === 'uz' ? 'Kod yuborildi' : 'Код отправлен');
+      } else {
+        toast.error(response.message || (language === 'uz' ? 'Xatolik yuz berdi' : 'Произошла ошибка'));
+      }
+    } catch (error) {
+      console.error('Register request error:', error);
+      toast.error(language === 'uz' ? 'Xatolik yuz berdi' : 'Произошла ошибка');
+    } finally {
       setIsLoading(false);
-      setStep('verify');
-      toast.success(language === 'uz' ? 'Kod yuborildi' : 'Код отправлен');
-    }, 1000);
+    }
   };
 
   const handleVerifyCode = async () => {
-    if (verificationCode.length !== 6) {
+    if (verificationCode.length !== 5) {
       toast.error(language === 'uz' ? 'Kodni to\'liq kiriting' : 'Введите код полностью');
       return;
     }
     
     setIsLoading(true);
-    setTimeout(() => {
+    
+    try {
+      // Verify the code without creating the user
+      const response = await api.verifyCodeOnly(formatPhoneForBackend(phoneNumber), verificationCode);
+      
+      if (response.success) {
+        // Code is valid, move to details step
+        setStep('details');
+        toast.success(language === 'uz' ? 'Kod tasdiqlandi' : 'Код подтвержден');
+      } else {
+        // Code is invalid, show error and stay on verify step
+        toast.error(response.message || (language === 'uz' ? 'Noto\'g\'ri kod' : 'Неверный код'));
+      }
+    } catch (error) {
+      console.error('Verify code error:', error);
+      toast.error(language === 'uz' ? 'Noto\'g\'ri kod' : 'Неверный код');
+    } finally {
       setIsLoading(false);
-      setStep('details');
-    }, 1000);
+    }
   };
 
   const handleDetailsNext = () => {
@@ -85,21 +112,42 @@ export default function Register() {
       toast.error(language === 'uz' ? 'Barcha maydonlarni to\'ldiring' : 'Заполните все поля');
       return;
     }
-    setStep('selection');
+    // Directly register the user instead of going to selection step
+    handleRegister();
   };
 
   const handleRegister = async () => {
-    if (!directionId || !courseId) {
-      toast.error(language === 'uz' ? 'Yo\'nalish va kursni tanlang' : 'Выберите направление и курс');
+    if (!formData.first_name || !formData.last_name || !formData.email) {
+      toast.error(language === 'uz' ? 'Barcha maydonlarni to\'ldiring' : 'Заполните все поля');
       return;
     }
     
     setIsLoading(true);
-    setTimeout(() => {
+    
+    try {
+      const response = await api.registerVerifyCode({
+        code: verificationCode,
+        email: formData.email,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        middle_name: formData.middle_name,
+        phone_number: formatPhoneForBackend(phoneNumber),
+      });
+      
+      if (response.success && response.token) {
+        // Store token in localStorage
+        localStorage.setItem('token', response.token);
+        toast.success(language === 'uz' ? 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz!' : 'Регистрация успешна!');
+        navigate('/dashboard');
+      } else {
+        toast.error(response.message || (language === 'uz' ? 'Xatolik yuz berdi' : 'Произошла ошибка'));
+      }
+    } catch (error) {
+      console.error('Register verify error:', error);
+      toast.error(language === 'uz' ? 'Xatolik yuz berdi' : 'Произошла ошибка');
+    } finally {
       setIsLoading(false);
-      toast.success(language === 'uz' ? 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz!' : 'Регистрация успешна!');
-      navigate('/dashboard');
-    }, 1500);
+    }
   };
 
   const renderStep = () => {
@@ -119,14 +167,36 @@ export default function Register() {
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="+998 90 123 45 67"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="+998901234567"
+                  value={phoneNumber || '+998'}
+                  onChange={handlePhoneChange}
+                  onKeyDown={(e) => {
+                    // Prevent deletion of +998 prefix
+                    if ((e.key === 'Backspace' || e.key === 'Delete') && phoneNumber.length <= 4) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onFocus={(e) => {
+                    // Ensure +998 is always present when focused
+                    if (!phoneNumber || phoneNumber.length < 4) {
+                      setPhoneNumber('+998');
+                    }
+                  }}
                   className="pl-10"
+                  maxLength={13}
                 />
               </div>
+              <p className="text-xs text-muted-foreground">
+                {language === 'uz' && 'Format: +998XXXXXXXXX (9 ta raqam)'}
+                {language === 'ru' && 'Формат: +998XXXXXXXXX (9 цифр)'}
+                {language === 'en' && 'Format: +998XXXXXXXXX (9 digits)'}
+              </p>
             </div>
-            <Button onClick={handleRequestCode} className="w-full" disabled={isLoading}>
+            <Button 
+              onClick={handleRequestCode} 
+              className="w-full" 
+              disabled={isLoading || phoneNumber.length !== 13}
+            >
               {isLoading ? t('common.loading') : t('auth.send_code')}
             </Button>
           </motion.div>
@@ -148,12 +218,12 @@ export default function Register() {
                 {language === 'en' && `Code sent to ${phoneNumber}`}
               </p>
               <InputOTP
-                maxLength={6}
+                maxLength={5}
                 value={verificationCode}
                 onChange={(value) => setVerificationCode(value)}
               >
                 <InputOTPGroup className="gap-2 justify-center w-full">
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                  {[0, 1, 2, 3, 4].map((i) => (
                     <InputOTPSlot key={i} index={i} className="w-12 h-12 text-lg" />
                   ))}
                 </InputOTPGroup>
@@ -225,59 +295,8 @@ export default function Register() {
               <Button variant="outline" onClick={() => setStep('verify')} className="flex-1">
                 {t('common.back')}
               </Button>
-              <Button onClick={handleDetailsNext} className="flex-1">
-                {t('common.next')}
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
-          </motion.div>
-        );
-
-      case 'selection':
-        return (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
-          >
-            <div className="space-y-2">
-              <Label>{t('auth.select_direction')}</Label>
-              <Select value={directionId} onValueChange={(val) => { setDirectionId(val); setCourseId(''); }}>
-                <SelectTrigger>
-                  <Building className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder={t('auth.select_direction')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {mockDirections.map((dir) => (
-                    <SelectItem key={dir.id} value={String(dir.id)}>
-                      {getLocalizedField(dir, 'title', language)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t('auth.select_course')}</Label>
-              <Select value={courseId} onValueChange={setCourseId} disabled={!directionId}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('auth.select_course')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredCourses.map((course) => (
-                    <SelectItem key={course.id} value={String(course.id)}>
-                      {getLocalizedField(course, 'title', language)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex gap-3 pt-2">
-              <Button variant="outline" onClick={() => setStep('details')} className="flex-1">
-                {t('common.back')}
-              </Button>
-              <Button onClick={handleRegister} className="flex-1" disabled={isLoading}>
-                {isLoading ? t('common.loading') : t('common.submit')}
+              <Button onClick={handleDetailsNext} className="flex-1" disabled={isLoading}>
+                {isLoading ? t('common.loading') : t('auth.register')}
               </Button>
             </div>
           </motion.div>
@@ -289,13 +308,12 @@ export default function Register() {
     { key: 'phone', label: { uz: 'Telefon', ru: 'Телефон', en: 'Phone' } },
     { key: 'verify', label: { uz: 'Tasdiqlash', ru: 'Подтверждение', en: 'Verify' } },
     { key: 'details', label: { uz: "Ma'lumotlar", ru: 'Данные', en: 'Details' } },
-    { key: 'selection', label: { uz: 'Tanlash', ru: 'Выбор', en: 'Selection' } },
   ];
 
   const currentStepIndex = steps.findIndex(s => s.key === step);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-accent/30">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-100/60 via-blue-50/40 to-indigo-100/50">
       <ParticleBackground />
       
       <motion.div
@@ -311,10 +329,10 @@ export default function Register() {
           {t('common.back')}
         </Link>
 
-        <Card className="card-elevated">
+        <Card className="card-elevated backdrop-blur-sm bg-white/80 border-blue-200/40 shadow-lg">
           <CardHeader className="text-center">
             <Link to="/" className="flex justify-center mb-4">
-              <img src={logo} alt="FinLab" className="h-16 w-auto" />
+              <img src="/PRIME EDUCATION FINLAND.png" alt="FinLab" className="h-16 w-auto" />
             </Link>
             <CardTitle className="text-2xl font-display">{t('auth.register')}</CardTitle>
             <CardDescription>

@@ -1,6 +1,4 @@
 // API Service for connecting to Express.js backend
-// Update BASE_URL to your actual backend URL
-
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000';
 
 interface ApiResponse<T = any> {
@@ -18,14 +16,17 @@ class ApiService {
 
   constructor() {
     this.token = localStorage.getItem('token');
+    console.log('API Service initialized with token:', this.token ? this.token.substring(0, 20) + '...' : 'null'); // Debug log
   }
 
   setToken(token: string) {
+    console.log('Setting token:', token.substring(0, 20) + '...'); // Debug log
     this.token = token;
     localStorage.setItem('token', token);
   }
 
   clearToken() {
+    console.log('Clearing token'); // Debug log
     this.token = null;
     localStorage.removeItem('token');
   }
@@ -41,6 +42,9 @@ class ApiService {
 
     if (this.token) {
       (headers as Record<string, string>)['Authorization'] = `Bearer ${this.token}`;
+      console.log('Making request to', endpoint, 'with token:', this.token.substring(0, 20) + '...'); // Debug log
+    } else {
+      console.log('Making request to', endpoint, 'without token'); // Debug log
     }
 
     try {
@@ -50,6 +54,7 @@ class ApiService {
       });
 
       const data = await response.json();
+      console.log('Response from', endpoint, ':', data); // Debug log
       return data;
     } catch (error) {
       console.error('API Error:', error);
@@ -65,16 +70,20 @@ class ApiService {
     });
   }
 
+  async verifyCodeOnly(phone_number: string, code: string) {
+    return this.request('/user/register/verify-code', {
+      method: 'POST',
+      body: JSON.stringify({ phone_number, code }),
+    });
+  }
+
   async registerVerifyCode(data: {
     code: string;
     email: string;
     first_name: string;
     last_name: string;
-    middle_name: string;
+    middle_name?: string;
     phone_number: string;
-    status: string;
-    course_id: number;
-    direction_id: number;
   }) {
     const response = await this.request<{ token: string }>('/user/register/verify', {
       method: 'POST',
@@ -86,17 +95,30 @@ class ApiService {
     return response;
   }
 
-  async loginRequestCode(email: string, phone_number: string) {
-    return this.request('/user/login/request', {
+  async registerForCourse(data: {
+    course_id: number;
+    direction_id: number;
+    address?: string;
+    workplace?: string;
+    position?: string;
+  }) {
+    return this.request('/user/register/course', {
       method: 'POST',
-      body: JSON.stringify({ email, phone_number }),
+      body: JSON.stringify(data),
     });
   }
 
-  async loginVerifyCode(email: string, phone_number: string, code: string) {
+  async loginRequestCode(data: { email: string; phone_number: string }) {
+    return this.request('/user/login/request', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async loginVerifyCode(data: { email: string; phone_number: string; code: string }) {
     const response = await this.request<{ token: string }>('/user/login/verify', {
       method: 'POST',
-      body: JSON.stringify({ email, phone_number, code }),
+      body: JSON.stringify(data),
     });
     if (response.token) {
       this.setToken(response.token);
@@ -144,13 +166,247 @@ class ApiService {
     return this.request('/admin/profile');
   }
 
+  async createAdmin(username: string, password: string) {
+    return this.request('/admin', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+  }
+
+  async updateAdminProfile(username: string, password: string) {
+    return this.request('/admin/update', {
+      method: 'PATCH',
+      body: JSON.stringify({ username, password }),
+    });
+  }
+
+  // Admin - User Management
+  async getAllUsers() {
+    return this.request('/user');
+  }
+
+  async createUser(data: {
+    email: string;
+    first_name: string;
+    last_name: string;
+    middle_name: string;
+    phone_number: string;
+    status: string;
+    course_id: number;
+    direction_id: number;
+  }) {
+    return this.request('/user', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Admin - News Management
+  async createNews(data: {
+    title_en: string;
+    title_ru: string;
+    title_uz: string;
+    content_en: string;
+    content_ru: string;
+    content_uz: string;
+  }, files?: File[]) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    if (files) {
+      files.forEach(file => formData.append('medias', file));
+    }
+
+    return this.request('/news', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        // Remove Content-Type to let browser set it with boundary for FormData
+        'Authorization': this.token ? `Bearer ${this.token}` : '',
+      },
+    });
+  }
+
+  async updateNews(id: number, data: {
+    title_en?: string;
+    title_ru?: string;
+    title_uz?: string;
+    content_en?: string;
+    content_ru?: string;
+    content_uz?: string;
+  }, files?: File[]) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value) formData.append(key, value);
+    });
+    if (files) {
+      files.forEach(file => formData.append('medias', file));
+    }
+
+    return this.request(`/news/${id}`, {
+      method: 'PATCH',
+      body: formData,
+      headers: {
+        'Authorization': this.token ? `Bearer ${this.token}` : '',
+      },
+    });
+  }
+
+  async deleteNews(id: number) {
+    return this.request(`/news/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Admin - Direction Management
+  async createDirection(data: {
+    title_en: string;
+    title_ru: string;
+    title_uz: string;
+    description_en: string;
+    description_ru: string;
+    description_uz: string;
+    published_at: string;
+    ends_at: string;
+  }) {
+    return this.request('/direction', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateDirection(id: number, data: {
+    title_en?: string;
+    title_ru?: string;
+    title_uz?: string;
+    description_en?: string;
+    description_ru?: string;
+    description_uz?: string;
+    published_at?: string;
+    ends_at?: string;
+  }) {
+    return this.request(`/direction/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteDirection(id: number) {
+    return this.request(`/direction/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Admin - Course Management
+  async createCourse(data: {
+    title_en: string;
+    title_ru: string;
+    title_uz: string;
+    description_en: string;
+    description_ru: string;
+    description_uz: string;
+    published_at: string;
+    start_date: string;
+    ends_at: string;
+    direction_id: number;
+  }) {
+    return this.request('/courses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateCourse(id: number, data: {
+    title_en?: string;
+    title_ru?: string;
+    title_uz?: string;
+    description_en?: string;
+    description_ru?: string;
+    description_uz?: string;
+    published_at?: string;
+    start_date?: string;
+    ends_at?: string;
+    direction_id?: number;
+  }) {
+    return this.request(`/courses/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteCourse(id: number) {
+    return this.request(`/courses/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Admin - Opportunity Management
+  async createOpportunity(data: {
+    title_en: string;
+    title_ru: string;
+    title_uz: string;
+    content_en: string;
+    content_ru: string;
+    content_uz: string;
+    ends_at: string;
+  }, files?: File[]) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    if (files) {
+      files.forEach(file => formData.append('medias', file));
+    }
+
+    return this.request('/elon', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Authorization': this.token ? `Bearer ${this.token}` : '',
+      },
+    });
+  }
+
+  async updateOpportunity(id: number, data: {
+    title_en?: string;
+    title_ru?: string;
+    title_uz?: string;
+    content_en?: string;
+    content_ru?: string;
+    content_uz?: string;
+    ends_at?: string;
+  }, files?: File[]) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value) formData.append(key, value);
+    });
+    if (files) {
+      files.forEach(file => formData.append('medias', file));
+    }
+
+    return this.request(`/elon/${id}`, {
+      method: 'PATCH',
+      body: formData,
+      headers: {
+        'Authorization': this.token ? `Bearer ${this.token}` : '',
+      },
+    });
+  }
+
+  async deleteOpportunity(id: number) {
+    return this.request(`/elon/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Directions
   async getDirections(page = 1, limit = 20) {
-    return this.request(`/directions?page=${page}&limit=${limit}`);
+    return this.request(`/direction?page=${page}&limit=${limit}`);
   }
 
   async getDirection(id: number) {
-    return this.request(`/directions/${id}`);
+    return this.request(`/direction/${id}`);
   }
 
   // Courses

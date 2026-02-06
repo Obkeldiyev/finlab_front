@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -16,12 +16,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 213 47% 17%;
 
-    /* Primary: #2755a1 */
-    --primary: 213 54% 39%;
+    /* Primary: Darker blue #1a4480 */
+    --primary: 215 65% 31%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: #1c3f76 */
-    --secondary: 215 62% 29%;
+    /* Secondary: Even darker blue #0f2c5c */
+    --secondary: 217 75% 21%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96%;
@@ -29,36 +29,36 @@
 
     /* Accent - lighter blue */
     --accent: 210 100% 96%;
-    --accent-foreground: 213 54% 39%;
+    --accent-foreground: 215 65% 31%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 213 54% 39%;
+    --ring: 215 65% 31%;
 
     --radius: 0.75rem;
 
     /* Custom FinLab tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(213 54% 39%) 0%, hsl(215 62% 29%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(215 62% 29% / 0.95) 0%, hsl(213 54% 39% / 0.9) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(215 65% 31%) 0%, hsl(217 75% 21%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(217 75% 21% / 0.95) 0%, hsl(215 65% 31% / 0.9) 100%);
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
     
-    --shadow-sm: 0 1px 2px 0 hsl(215 62% 29% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(215 62% 29% / 0.1), 0 2px 4px -2px hsl(215 62% 29% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(215 62% 29% / 0.1), 0 4px 6px -4px hsl(215 62% 29% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(215 62% 29% / 0.1), 0 8px 10px -6px hsl(215 62% 29% / 0.1);
-    --shadow-glow: 0 0 40px hsl(213 54% 39% / 0.3);
+    --shadow-sm: 0 1px 2px 0 hsl(217 75% 21% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(217 75% 21% / 0.1), 0 2px 4px -2px hsl(217 75% 21% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(217 75% 21% / 0.1), 0 4px 6px -4px hsl(217 75% 21% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(217 75% 21% / 0.1), 0 8px 10px -6px hsl(217 75% 21% / 0.1);
+    --shadow-glow: 0 0 40px hsl(215 65% 31% / 0.3);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 215 16% 26%;
-    --sidebar-primary: 213 54% 39%;
+    --sidebar-primary: 215 65% 31%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 96%;
-    --sidebar-accent-foreground: 215 62% 29%;
+    --sidebar-accent-foreground: 217 75% 21%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 213 54% 39%;
+    --sidebar-ring: 215 65% 31%;
   }
 
   .dark {
@@ -122,12 +122,13 @@
     @apply bg-primary text-primary-foreground;
     @apply hover:opacity-90 transition-all duration-300;
     @apply shadow-lg hover:shadow-xl hover:-translate-y-0.5;
+    @apply border-2 border-transparent;
   }
 
   .btn-hero-outline {
     @apply inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl;
     @apply bg-transparent border-2 border-primary-foreground/30 text-primary-foreground;
-    @apply hover:bg-primary-foreground/10 transition-all duration-300;
+    @apply hover:bg-primary-foreground/10 hover:border-primary-foreground/50 transition-all duration-300;
   }
 
   .card-elevated {
@@ -155,13 +156,14 @@
   }
 
   .particle-canvas {
-    position: fixed;
+    position: fixed !important;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
+    opacity: 1;
   }
 }
 
@@ -179,12 +181,87 @@
     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+  }
+
+  .hover-bounce:hover {
+    animation: bounce 0.6s ease-in-out;
+  }
+
+  .hover-rotate:hover {
+    transform: rotate(5deg) scale(1.1);
+    transition: all 0.3s ease;
+  }
+
+  .hover-shake:hover {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  .hover-pulse:hover {
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  .hover-gradient:hover {
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
+    background-size: 200% 200%;
+    animation: gradient-shift 2s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 60%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-20px);
+    }
+    80% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
     }
     50% {
       transform: translateY(-20px);
+    }
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    }
+    to {
+      box-shadow: 0 0 30px hsl(var(--primary) / 0.6);
     }
   }
 
@@ -195,5 +272,42 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .video-overlay {
+    background: linear-gradient(
+      45deg,
+      rgba(26, 68, 128, 0.8) 0%,
+      rgba(15, 44, 92, 0.6) 50%,
+      rgba(26, 68, 128, 0.8) 100%
+    );
+  }
+
+  .video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .video-background video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
   }
 }

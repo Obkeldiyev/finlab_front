@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Instagram, Youtube, Send } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import logo from '@/assets/logo.svg';
 
 export function Footer() {
   const { t } = useLanguage();
@@ -27,7 +26,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              <img src={logo} alt="FinLab" className="h-12 w-auto brightness-0 invert" />
+              <img src="/PRIME EDUCATION FINLAND.png" alt="FinLab" className="h-12 w-auto brightness-0 invert" />
               <span className="font-display text-2xl font-bold">FinLab</span>
             </Link>
             <p className="text-secondary-foreground/80 text-sm leading-relaxed">

@@ -10,12 +10,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import logo from '@/assets/logo.svg';
 
 const languages: { code: Language; label: string; flag: string }[] = [
   { code: 'uz', label: "O'zbekcha", flag: '🇺🇿' },
   { code: 'ru', label: 'Русский', flag: '🇷🇺' },
-  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'en', label: 'English', flag: 'EN' },
 ];
 
 export function Navbar() {
@@ -39,7 +38,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="FinLab" className="h-10 md:h-12 w-auto" />
+            <img src="/PRIME EDUCATION FINLAND.png" alt="Finland Education Laboratory" className="h-10 md:h-12 w-auto" />
             <span className="font-display text-xl md:text-2xl font-bold text-primary">
               FinLab
             </span>
@@ -98,6 +97,11 @@ export function Navbar() {
               <Link to="/register">
                 <Button size="sm">{t('nav.register')}</Button>
               </Link>
+              <Link to="/admin/login">
+                <Button variant="outline" size="sm">
+                  Admin
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -145,6 +149,13 @@ export function Navbar() {
                 </Link>
                 <Link to="/register" className="flex-1" onClick={() => setIsOpen(false)}>
                   <Button className="w-full">{t('nav.register')}</Button>
+                </Link>
+              </div>
+              <div className="pt-2">
+                <Link to="/admin/login" className="block" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    Admin Login
+                  </Button>
                 </Link>
               </div>
             </div>

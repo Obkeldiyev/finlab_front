@@ -59,9 +59,9 @@ export default {
         },
         // FinLab specific colors
         finlab: {
-          blue: "#2755a1",
-          "blue-dark": "#1c3f76",
-          "blue-light": "#4a7dc9",
+          blue: "#1a4480",
+          "blue-dark": "#0f2c5c",
+          "blue-light": "#2d5aa0",
         },
       },
       fontFamily: {

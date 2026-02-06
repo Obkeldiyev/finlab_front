@@ -9,14 +9,28 @@ import {
   BookOpen,
   Cpu,
   Globe,
-  Play
+  Play,
+  TrendingUp,
+  Star,
+  Target,
+  FileText,
+  Microscope,
+  BookMarked,
+  Building
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useLanguage, getLocalizedField } from '@/contexts/LanguageContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { ParticleBackground } from '@/components/ParticleBackground';
+import { AdaptiveParticleBackground } from '@/components/AdaptiveParticleBackground';
+import { VideoBackground } from '@/components/VideoBackground';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Sticker } from '@/components/ui/sticker';
+import { opportunities as opportunitiesData } from '@/data/opportunities';
+import { OpportunityDialog } from '@/components/OpportunityDialog';
+import { dataService, type Course } from '@/services/dataService';
+import { toast } from 'sonner';
 
 // Import gallery images
 import gallery1 from '@/assets/gallery/gallery-1.jpg';
@@ -38,8 +52,191 @@ const staggerContainer = {
   }
 };
 
+// Counter animation hook - Fixed version
+const useCounter = (end: number, duration: number = 2000, start: number = 0) => {
+  const [count, setCount] = useState(start);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let startTime: number | null = null;
+    let animationFrame: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      
+      // Use easeOutCubic for smoother animation
+      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+      const currentCount = Math.floor(easeOutCubic * (end - start) + start);
+      
+      setCount(currentCount);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        setCount(end); // Ensure we end at the exact target
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [end, duration, start, isVisible]);
+
+  return { count, setIsVisible };
+};
+
 export default function Index() {
   const { t, language } = useLanguage();
+  const [selectedOpportunity, setSelectedOpportunity] = useState<typeof opportunitiesData[0] | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = useState(true);
+  const [directions, setDirections] = useState<any[]>([]);
+  const [isLoadingDirections, setIsLoadingDirections] = useState(true);
+
+  // Load courses from backend
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const coursesData = await dataService.getCourses();
+        setCourses(coursesData.slice(0, 3)); // Show only first 3 courses
+      } catch (error) {
+        console.error('Failed to load courses:', error);
+        toast.error('Failed to load courses');
+      } finally {
+        setIsLoadingCourses(false);
+      }
+    };
+    loadCourses();
+  }, []);
+
+  // Load directions from backend
+  useEffect(() => {
+    const loadDirections = async () => {
+      try {
+        const directionsData = await dataService.getDirections();
+        setDirections(directionsData.slice(0, 3)); // Show only first 3 directions
+      } catch (error) {
+        console.error('Failed to load directions:', error);
+        toast.error('Failed to load directions');
+      } finally {
+        setIsLoadingDirections(false);
+      }
+    };
+    loadDirections();
+  }, []);
+
+  const handleOpportunityClick = (opportunity: typeof opportunitiesData[0]) => {
+    setSelectedOpportunity(opportunity);
+    setIsDialogOpen(true);
+  };
+
+  // StatCard component with animation - Fixed version with fallback
+  const StatCard = ({ stat, index }: { stat: any, index: number }) => {
+    const { count, setIsVisible } = useCounter(stat.value, 1500 + index * 300);
+    const [hasTriggered, setHasTriggered] = useState(false);
+    const IconComponent = stat.icon;
+
+    // Fallback trigger after component mounts
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        if (!hasTriggered) {
+          setIsVisible(true);
+          setHasTriggered(true);
+        }
+      }, 1000 + index * 200);
+
+      return () => clearTimeout(timer);
+    }, [hasTriggered, index, setIsVisible]);
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 50, scale: 0.8 }}
+        whileInView={{ 
+          opacity: 1, 
+          y: 0, 
+          scale: 1,
+          transition: { 
+            duration: 0.6, 
+            delay: index * 0.1,
+            type: "spring",
+            stiffness: 100
+          }
+        }}
+        viewport={{ once: true, margin: "-50px" }}
+        onViewportEnter={() => {
+          if (!hasTriggered) {
+            setIsVisible(true);
+            setHasTriggered(true);
+          }
+        }}
+        className="group"
+      >
+        <Card className="text-center hover-lift hover-glow cursor-pointer group relative overflow-hidden h-full border-2 border-slate-200 hover:border-primary shadow-xl bg-white transition-all duration-300">
+          {/* Animated background gradient */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-all duration-500`} />
+          
+          {/* Decorative elements */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+          <CardContent className="pt-6 pb-6 px-6 relative z-10">
+            {/* Icon with animated background */}
+            <div className="mb-4 flex justify-center">
+              <div className={`relative p-4 rounded-2xl bg-gradient-to-br ${stat.color} group-hover:scale-110 transition-all duration-300 shadow-lg`}>
+                <IconComponent className="h-8 w-8 text-white relative z-10" />
+                {/* Glow effect */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${stat.color} blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300`} />
+              </div>
+            </div>
+
+            {/* Animated Counter with enhanced styling */}
+            <div className="mb-3 relative">
+              <div className="flex items-center justify-center">
+                <span className="text-4xl md:text-5xl font-bold text-primary group-hover:scale-110 transition-transform duration-300 inline-block relative">
+                  {count}
+                  {/* Number glow effect */}
+                  <span className="absolute inset-0 text-4xl md:text-5xl font-bold text-primary blur-sm opacity-0 group-hover:opacity-30 transition-opacity duration-300">
+                    {count}
+                  </span>
+                </span>
+                <span className="text-2xl md:text-3xl font-bold text-primary/70 ml-1 group-hover:text-primary transition-colors duration-300">
+                  {stat.suffix}
+                </span>
+              </div>
+              
+              {/* Progress bar animation */}
+              <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "100%" }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2 + 0.5, duration: 1.5, ease: "easeOut" }}
+                  className={`h-full bg-gradient-to-r ${stat.color} rounded-full`}
+                />
+              </div>
+            </div>
+
+            {/* Label with enhanced typography */}
+            <div className="text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+              {getLocalizedField(stat, 'label', language)}
+            </div>
+
+            {/* Description with better spacing */}
+            <div className="text-sm text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors duration-300">
+              {getLocalizedField(stat, 'description', language)}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  };
 
   const opportunities = [
     {
@@ -81,161 +278,226 @@ export default function Index() {
   ];
 
   const stats = [
-    { value: '250+', label: { uz: 'Ilmiy ishlar', ru: 'Научных работ', en: 'Research Papers' } },
-    { value: '500+', label: { uz: 'Bitiruvchilar', ru: 'Выпускников', en: 'Graduates' } },
-    { value: '15+', label: { uz: "Xorijiy hamkorlar", ru: 'Иностранных партнеров', en: 'Foreign Partners' } },
-    { value: '10+', label: { uz: "Yillik tajriba", ru: 'Лет опыта', en: 'Years Experience' } },
-  ];
-
-  const courses = [
-    {
-      hours: 288,
-      title: { 
-        uz: 'Malaka oshirish kursi', 
-        ru: 'Курс повышения квалификации', 
-        en: 'Professional Development Course' 
+    { 
+      value: 250, 
+      suffix: '+',
+      label: { uz: 'Ilmiy ishlar', ru: 'Научных работ', en: 'Research Papers' },
+      description: { 
+        uz: 'Nashr etilgan va amaliyotga joriy etilgan ilmiy-metodik ishlar soni',
+        ru: 'Количество опубликованных и внедренных научно-методических работ',
+        en: 'Number of published and implemented scientific-methodological works'
       },
-      description: {
-        uz: "144 soat laboratoriya, 72 soat xorijda, 72 soat to'g'ridan-to'g'ri ta'lim",
-        ru: '144 часа в лаборатории, 72 часа за рубежом, 72 часа прямого обучения',
-        en: '144 hours lab work, 72 hours abroad, 72 hours direct training'
-      },
-      features: ['STEAM', 'VR/AR', 'Robototexnika', 'Portfolio']
+      icon: BookOpen,
+      color: 'from-blue-500 to-cyan-500',
+      sticker: 'popular'
     },
-    {
-      hours: 72,
-      title: { 
-        uz: 'Qisqa muddatli kurs', 
-        ru: 'Краткосрочный курс', 
-        en: 'Short-term Course' 
+    { 
+      value: 500, 
+      suffix: '+',
+      label: { uz: 'Bitiruvchilar', ru: 'Выпускников', en: 'Graduates' },
+      description: { 
+        uz: 'Muvaffaqiyatli tugatgan va ishga joylashgan bitiruvchilar soni',
+        ru: 'Количество успешно окончивших и трудоустроенных выпускников',
+        en: 'Number of successfully graduated and employed alumni'
       },
-      description: {
-        uz: "Finlandiya ta'lim modeli asosida intensiv kasbiy rivojlanish dasturi",
-        ru: 'Интенсивная программа профессионального развития по финской модели',
-        en: 'Intensive professional development program based on Finnish model'
-      },
-      features: ['3D printer', 'Digital Lab', 'Methodology']
+      icon: Users,
+      color: 'from-green-500 to-emerald-500',
+      sticker: 'bestseller'
     },
-    {
-      hours: 36,
-      title: { 
-        uz: 'Boshlang\'ich kurs', 
-        ru: 'Начальный курс', 
-        en: 'Introductory Course' 
+    { 
+      value: 15, 
+      suffix: '+',
+      label: { uz: "Xorijiy hamkorlar", ru: 'Иностранных партнеров', en: 'Foreign Partners' },
+      description: { 
+        uz: 'Finlandiya va boshqa Yevropa davlatlari bilan hamkorlik',
+        ru: 'Сотрудничество с Финляндией и другими европейскими странами',
+        en: 'Partnerships with Finland and other European countries'
       },
-      description: {
-        uz: "Finlandiya ta'lim tizimi asoslari bilan tanishish kursi",
-        ru: 'Вводный курс по основам финской системы образования',
-        en: 'Introduction to Finnish education system fundamentals'
+      icon: Globe,
+      color: 'from-purple-500 to-pink-500',
+      sticker: 'exclusive'
+    },
+    { 
+      value: 10, 
+      suffix: '+',
+      label: { uz: "Yillik tajriba", ru: 'Лет опыта', en: 'Years Experience' },
+      description: { 
+        uz: 'Zamonaviy ta\'lim texnologiyalari sohasidagi tajriba',
+        ru: 'Опыт в области современных образовательных технологий',
+        en: 'Experience in modern educational technologies'
       },
-      features: ['Theory', 'Practice', 'Certificate']
-    }
+      icon: Award,
+      color: 'from-orange-500 to-red-500',
+      sticker: 'premium'
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <ParticleBackground />
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        <div className="absolute inset-0 bg-gradient-hero opacity-95" />
-        
-        <div className="container relative z-10 mx-auto px-4 py-20">
-          <motion.div
-            initial="initial"
-            animate="animate"
-            variants={staggerContainer}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <motion.div
-              variants={fadeInUp}
-              className="flex items-center justify-center gap-4 mb-8"
-            >
-              <span className="text-4xl">🇫🇮</span>
-              <span className="text-primary-foreground/60 text-2xl">×</span>
-              <span className="text-4xl">🇺🇿</span>
-            </motion.div>
-
-            <motion.h1
-              variants={fadeInUp}
-              className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-primary-foreground mb-6"
-            >
-              {t('hero.title')}
-            </motion.h1>
-
-            <motion.p
-              variants={fadeInUp}
-              className="text-xl md:text-2xl text-primary-foreground/80 mb-12 max-w-2xl mx-auto"
-            >
-              {t('hero.subtitle')}
-            </motion.p>
-
-            <motion.div
-              variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              <Link to="/register">
-                <Button size="lg" className="btn-hero group">
-                  {t('hero.cta')}
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link to="/directions">
-                <Button variant="outline" size="lg" className="btn-hero-outline">
-                  <Play className="mr-2 h-5 w-5" />
-                  {t('hero.learn_more')}
-                </Button>
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+      {/* Hero Section - Video (Full viewport) */}
+      <section className="relative w-full overflow-hidden" style={{ height: '100vh', minHeight: '700px' }}>
+        <VideoBackground 
+          videoSrc="/13 SENTYA.MP4"
+          className="w-full h-full flex items-center justify-center"
         >
-          <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex items-start justify-center p-2">
+          <div className="w-full relative z-10 px-4 py-16 mt-16 md:mt-20">
             <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1.5 h-1.5 rounded-full bg-primary-foreground/60"
-            />
+              initial="initial"
+              animate="animate"
+              variants={staggerContainer}
+              className="text-center max-w-4xl mx-auto"
+            >
+              <motion.div
+                variants={fadeInUp}
+                className="flex items-center justify-center gap-4 mb-8"
+              >
+                <span className="text-4xl">🇫🇮</span>
+                <span className="text-white/60 text-2xl">×</span>
+                <span className="text-4xl">🇺🇿</span>
+              </motion.div>
+
+              <motion.h1
+                variants={fadeInUp}
+                className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6"
+              >
+                {t('hero.title')}
+              </motion.h1>
+
+              <motion.p
+                variants={fadeInUp}
+                className="text-lg md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto"
+              >
+                {t('hero.subtitle')}
+              </motion.p>
+
+              <motion.div
+                variants={fadeInUp}
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+              >
+                <Link to="/register">
+                  <Button size="lg" className="btn-hero group bg-white text-primary hover:bg-white/90 hover-lift hover-glow">
+                    {t('hero.cta')}
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300" />
+                  </Button>
+                </Link>
+                <Link to="/directions">
+                  <Button variant="outline" size="lg" className="btn-hero-outline border-white/30 text-white hover:bg-white/10 hover:border-white/50 hover-bounce">
+                    <Play className="mr-2 h-5 w-5 group-hover:scale-125 transition-transform duration-300" />
+                    {t('hero.learn_more')}
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
           </div>
-        </motion.div>
+
+          {/* Scroll indicator - More prominent */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
+          >
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-white/80 text-sm font-medium">
+                {language === 'uz' && 'Pastga aylantiring'}
+                {language === 'ru' && 'Прокрутите вниз'}
+                {language === 'en' && 'Scroll down'}
+              </span>
+              <div className="w-6 h-10 rounded-full border-2 border-white/50 flex items-start justify-center p-2">
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="w-1.5 h-1.5 rounded-full bg-white/80"
+                />
+              </div>
+            </div>
+          </motion.div>
+        </VideoBackground>
       </section>
 
-      {/* Stats Section */}
-      <section className="relative z-10 -mt-20">
-        <div className="container mx-auto px-4">
+      {/* Enhanced Stats Section - WHITE BACKGROUND with BLUE PARTICLES */}
+      <section className="relative z-10 pt-16 pb-20 bg-white overflow-hidden">
+        {/* Blue particles on white background */}
+        <AdaptiveParticleBackground color="white" />
+        
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
+        
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+            className="text-center mb-12"
           >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-medium mb-4">
+              <Star className="h-4 w-4" />
+              <span>
+                {language === 'uz' && 'Bizning natijalarimiz'}
+                {language === 'ru' && 'Наши результаты'}
+                {language === 'en' && 'Our Results'}
+              </span>
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+              {language === 'uz' && 'Raqamlar orqasidagi muvaffaqiyat'}
+              {language === 'ru' && 'Успех за цифрами'}
+              {language === 'en' && 'Success Behind Numbers'}
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              {language === 'uz' && 'Har bir raqam bizning mehnat va sadoqatimizning natijasidir'}
+              {language === 'ru' && 'Каждая цифра - результат нашего труда и преданности'}
+              {language === 'en' && 'Every number represents our dedication and hard work'}
+            </p>
+          </motion.div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {stats.map((stat, index) => (
-              <Card key={index} className="card-elevated text-center">
-                <CardContent className="pt-6">
-                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {getLocalizedField(stat, 'label', language)}
-                  </div>
-                </CardContent>
-              </Card>
+              <StatCard key={index} stat={stat} index={index} />
             ))}
+          </div>
+
+          {/* Additional Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.8 }}
+            className="text-center"
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full text-white shadow-lg">
+                <TrendingUp className="h-5 w-5" />
+                <span className="font-medium">
+                  {language === 'uz' && 'Har yili 25% o\'sish'}
+                  {language === 'ru' && 'Рост 25% ежегодно'}
+                  {language === 'en' && '25% annual growth'}
+                </span>
+              </div>
+              
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-white shadow-lg">
+                <Target className="h-5 w-5" />
+                <span className="font-medium">
+                  {language === 'uz' && '98% mamnunlik darajasi'}
+                  {language === 'ru' && '98% удовлетворенности'}
+                  {language === 'en' && '98% satisfaction rate'}
+                </span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="section-padding relative z-10">
-        <div className="container mx-auto">
+      {/* About Section - BLUE BACKGROUND with WHITE PARTICLES */}
+      <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
+        {/* White particles on blue background */}
+        <AdaptiveParticleBackground color="blue" />
+        
+        <div className="container mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -243,26 +505,75 @@ export default function Index() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-white font-medium mb-6">
+                <BookOpen className="h-4 w-4" />
+                <span>
+                  {language === 'uz' && 'Bizning missiyamiz'}
+                  {language === 'ru' && 'Наша миссия'}
+                  {language === 'en' && 'Our Mission'}
+                </span>
+              </div>
+
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-6">
                 {t('about.title')}
               </h2>
-              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                {t('about.description')}
-              </p>
+              
+              <div className="space-y-4 mb-8">
+                <p className="text-lg text-white/90 leading-relaxed">
+                  {t('about.description')}
+                </p>
+                
+                <p className="text-base text-white/80 leading-relaxed">
+                  {language === 'uz' && 'Bizning laboratoriyamiz Finlandiya Ta\'lim vazirligining rasmiy hamkorligi ostida faoliyat yuritadi va dunyodagi eng ilg\'or ta\'lim texnologiyalarini O\'zbekistonga olib keladi. Biz har bir o\'quvchining individual ehtiyojlarini hisobga olgan holda, zamonaviy VR/AR texnologiyalar, 3D printing va robototexnika orqali ta\'lim beramiz.'}
+                  {language === 'ru' && 'Наша лаборатория работает под официальным партнерством Министерства образования Финляндии и привносит самые передовые образовательные технологии в Узбекистан. Мы обучаем с учетом индивидуальных потребностей каждого студента, используя современные VR/AR технологии, 3D-печать и робототехнику.'}
+                  {language === 'en' && 'Our laboratory operates under the official partnership of the Finnish Ministry of Education and brings the most advanced educational technologies to Uzbekistan. We teach considering the individual needs of each student, using modern VR/AR technologies, 3D printing and robotics.'}
+                </p>
+
+                <p className="text-base text-white/80 leading-relaxed">
+                  {language === 'uz' && 'Laboratoriyamizda o\'qituvchilar uchun maxsus malaka oshirish kurslari, talabalar uchun amaliy mashg\'ulotlar va tadqiqotchilar uchun ilmiy loyihalar amalga oshiriladi. Bizning maqsadimiz - O\'zbekiston ta\'lim tizimini jahon standartlariga moslashtirishdir.'}
+                  {language === 'ru' && 'В нашей лаборатории проводятся специальные курсы повышения квалификации для учителей, практические занятия для студентов и научные проекты для исследователей. Наша цель - адаптировать систему образования Узбекистана к мировым стандартам.'}
+                  {language === 'en' && 'Our laboratory conducts special professional development courses for teachers, practical sessions for students, and research projects for researchers. Our goal is to adapt Uzbekistan\'s education system to world standards.'}
+                </p>
+              </div>
+
               <div className="space-y-4">
                 {[
-                  { icon: BookOpen, text: { uz: "Finlandiya ta'lim modeli", ru: 'Финская модель образования', en: 'Finnish education model' } },
-                  { icon: Users, text: { uz: 'Professional pedagoglar jamoasi', ru: 'Команда профессиональных педагогов', en: 'Team of professional educators' } },
-                  { icon: Globe, text: { uz: 'Xalqaro hamkorlik', ru: 'Международное сотрудничество', en: 'International cooperation' } },
+                  { 
+                    icon: BookOpen, 
+                    text: { uz: "Finlandiya ta'lim modeli", ru: 'Финская модель образования', en: 'Finnish education model' },
+                    desc: { uz: 'Dunyodagi eng yaxshi ta\'lim tizimi', ru: 'Лучшая система образования в мире', en: 'World\'s best education system' }
+                  },
+                  { 
+                    icon: Users, 
+                    text: { uz: 'Professional pedagoglar jamoasi', ru: 'Команда профессиональных педагогов', en: 'Team of professional educators' },
+                    desc: { uz: 'Xalqaro tajribaga ega mutaxassislar', ru: 'Специалисты с международным опытом', en: 'Specialists with international experience' }
+                  },
+                  { 
+                    icon: Globe, 
+                    text: { uz: 'Xalqaro hamkorlik', ru: 'Международное сотрудничество', en: 'International cooperation' },
+                    desc: { uz: 'Finlandiya va Yevropa universitetlari bilan', ru: 'С университетами Финляндии и Европы', en: 'With Finnish and European universities' }
+                  },
                 ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-accent">
-                      <item.icon className="h-6 w-6 text-primary" />
+                  <motion.div 
+                    key={index} 
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    className="flex items-start gap-4 hover-lift cursor-pointer group p-4 rounded-xl hover:bg-white/10 transition-all duration-300"
+                  >
+                    <div className="p-3 rounded-xl bg-white/20 group-hover:bg-white group-hover:scale-110 transition-all duration-300 flex-shrink-0">
+                      <item.icon className="h-6 w-6 text-white group-hover:text-primary group-hover:rotate-12 transition-all duration-300" />
                     </div>
-                    <span className="text-foreground font-medium">
-                      {getLocalizedField(item, 'text', language)}
-                    </span>
-                  </div>
+                    <div className="flex-1">
+                      <span className="text-white font-semibold group-hover:translate-x-2 transition-all duration-300 block">
+                        {getLocalizedField(item, 'text', language)}
+                      </span>
+                      <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">
+                        {getLocalizedField(item, 'desc', language)}
+                      </span>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
@@ -274,76 +585,781 @@ export default function Index() {
               transition={{ duration: 0.6 }}
               className="grid grid-cols-2 gap-4"
             >
-              <img
+              <motion.img
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                transition={{ duration: 0.3 }}
                 src={gallery1}
                 alt="Lab environment"
-                className="rounded-2xl shadow-lg w-full h-48 object-cover"
+                className="rounded-2xl shadow-lg w-full h-48 object-cover hover:shadow-xl transition-shadow duration-300"
               />
-              <img
+              <motion.img
+                whileHover={{ scale: 1.05, rotate: -2 }}
+                transition={{ duration: 0.3 }}
                 src={gallery2}
                 alt="Lab workspace"
-                className="rounded-2xl shadow-lg w-full h-48 object-cover mt-8"
+                className="rounded-2xl shadow-lg w-full h-48 object-cover mt-8 hover:shadow-xl transition-shadow duration-300"
               />
-              <img
+              <motion.img
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                transition={{ duration: 0.3 }}
                 src={gallery3}
                 alt="Lab activities"
-                className="rounded-2xl shadow-lg w-full h-48 object-cover -mt-4"
+                className="rounded-2xl shadow-lg w-full h-48 object-cover -mt-4 hover:shadow-xl transition-shadow duration-300"
               />
-              <img
+              <motion.img
+                whileHover={{ scale: 1.05, rotate: -2 }}
+                transition={{ duration: 0.3 }}
                 src={gallery4}
                 alt="Lab technology"
-                className="rounded-2xl shadow-lg w-full h-48 object-cover mt-4"
+                className="rounded-2xl shadow-lg w-full h-48 object-cover mt-4 hover:shadow-xl transition-shadow duration-300"
               />
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Opportunities Section */}
-      <section className="section-padding bg-accent/50 relative z-10">
-        <div className="container mx-auto">
+      {/* Why Finnish Education Model Section - WHITE BACKGROUND with BLUE PARTICLES */}
+      <section className="section-padding bg-white relative z-10 overflow-hidden">
+        {/* Blue particles on white background */}
+        <AdaptiveParticleBackground color="white" />
+        
+        <div className="container mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            <h3 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-8">
+              {language === 'uz' && "Nima uchun aynan Finlandiya ta'lim modeli?"}
+              {language === 'ru' && 'Почему именно финская модель образования?'}
+              {language === 'en' && 'Why Finnish Education Model?'}
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-8 text-left">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-primary/10 mt-1">
+                    <Award className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">
+                      {language === 'uz' && "Dunyodagi eng yaxshi ta'lim tizimi"}
+                      {language === 'ru' && 'Лучшая система образования в мире'}
+                      {language === 'en' && 'World\'s Best Education System'}
+                    </h4>
+                    <p className="text-muted-foreground text-sm">
+                      {language === 'uz' && "PISA testlari bo'yicha doimiy ravishda yuqori natijalar"}
+                      {language === 'ru' && 'Стабильно высокие результаты по тестам PISA'}
+                      {language === 'en' && 'Consistently high PISA test results'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-primary/10 mt-1">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">
+                      {language === 'uz' && "O'quvchi markazli yondashuv"}
+                      {language === 'ru' && 'Студентоцентрированный подход'}
+                      {language === 'en' && 'Student-Centered Approach'}
+                    </h4>
+                    <p className="text-muted-foreground text-sm">
+                      {language === 'uz' && "Har bir o'quvchining individual ehtiyojlarini hisobga olish"}
+                      {language === 'ru' && 'Учет индивидуальных потребностей каждого студента'}
+                      {language === 'en' && 'Considering individual needs of each student'}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="space-y-4"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-primary/10 mt-1">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">
+                      {language === 'uz' && "Innovatsion metodlar"}
+                      {language === 'ru' && 'Инновационные методы'}
+                      {language === 'en' && 'Innovative Methods'}
+                    </h4>
+                    <p className="text-muted-foreground text-sm">
+                      {language === 'uz' && "Zamonaviy texnologiyalar va kreativ yondashuvlar"}
+                      {language === 'ru' && 'Современные технологии и креативные подходы'}
+                      {language === 'en' && 'Modern technologies and creative approaches'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="p-2 rounded-lg bg-primary/10 mt-1">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">
+                      {language === 'uz' && "Amaliy yo'naltirilganlik"}
+                      {language === 'ru' && 'Практическая направленность'}
+                      {language === 'en' && 'Practical Orientation'}
+                    </h4>
+                    <p className="text-muted-foreground text-sm">
+                      {language === 'uz' && "Nazariya va amaliyotning mukammal uyg'unligi"}
+                      {language === 'ru' && 'Идеальное сочетание теории и практики'}
+                      {language === 'en' && 'Perfect combination of theory and practice'}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="mt-8 p-6 bg-gradient-primary rounded-2xl text-white"
+            >
+              <p className="text-lg font-medium">
+                {language === 'uz' && "Bizning laboratoriyamiz Finlandiya ta'lim vazirligining rasmiy hamkorligi bilan faoliyat yuritadi va xalqaro standartlarga javob beradi."}
+                {language === 'ru' && 'Наша лаборатория работает при официальном партнерстве с Министерством образования Финляндии и соответствует международным стандартам.'}
+                {language === 'en' && 'Our laboratory operates in official partnership with the Finnish Ministry of Education and meets international standards.'}
+              </p>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Finland Education Laboratory Video Section */}
+      <section className="relative z-10 min-h-screen">
+        <VideoBackground 
+          videoSrc="/13 SENTYA.MP4" 
+          posterSrc={gallery1}
+          className="min-h-screen flex items-center"
+        >
+          <div className="container mx-auto px-4 py-20">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center max-w-4xl mx-auto"
+            >
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <span className="text-5xl">🇫🇮</span>
+                <GraduationCap className="h-12 w-12 text-white" />
+                <span className="text-5xl">🔬</span>
+              </div>
+              
+              <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
+                {language === 'uz' && "Finlandiya Ta'lim Laboratoriyasi"}
+                {language === 'ru' && 'Финская Образовательная Лаборатория'}
+                {language === 'en' && 'Finland Education Laboratory'}
+              </h2>
+              
+              <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
+                {language === 'uz' && "Zamonaviy texnologiyalar va innovatsion ta'lim metodlari bilan jihozlangan laboratoriya"}
+                {language === 'ru' && 'Лаборатория, оснащенная современными технологиями и инновационными методами обучения'}
+                {language === 'en' && 'Laboratory equipped with modern technologies and innovative teaching methods'}
+              </p>
+              
+              <div className="grid md:grid-cols-3 gap-6 mb-12">
+                {[
+                  {
+                    icon: Cpu,
+                    title: { uz: 'VR/AR Texnologiyalar', ru: 'VR/AR Технологии', en: 'VR/AR Technologies' },
+                    desc: { uz: 'Virtual reallik tajribasi', ru: 'Опыт виртуальной реальности', en: 'Virtual reality experience' }
+                  },
+                  {
+                    icon: Lightbulb,
+                    title: { uz: '3D Printing', ru: '3D Печать', en: '3D Printing' },
+                    desc: { uz: 'Prototiplash va dizayn', ru: 'Прототипирование и дизайн', en: 'Prototyping and design' }
+                  },
+                  {
+                    icon: Award,
+                    title: { uz: 'Robotika', ru: 'Робототехника', en: 'Robotics' },
+                    desc: { uz: 'Programmalashtirish va avtomatlashtirish', ru: 'Программирование и автоматизация', en: 'Programming and automation' }
+                  }
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.2, duration: 0.6 }}
+                    className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20"
+                  >
+                    <item.icon className="h-12 w-12 text-white mb-4 mx-auto" />
+                    <h3 className="text-xl font-display font-semibold text-white mb-2">
+                      {getLocalizedField(item, 'title', language)}
+                    </h3>
+                    <p className="text-white/80">
+                      {getLocalizedField(item, 'desc', language)}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.8 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+              >
+                <Link to="/gallery">
+                  <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
+                    <Play className="mr-2 h-5 w-5" />
+                    {language === 'uz' && 'Laboratoriyani ko\'ring'}
+                    {language === 'ru' && 'Посмотреть лабораторию'}
+                    {language === 'en' && 'Explore Laboratory'}
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="lg" className="text-lg px-8 py-6 bg-white text-primary hover:bg-white/90">
+                    {t('hero.cta')}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+          </div>
+        </VideoBackground>
+      </section>
+
+      {/* Opportunities Section - WHITE BACKGROUND with BLUE PARTICLES */}
+      <section className="section-padding bg-white relative z-10 overflow-hidden">
+        {/* Blue particles on white background */}
+        <AdaptiveParticleBackground color="white" />
+        
+        <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-12"
           >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-medium mb-4">
+              <Lightbulb className="h-4 w-4" />
+              <span>Imkoniyatlar</span>
+            </div>
+            
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-              {t('opportunities.title')}
+              Laboratoriya Imkoniyatlari
             </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Finlandiya ta'lim modeli asosida kasbiy rivojlanish uchun keng imkoniyatlar
+            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {opportunities.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="card-feature h-full">
-                  <CardContent className="pt-6">
-                    <div className="p-4 rounded-2xl bg-primary/10 w-fit mb-4">
-                      <item.icon className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-display font-semibold text-foreground mb-2">
-                      {getLocalizedField(item, 'title', language)}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {getLocalizedField(item, 'description', language)}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+          <div className="grid md:grid-cols-3 gap-8">
+            {opportunitiesData.map((opportunity, index) => {
+              const icons = [GraduationCap, FileText, Microscope];
+              const IconComponent = icons[index];
+              const colors = [
+                'from-blue-500 to-cyan-500',
+                'from-green-500 to-emerald-500',
+                'from-purple-500 to-pink-500'
+              ];
+              
+              return (
+                <motion.div
+                  key={opportunity.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  onClick={() => handleOpportunityClick(opportunity)}
+                  className="cursor-pointer"
+                >
+                  <Card className="h-full group hover:shadow-2xl transition-all duration-300 border-2 border-slate-200 hover:border-primary bg-white shadow-lg">
+                    <CardContent className="pt-8 pb-6 px-6">
+                      {/* Icon with gradient background */}
+                      <div className="mb-6 flex justify-center">
+                        <div className={`relative p-4 rounded-2xl bg-gradient-to-br ${colors[index]} group-hover:scale-110 transition-all duration-300 shadow-xl`}>
+                          <IconComponent className="h-10 w-10 text-white relative z-10" />
+                          {/* Glow effect */}
+                          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors[index]} blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300`} />
+                        </div>
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="text-xl font-display font-bold text-foreground mb-4 text-center group-hover:text-primary transition-colors duration-300">
+                        {opportunity.title}
+                      </h3>
+
+                      {/* Short Description */}
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-6 text-center line-clamp-3">
+                        {opportunity.shortDescription}
+                      </p>
+
+                      {/* Read More Button */}
+                      <div className="flex justify-center">
+                        <Button 
+                          variant="outline" 
+                          className="group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300 border-2"
+                        >
+                          Batafsil o'qish
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        </Button>
+                      </div>
+
+                      {/* Decorative bottom line */}
+                      <div className={`mt-6 h-1 bg-gradient-to-r ${colors[index]} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Courses Section */}
-      <section className="section-padding relative z-10">
-        <div className="container mx-auto">
+      {/* Opportunity Dialog */}
+      <OpportunityDialog 
+        opportunity={selectedOpportunity}
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
+
+      {/* Team Leadership Section - BLUE BACKGROUND with WHITE PARTICLES */}
+      <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
+        {/* White particles on blue background */}
+        <AdaptiveParticleBackground color="blue" />
+        
+        <div className="container mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
+              {language === 'uz' && 'Laboratoriya rahbariyati'}
+              {language === 'ru' && 'Руководство лаборатории'}
+              {language === 'en' && 'Laboratory Leadership'}
+            </h2>
+            <p className="text-xl text-white/90 max-w-3xl mx-auto">
+              {language === 'uz' && 'Tajribali mutaxassislar va innovator olimlar jamoasi'}
+              {language === 'ru' && 'Команда опытных специалистов и ученых-новаторов'}
+              {language === 'en' && 'Team of experienced specialists and innovative scientists'}
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="max-w-4xl mx-auto"
+          >
+            <Card className="card-feature overflow-hidden">
+              <div className="md:flex">
+                {/* Director Photo */}
+                <div className="md:w-80 bg-gradient-primary p-8 flex items-center justify-center">
+                  <div className="w-48 h-48 rounded-full bg-white/20 flex items-center justify-center">
+                    <Users className="h-24 w-24 text-white" />
+                  </div>
+                </div>
+                
+                {/* Director Info */}
+                <div className="flex-1 p-8">
+                  <h3 className="text-2xl font-display font-bold text-foreground mb-2">
+                    Supiyeva Buxolida Abduvaliyevna
+                  </h3>
+                  <p className="text-primary font-semibold mb-4">
+                    {language === 'uz' && 'Laboratoriya mudiri'}
+                    {language === 'ru' && 'Директор лаборатории'}
+                    {language === 'en' && 'Laboratory Director'}
+                  </p>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    {language === 'uz' && 'Pedagogika fanlari bo\'yicha falsafa doktori (PhD), dotsent, shoira, O\'zbekiston Yozuvchilar uyushmasi a\'zosi'}
+                    {language === 'ru' && 'Доктор философии (PhD) по педагогическим наукам, доцент, поэтесса, член Союза писателей Узбекистана'}
+                    {language === 'en' && 'Doctor of Philosophy (PhD) in Pedagogical Sciences, Associate Professor, Poet, Member of the Writers\' Union of Uzbekistan'}
+                  </p>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-start gap-3">
+                      <Award className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium text-foreground text-sm">
+                          {language === 'uz' && '250+ ilmiy-metodik ishlar'}
+                          {language === 'ru' && '250+ научно-методических работ'}
+                          {language === 'en' && '250+ scientific-methodological works'}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {language === 'uz' && 'Nashr etilgan va amaliyotga joriy etilgan'}
+                          {language === 'ru' && 'Опубликованы и внедрены в практику'}
+                          {language === 'en' && 'Published and implemented in practice'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <Lightbulb className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium text-foreground text-sm">
+                          {language === 'uz' && 'O\'zbekistonda birinchi onlayn darslar muallifi (2011)'}
+                          {language === 'ru' && 'Первый автор онлайн-уроков в Узбекистане (2011)'}
+                          {language === 'en' && 'First author of online lessons in Uzbekistan (2011)'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <BookOpen className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium text-foreground text-sm">
+                          {language === 'uz' && 'Dunyoda birinchi QR-kodli she\'riy to\'plam muallifi (2019)'}
+                          {language === 'ru' && 'Первый в мире автор поэтического сборника с QR-кодом (2019)'}
+                          {language === 'en' && 'World\'s first author of QR-coded poetry collection (2019)'}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {language === 'uz' && '"Qalbim ko\'zgusi" - avangard elektron janr'}
+                          {language === 'ru' && '"Зеркало моего сердца" - авангардный электронный жанр'}
+                          {language === 'en' && '"Mirror of My Heart" - avant-garde electronic genre'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <Cpu className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <p className="font-medium text-foreground text-sm">
+                          {language === 'uz' && 'VR/AR texnologiyalarini ta\'limga joriy etish eksperti'}
+                          {language === 'ru' && 'Эксперт по внедрению VR/AR технологий в образование'}
+                          {language === 'en' && 'Expert in implementing VR/AR technologies in education'}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {language === 'uz' && 'Buyuk allomalar hayotini VR/AR orqali o\'rgatish'}
+                          {language === 'ru' && 'Обучение жизни великих ученых через VR/AR'}
+                          {language === 'en' && 'Teaching the lives of great scholars through VR/AR'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Link to="/team">
+                    <Button variant="outline" className="w-full md:w-auto">
+                      {language === 'uz' && 'Batafsil ma\'lumot'}
+                      {language === 'ru' && 'Подробнее'}
+                      {language === 'en' && 'Learn More'}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Enhanced Opportunities Features Section - BLUE BACKGROUND with WHITE PARTICLES */}
+      <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
+        {/* White particles on blue background */}
+        <AdaptiveParticleBackground color="blue" />
+        
+        <div className="container mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h3 className="text-2xl md:text-3xl font-display font-bold text-white mb-4">
+              {language === 'uz' && 'Bizning afzalliklarimiz'}
+              {language === 'ru' && 'Наши преимущества'}
+              {language === 'en' && 'Our Advantages'}
+            </h3>
+            <p className="text-lg text-white/90 max-w-2xl mx-auto">
+              {language === 'uz' && "Nima uchun minglab o'qituvchilar bizni tanlaydi"}
+              {language === 'ru' && 'Почему тысячи учителей выбирают нас'}
+              {language === 'en' && 'Why thousands of teachers choose us'}
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <div className="p-6 rounded-2xl bg-white shadow-lg mb-4">
+                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="text-lg font-display font-semibold text-foreground mb-2">
+                  {language === 'uz' && 'Davlat sertifikati'}
+                  {language === 'ru' && 'Государственный сертификат'}
+                  {language === 'en' && 'State Certificate'}
+                </h4>
+                <p className="text-muted-foreground text-sm">
+                  {language === 'uz' && "O'zbekiston Respublikasi Prezidentining farmoni asosida"}
+                  {language === 'ru' && 'На основе указа Президента Республики Узбекистан'}
+                  {language === 'en' && 'Based on the decree of the President of Uzbekistan'}
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-center"
+            >
+              <div className="p-6 rounded-2xl bg-white shadow-lg mb-4">
+                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Globe className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="text-lg font-display font-semibold text-foreground mb-2">
+                  {language === 'uz' && 'Xalqaro tan olinish'}
+                  {language === 'ru' && 'Международное признание'}
+                  {language === 'en' && 'International Recognition'}
+                </h4>
+                <p className="text-muted-foreground text-sm">
+                  {language === 'uz' && "Finlandiya ta'lim tashkilotlarining sertifikati"}
+                  {language === 'ru' && 'Сертификат финских образовательных организаций'}
+                  {language === 'en' && 'Certificate from Finnish educational organizations'}
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="text-center"
+            >
+              <div className="p-6 rounded-2xl bg-white shadow-lg mb-4">
+                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Cpu className="h-8 w-8 text-white" />
+                </div>
+                <h4 className="text-lg font-display font-semibold text-foreground mb-2">
+                  {language === 'uz' && 'Zamonaviy texnologiyalar'}
+                  {language === 'ru' && 'Современные технологии'}
+                  {language === 'en' && 'Modern Technologies'}
+                </h4>
+                <p className="text-muted-foreground text-sm">
+                  {language === 'uz' && 'VR/AR, 3D printing, robototexnika va boshqalar'}
+                  {language === 'ru' && 'VR/AR, 3D печать, робототехника и другие'}
+                  {language === 'en' && 'VR/AR, 3D printing, robotics and more'}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Success Stories */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+          >
+            <h4 className="text-xl font-display font-bold text-foreground text-center mb-8">
+              {language === 'uz' && 'Muvaffaqiyat hikoyalari'}
+              {language === 'ru' && 'Истории успеха'}
+              {language === 'en' && 'Success Stories'}
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 }}
+                className="bg-white p-6 rounded-2xl shadow-lg"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-foreground">
+                      {language === 'uz' && "Gulnora Karimova - Maktab direktori"}
+                      {language === 'ru' && 'Гульнора Каримова - Директор школы'}
+                      {language === 'en' && 'Gulnora Karimova - School Director'}
+                    </h5>
+                    <p className="text-sm text-muted-foreground">288 soatlik kurs bitiruvchisi</p>
+                  </div>
+                </div>
+                <p className="text-muted-foreground italic">
+                  {language === 'uz' && "\"Finlandiya metodikasi bizning maktabimizda o'quvchilarning o'zlashtirish darajasini 40% ga oshirdi. Zamonaviy yondashuvlar juda samarali.\""}
+                  {language === 'ru' && '"Финская методика повысила уровень усвоения учащихся в нашей школе на 40%. Современные подходы очень эффективны."'}
+                  {language === 'en' && '"Finnish methodology increased student achievement in our school by 40%. Modern approaches are very effective."'}
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.7 }}
+                className="bg-white p-6 rounded-2xl shadow-lg"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                    <BookOpen className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-foreground">
+                      {language === 'uz' && "Aziz Rahimov - Oliy ta'lim o'qituvchisi"}
+                      {language === 'ru' && 'Азиз Рахимов - Преподаватель вуза'}
+                      {language === 'en' && 'Aziz Rahimov - University Lecturer'}
+                    </h5>
+                    <p className="text-sm text-muted-foreground">72 soatlik kurs bitiruvchisi</p>
+                  </div>
+                </div>
+                <p className="text-muted-foreground italic">
+                  {language === 'uz' && "\"VR texnologiyalari yordamida talabalarimga murakkab mavzularni oson tushuntirish imkoniyati paydo bo'ldi. Juda innovatsion yondashuv!\""}
+                  {language === 'ru' && '"С помощью VR технологий появилась возможность легко объяснять студентам сложные темы. Очень инновационный подход!"'}
+                  {language === 'en' && '"VR technologies made it possible to easily explain complex topics to students. Very innovative approach!"'}
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Directions Section - WHITE BACKGROUND with BLUE PARTICLES */}
+      <section className="section-padding relative z-10 bg-white overflow-hidden">
+        {/* Blue particles on white background */}
+        <AdaptiveParticleBackground color="white" />
+        
+        <div className="container mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-medium mb-4">
+              <Building className="h-4 w-4" />
+              <span>
+                {language === 'uz' && "Ta'lim yo'nalishlari"}
+                {language === 'ru' && 'Образовательные направления'}
+                {language === 'en' && 'Educational Directions'}
+              </span>
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+              {language === 'uz' && "Kasbiy rivojlanish yo'nalishlari"}
+              {language === 'ru' && 'Направления профессионального развития'}
+              {language === 'en' && 'Professional Development Directions'}
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              {language === 'uz' && "Turli sohalarda malaka oshirish uchun maxsus yo'nalishlar"}
+              {language === 'ru' && 'Специальные направления для повышения квалификации в различных областях'}
+              {language === 'en' && 'Special directions for professional development in various fields'}
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {isLoadingDirections ? (
+              <div className="col-span-3 text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">
+                  {language === 'uz' && "Yo'nalishlar yuklanmoqda..."}
+                  {language === 'ru' && 'Загрузка направлений...'}
+                  {language === 'en' && 'Loading directions...'}
+                </p>
+              </div>
+            ) : directions.length === 0 ? (
+              <div className="col-span-3 text-center py-12">
+                <Building className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">
+                  {language === 'uz' && "Hozircha yo'nalishlar mavjud emas"}
+                  {language === 'ru' && 'Направления пока недоступны'}
+                  {language === 'en' && 'No directions available yet'}
+                </p>
+              </div>
+            ) : (
+              directions.map((direction, index) => {
+                const icons = [GraduationCap, BookOpen, Microscope];
+                const IconComponent = icons[index % icons.length];
+                return (
+                  <motion.div
+                    key={direction.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Link to={`/courses?direction=${direction.id}`}>
+                      <Card className="card-feature h-full hover-lift cursor-pointer group relative overflow-hidden border-2 border-slate-200 hover:border-primary shadow-lg bg-white transition-all duration-300">
+                        {/* Stickers for directions */}
+                        <div className="absolute top-4 right-4 z-10">
+                          {index === 0 && <Sticker type="popular" size="md" />}
+                          {index === 1 && <Sticker type="recommended" size="md" />}
+                          {index === 2 && <Sticker type="new" size="md" />}
+                        </div>
+                        
+                        <CardContent className="pt-6">
+                          <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 w-fit mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <IconComponent className="h-8 w-8 text-primary" />
+                          </div>
+                          
+                          <h3 className="text-2xl font-display font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                            {getLocalizedField(direction, 'title', language)}
+                          </h3>
+                          
+                          <p className="text-muted-foreground mb-4 line-clamp-3 group-hover:text-foreground transition-colors duration-300">
+                            {getLocalizedField(direction, 'description', language)}
+                          </p>
+                          
+                          <div className="flex items-center justify-between pt-4 border-t border-border">
+                            <div className="flex items-center gap-2">
+                              <BookOpen className="h-5 w-5 text-primary" />
+                              <span className="text-sm font-semibold text-primary">
+                                {direction.courses?.length || 0} {language === 'uz' ? 'ta kurs' : language === 'ru' ? 'курсов' : 'courses'}
+                              </span>
+                            </div>
+                            <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-2 transition-all duration-300" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                );
+              })
+            )}
+          </div>
+
+          <div className="text-center">
+            <Link to="/directions">
+              <Button size="lg" className="hover-gradient group">
+                {language === 'uz' && "Barcha yo'nalishlar"}
+                {language === 'ru' && 'Все направления'}
+                {language === 'en' && 'All Directions'}
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Courses Section - WHITE BACKGROUND with BLUE PARTICLES */}
+      <section className="section-padding relative z-10 bg-white overflow-hidden">
+        {/* Blue particles on white background */}
+        <AdaptiveParticleBackground color="white" />
+        
+        <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -356,62 +1372,139 @@ export default function Index() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {courses.map((course, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="card-feature h-full flex flex-col">
-                  <CardContent className="pt-6 flex-1 flex flex-col">
-                    <div className="text-4xl font-bold text-primary mb-2">
-                      {course.hours}
-                      <span className="text-lg font-normal text-muted-foreground ml-2">
-                        {t('courses.hours')}
-                      </span>
+            {isLoadingCourses ? (
+              <div className="col-span-3 text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">
+                  {language === 'uz' && 'Kurslar yuklanmoqda...'}
+                  {language === 'ru' && 'Загрузка курсов...'}
+                  {language === 'en' && 'Loading courses...'}
+                </p>
+              </div>
+            ) : courses.length === 0 ? (
+              <div className="col-span-3 text-center py-12">
+                <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">
+                  {language === 'uz' && 'Hozircha kurslar mavjud emas'}
+                  {language === 'ru' && 'Курсы пока недоступны'}
+                  {language === 'en' && 'No courses available yet'}
+                </p>
+              </div>
+            ) : (
+              courses.map((course, index) => (
+                <motion.div
+                  key={course.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className="h-full flex flex-col hover-lift hover-glow cursor-pointer group relative overflow-hidden border-2 border-slate-200 hover:border-primary shadow-lg bg-white transition-all duration-300">
+                    {/* Stickers */}
+                    <div className="absolute top-4 right-4 z-10">
+                      {index === 0 && <Sticker type="popular" size="md" />}
+                      {index === 1 && <Sticker type="recommended" size="md" />}
+                      {index === 2 && <Sticker type="new" size="md" />}
                     </div>
-                    <h3 className="text-xl font-display font-semibold text-foreground mb-3">
-                      {getLocalizedField(course, 'title', language)}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 flex-1">
-                      {getLocalizedField(course, 'description', language)}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {course.features.map((feature, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-1 text-sm rounded-full bg-accent text-accent-foreground"
-                        >
-                          {feature}
+                    
+                    <CardContent className="pt-6 flex-1 flex flex-col">
+                      <div className="text-4xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300">
+                        40
+                        <span className="text-lg font-normal text-muted-foreground ml-2">
+                          {t('courses.hours')}
                         </span>
-                      ))}
-                    </div>
-                    <Link to="/register">
-                      <Button className="w-full">{t('courses.enroll')}</Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                      </div>
+                      <h3 className="text-xl font-display font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                        {getLocalizedField(course, 'title', language)}
+                      </h3>
+                      
+                      {/* Sticker explanation text */}
+                      {index === 0 && (
+                        <div className="mb-3 p-2 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+                          <p className="text-sm text-orange-800 font-medium">
+                            {language === 'uz' && '🔥 Eng ko\'p tanlanadigan kurs! 500+ tinglovchi'}
+                            {language === 'ru' && '🔥 Самый популярный курс! 500+ слушателей'}
+                            {language === 'en' && '🔥 Most popular course! 500+ students enrolled'}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {index === 1 && (
+                        <div className="mb-3 p-2 bg-teal-50 rounded-lg border-l-4 border-teal-500">
+                          <p className="text-sm text-teal-800 font-medium">
+                            {language === 'uz' && '⭐ Ekspertlar tomonidan tavsiya etiladi'}
+                            {language === 'ru' && '⭐ Рекомендовано экспертами'}
+                            {language === 'en' && '⭐ Recommended by experts'}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {index === 2 && (
+                        <div className="mb-3 p-2 bg-green-50 rounded-lg border-l-4 border-green-500">
+                          <p className="text-sm text-green-800 font-medium">
+                            {language === 'uz' && '✨ Yangi dastur! 2024-yil uchun yangilangan'}
+                            {language === 'ru' && '✨ Новая программа! Обновлено для 2024 года'}
+                            {language === 'en' && '✨ New program! Updated for 2024'}
+                          </p>
+                        </div>
+                      )}
+
+                      <p className="text-muted-foreground mb-4 flex-1 group-hover:text-foreground transition-colors duration-300 line-clamp-4">
+                        {getLocalizedField(course, 'description', language)}
+                      </p>
+                      
+                      {/* Course dates */}
+                      <div className="mb-4 space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span className="w-2 h-2 bg-primary rounded-full"></span>
+                          {language === 'uz' && `Boshlanish: ${new Date(course.start_date).toLocaleDateString()}`}
+                          {language === 'ru' && `Начало: ${new Date(course.start_date).toLocaleDateString()}`}
+                          {language === 'en' && `Starts: ${new Date(course.start_date).toLocaleDateString()}`}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span className="w-2 h-2 bg-primary rounded-full"></span>
+                          {language === 'uz' && `Tugash: ${new Date(course.ends_at).toLocaleDateString()}`}
+                          {language === 'ru' && `Окончание: ${new Date(course.ends_at).toLocaleDateString()}`}
+                          {language === 'en' && `Ends: ${new Date(course.ends_at).toLocaleDateString()}`}
+                        </div>
+                        {course.direction && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span className="w-2 h-2 bg-primary rounded-full"></span>
+                            {getLocalizedField(course.direction, 'title', language)}
+                          </div>
+                        )}
+                      </div>
+
+                      <Link to="/register">
+                        <Button className="w-full hover-gradient group-hover:scale-105 transition-transform duration-300">
+                          {t('courses.enroll')}
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>
 
-      {/* Gallery Preview */}
-      <section className="section-padding bg-secondary relative z-10">
-        <div className="container mx-auto">
+      {/* Gallery Preview - BLUE BACKGROUND with WHITE PARTICLES */}
+      <section className="section-padding bg-gradient-to-br from-primary via-primary/95 to-secondary relative z-10 overflow-hidden">
+        {/* White particles on blue background */}
+        <AdaptiveParticleBackground color="blue" />
+        
+        <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-secondary-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
               {t('gallery.title')}
             </h2>
-            <p className="text-secondary-foreground/80">
+            <p className="text-white/90">
               {t('gallery.subtitle')}
             </p>
           </motion.div>
@@ -452,9 +1545,12 @@ export default function Index() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section-padding relative z-10">
-        <div className="container mx-auto">
+      {/* CTA Section - WHITE BACKGROUND with BLUE PARTICLES */}
+      <section className="section-padding relative z-10 bg-white overflow-hidden">
+        {/* Blue particles on white background */}
+        <AdaptiveParticleBackground color="white" />
+        
+        <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

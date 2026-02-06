@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Supiyeva Buxolida Abduvaliyevna",
+    "position_uz": "Laboratoriya mudiri",
+    "position_ru": "Директор лаборатории",
+    "position_en": "Laboratory Director",
+    "title_uz": "Pedagogika fanlari bo'yicha falsafa doktori (PhD), dotsent, shoira, O'zbekiston Yozuvchilar uyushmasi a'zosi",
+    "title_ru": "Доктор философии (PhD) по педагогическим наукам, доцент, поэтесса, член Союза писателей Узбекистана",
+    "title_en": "Doctor of Philosophy (PhD) in Pedagogical Sciences, Associate Professor, Poet, Member of the Writers' Union of Uzbekistan",
+    "bio_uz": "Supiyeva Buxolida Abduvaliyevna – Renessans ta'lim universiteti Finlandiya ta'lim laboratoriyasining mudiri. Uning 250 dan ortiq ilmiy-metodik ishlari nashr etilgan va amaliyotga joriy etilgan.\n\nSupiyeva Buxolida Abduvaliyevna innovator olima sifatida O'zbekistonda ilk bor onlayn darslar muallifi (2011) bo'ldi. U 2019 yilda dunyoda birinchi marta \"Qalbim ko'zgusi\" nomli QR-kodli she'riy to'plamni nashr ettirib, yoshlar va o'quvchilar orasida kitobxonlikni rivojlantirishning mutlaqo yangi – avangard elektron janriga asos soldi.\n\nB.Supiyevaning ilmiy-innovatsion izlanishlari natijasi sifatida videoinsho, videomatn, VR/AR texnologiyalari, allaqochon ta'lim jarayoniga joriy etilgan. Ayniqsa, u Zahiriddin Muhammad Bobur, Abu Rayhon Beruniy, Mirzo Ulug'bek kabi buyuk allomalar hayoti va ijodini o'rgatishda VR/AR ta'lim texnologiyalarini qo'llash bo'yicha samarali pedagogik faoliyat olib borgan.\n\nHozirgi kunda B.A. Supiyeva Renessans ta'lim universiteti Finlandiya ta'lim laboratoriyasiga rahbarlik qilib, Finlandiya ta'lim modeli asosida innovatsion o'quv muhitlarini yaratish, pedagog kadrlarning kasbiy rivojlanishini ta'minlash, xalqaro hamkorlik, ilmiy tadqiqotlar va grant loyihalarini amalga oshirish yo'nalishlarida faoliyat yuritmoqda.",
+    "bio_ru": "Супиева Бухолида Абдувалиевна – директор Финской образовательной лаборатории Ренессанс университета образования. Опубликовано и внедрено в практику более 250 ее научно-методических работ.\n\nСупиева Бухолида Абдувалиевна как ученый-новатор впервые в Узбекистане стала автором онлайн-уроков (2011). В 2019 году она впервые в мире опубликовала поэтический сборник с QR-кодом \"Зеркало моего сердца\", заложив основы совершенно нового – авангардного электронного жанра развития читательской грамотности среди молодежи и учащихся.\n\nВ результате научно-инновационных исследований Б.Супиевой видеосочинения, видеотексты, VR/AR технологии уже внедрены в образовательный процесс. В частности, она ведет эффективную педагогическую деятельность по применению VR/AR образовательных технологий в изучении жизни и творчества великих ученых, таких как Захириддин Мухаммад Бабур, Абу Райхан Беруни, Мирзо Улугбек.\n\nВ настоящее время Б.А. Супиева руководит Финской образовательной лабораторией Ренессанс университета образования, осуществляя деятельность в направлениях создания инновационных образовательных сред на основе финской модели образования, обеспечения профессионального развития педагогических кадров, международного сотрудничества, научных исследований и реализации грантовых проектов.",
+    "bio_en": "Supiyeva Bukholida Abduvaliyevna is the Director of the Finnish Education Laboratory at Renaissance University of Education. More than 250 of her scientific and methodological works have been published and implemented in practice.\n\nSupiyeva Bukholida Abduvaliyevna, as an innovative scientist, became the first author of online lessons in Uzbekistan (2011). In 2019, she published the world's first poetry collection with QR codes called \"Mirror of My Heart\", laying the foundation for a completely new - avant-garde electronic genre of developing reading literacy among youth and students.\n\nAs a result of B. Supiyeva's scientific and innovative research, video essays, video texts, VR/AR technologies have already been introduced into the educational process. In particular, she conducts effective pedagogical activities on the application of VR/AR educational technologies in teaching the life and work of great scholars such as Zahiriddin Muhammad Babur, Abu Rayhan Beruni, Mirzo Ulugbek.\n\nCurrently, B.A. Supiyeva heads the Finnish Education Laboratory of Renaissance University of Education, carrying out activities in the areas of creating innovative educational environments based on the Finnish education model, ensuring professional development of teaching staff, international cooperation, scientific research and implementation of grant projects.",
+    "achievements": [
+      {
+        "uz": "250+ ilmiy-metodik ishlar",
+        "ru": "250+ научно-методических работ",
+        "en": "250+ scientific-methodological works"
+      },
+      {
+        "uz": "O'zbekistonda birinchi onlayn darslar muallifi (2011)",
+        "ru": "Первый автор онлайн-уроков в Узбекистане (2011)",
+        "en": "First author of online lessons in Uzbekistan (2011)"
+      },
+      {
+        "uz": "Dunyoda birinchi QR-kodli she'riy to'plam muallifi (2019)",
+        "ru": "Первый в мире автор поэтического сборника с QR-кодом (2019)",
+        "en": "World's first author of QR-coded poetry collection (2019)"
+      },
+      {
+        "uz": "VR/AR texnologiyalarini ta'limga joriy etish bo'yicha ekspert",
+        "ru": "Эксперт по внедрению VR/AR технологий в образование",
+        "en": "Expert in implementing VR/AR technologies in education"
+      }
+    ],
+    "image": "/team/director.jpg"
+  }
+]

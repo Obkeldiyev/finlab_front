@@ -117,6 +117,65 @@ const translations: Translations = {
   'common.save': { uz: 'Saqlash', ru: 'Сохранить', en: 'Save' },
   'common.back': { uz: 'Orqaga', ru: 'Назад', en: 'Back' },
   'common.next': { uz: 'Keyingi', ru: 'Далее', en: 'Next' },
+
+  // Notifications and Messages
+  'notification.welcome': { 
+    uz: 'Finlandiya Ta\'lim Laboratoriyasiga xush kelibsiz!', 
+    ru: 'Добро пожаловать в Финскую Образовательную Лабораторию!', 
+    en: 'Welcome to Finland Education Laboratory!' 
+  },
+  'notification.course_enrolled': { 
+    uz: 'Siz kursga muvaffaqiyatli ro\'yxatdan o\'tdingiz!', 
+    ru: 'Вы успешно записались на курс!', 
+    en: 'You have successfully enrolled in the course!' 
+  },
+  'notification.profile_updated': { 
+    uz: 'Profilingiz yangilandi', 
+    ru: 'Ваш профиль обновлен', 
+    en: 'Your profile has been updated' 
+  },
+  'notification.code_sent': { 
+    uz: 'Tasdiqlash kodi yuborildi', 
+    ru: 'Код подтверждения отправлен', 
+    en: 'Verification code sent' 
+  },
+  'notification.invalid_code': { 
+    uz: 'Noto\'g\'ri tasdiqlash kodi', 
+    ru: 'Неверный код подтверждения', 
+    en: 'Invalid verification code' 
+  },
+
+  // Stickers and Labels
+  'sticker.new': { uz: 'YANGI', ru: 'НОВОЕ', en: 'NEW' },
+  'sticker.popular': { uz: 'MASHHUR', ru: 'ПОПУЛЯРНОЕ', en: 'POPULAR' },
+  'sticker.limited': { uz: 'CHEKLANGAN', ru: 'ОГРАНИЧЕННОЕ', en: 'LIMITED' },
+  'sticker.free': { uz: 'BEPUL', ru: 'БЕСПЛАТНО', en: 'FREE' },
+  'sticker.premium': { uz: 'PREMIUM', ru: 'ПРЕМИУМ', en: 'PREMIUM' },
+  'sticker.bestseller': { uz: 'ENG YAXSHI', ru: 'БЕСТСЕЛЛЕР', en: 'BESTSELLER' },
+  'sticker.exclusive': { uz: 'EKSKLYUZIV', ru: 'ЭКСКЛЮЗИВ', en: 'EXCLUSIVE' },
+  'sticker.recommended': { uz: 'TAVSIYA ETILADI', ru: 'РЕКОМЕНДУЕТСЯ', en: 'RECOMMENDED' },
+
+  // Course Features
+  'feature.certificate': { uz: 'Sertifikat bilan', ru: 'С сертификатом', en: 'With Certificate' },
+  'feature.online': { uz: 'Onlayn', ru: 'Онлайн', en: 'Online' },
+  'feature.offline': { uz: 'Oflayn', ru: 'Оффлайн', en: 'Offline' },
+  'feature.hybrid': { uz: 'Aralash', ru: 'Смешанный', en: 'Hybrid' },
+  'feature.practical': { uz: 'Amaliy', ru: 'Практический', en: 'Practical' },
+  'feature.theoretical': { uz: 'Nazariy', ru: 'Теоретический', en: 'Theoretical' },
+
+  // Status Messages
+  'status.active': { uz: 'Faol', ru: 'Активный', en: 'Active' },
+  'status.pending': { uz: 'Kutilmoqda', ru: 'Ожидание', en: 'Pending' },
+  'status.completed': { uz: 'Yakunlangan', ru: 'Завершен', en: 'Completed' },
+  'status.enrolled': { uz: 'Ro\'yxatdan o\'tgan', ru: 'Зарегистрирован', en: 'Enrolled' },
+  'status.expired': { uz: 'Muddati tugagan', ru: 'Истекший', en: 'Expired' },
+
+  // Dashboard
+  'dashboard.welcome': { uz: 'Xush kelibsiz', ru: 'Добро пожаловать', en: 'Welcome' },
+  'dashboard.overview': { uz: 'Umumiy ko\'rinish', ru: 'Обзор', en: 'Overview' },
+  'dashboard.my_courses': { uz: 'Mening kurslarim', ru: 'Мои курсы', en: 'My Courses' },
+  'dashboard.progress': { uz: 'Jarayon', ru: 'Прогресс', en: 'Progress' },
+  'dashboard.achievements': { uz: 'Yutuqlar', ru: 'Достижения', en: 'Achievements' },
 };
 
 interface LanguageContextType {
