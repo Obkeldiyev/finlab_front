@@ -90,7 +90,8 @@ class DataService {
   async getDirections(): Promise<Direction[]> {
     try {
       const response = await api.getDirections();
-      return response.data || [];
+      const data = response.data || [];
+      return Array.isArray(data) ? data.filter(d => d != null) : [];
     } catch (error) {
       console.error('Failed to fetch directions:', error);
       return [];
@@ -111,7 +112,8 @@ class DataService {
   async getCourses(directionId?: number): Promise<Course[]> {
     try {
       const response = await api.getCourses(1, 100, directionId);
-      return response.data || [];
+      const data = response.data || [];
+      return Array.isArray(data) ? data.filter(c => c != null) : [];
     } catch (error) {
       console.error('Failed to fetch courses:', error);
       return [];

@@ -105,10 +105,12 @@ export default function Index() {
     const loadCourses = async () => {
       try {
         const coursesData = await dataService.getCourses();
-        setCourses(coursesData.slice(0, 3)); // Show only first 3 courses
+        const validCourses = (coursesData || []).filter(c => c != null);
+        setCourses(validCourses.slice(0, 3)); // Show only first 3 courses
       } catch (error) {
         console.error('Failed to load courses:', error);
         toast.error('Failed to load courses');
+        setCourses([]); // Set empty array on error
       } finally {
         setIsLoadingCourses(false);
       }
@@ -121,10 +123,12 @@ export default function Index() {
     const loadDirections = async () => {
       try {
         const directionsData = await dataService.getDirections();
-        setDirections(directionsData.slice(0, 3)); // Show only first 3 directions
+        const validDirections = (directionsData || []).filter(d => d != null);
+        setDirections(validDirections.slice(0, 3)); // Show only first 3 directions
       } catch (error) {
         console.error('Failed to load directions:', error);
         toast.error('Failed to load directions');
+        setDirections([]); // Set empty array on error
       } finally {
         setIsLoadingDirections(false);
       }

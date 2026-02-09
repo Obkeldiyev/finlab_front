@@ -65,23 +65,28 @@ export default function Dashboard() {
         const userData = await dataService.getUserProfile();
         setUser(userData);
         
-        // Load dashboard data
+        // Load dashboard data with error handling
         const [coursesData, directionsData, newsData] = await Promise.all([
-          dataService.getCourses(),
-          dataService.getDirections(),
-          dataService.getNews()
+          dataService.getCourses().catch(() => []),
+          dataService.getDirections().catch(() => []),
+          dataService.getNews().catch(() => [])
         ]);
         
+        // Filter out any null/undefined items
+        const validCourses = (coursesData || []).filter(c => c != null);
+        const validDirections = (directionsData || []).filter(d => d != null);
+        const validNews = (newsData || []).filter(n => n != null);
+        
         setStats({
-          courses: coursesData.length,
-          directions: directionsData.length,
-          news: newsData.length,
+          courses: validCourses.length,
+          directions: validDirections.length,
+          news: validNews.length,
           completedCourses: 0 // This would come from user's progress data
         });
         
-        setLatestNews(newsData);
-        setAvailableCourses(coursesData);
-        setAvailableDirections(directionsData);
+        setLatestNews(validNews);
+        setAvailableCourses(validCourses);
+        setAvailableDirections(validDirections);
         
       } catch (error) {
         console.error('Failed to load user data:', error);
