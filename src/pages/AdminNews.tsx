@@ -350,12 +350,12 @@ export default function AdminNews() {
                             )}
                           </div>
                           <CardTitle className="text-lg line-clamp-2">
-                            {getLocalizedField(newsItem, 'title', language)}
+                            {newsItem ? getLocalizedField(newsItem, 'title', language) : 'Untitled'}
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-                            {getLocalizedField(newsItem, 'content', language)}
+                            {newsItem ? getLocalizedField(newsItem, 'content', language) : ''}
                           </p>
                           
                           {/* Media Types */}

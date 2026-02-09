@@ -458,10 +458,10 @@ export default function AdminCourses() {
                         {filteredCourses.map((item) => (
                           <TableRow key={item.id} className="hover:bg-slate-50">
                             <TableCell className="font-medium">
-                              {getLocalizedField(item, 'title', language)}
+                              {item ? getLocalizedField(item, 'title', language) : '-'}
                             </TableCell>
                             <TableCell>
-                              {item.direction ? getLocalizedField(item.direction, 'title', language) : '-'}
+                              {item?.direction ? getLocalizedField(item.direction, 'title', language) : '-'}
                             </TableCell>
                             <TableCell>
                               {new Date(item.start_date).toLocaleDateString()}

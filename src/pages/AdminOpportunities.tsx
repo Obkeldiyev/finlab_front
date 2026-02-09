@@ -366,12 +366,12 @@ export default function AdminOpportunities() {
                             </div>
                           </div>
                           <CardTitle className="text-lg line-clamp-2">
-                            {getLocalizedField(opportunity, 'title', language)}
+                            {opportunity ? getLocalizedField(opportunity, 'title', language) : 'Untitled'}
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-                            {getLocalizedField(opportunity, 'description', language)}
+                            {opportunity ? getLocalizedField(opportunity, 'description', language) : ''}
                           </p>
                           
                           {/* End Date */}

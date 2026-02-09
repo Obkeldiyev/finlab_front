@@ -390,10 +390,10 @@ export default function AdminDirections() {
                         {filteredDirections.map((item) => (
                           <TableRow key={item.id} className="hover:bg-slate-50">
                             <TableCell className="font-medium">
-                              {getLocalizedField(item, 'title', language)}
+                              {item ? getLocalizedField(item, 'title', language) : '-'}
                             </TableCell>
                             <TableCell className="max-w-md truncate">
-                              {getLocalizedField(item, 'description', language)}
+                              {item ? getLocalizedField(item, 'description', language) : '-'}
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">
