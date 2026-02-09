@@ -39,7 +39,8 @@ export default function Gallery() {
   const [selectedVideo, setSelectedVideo] = useState<number | null>(null);
 
   const getLocalizedTitle = (item: typeof galleryImages[0] | typeof galleryVideos[0]) => {
-    return item.title[language as keyof typeof item.title];
+    if (!item || !item.title) return '';
+    return item.title[language as keyof typeof item.title] || '';
   };
 
   return (

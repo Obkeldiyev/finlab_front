@@ -161,7 +161,8 @@ export default function AdminDashboard() {
   ];
 
   const getLocalizedField = (item: any, field: string, lang: string) => {
-    return item[field][lang] || item[field]['en'] || '';
+    if (!item) return '';
+    return item[field]?.[lang] || item[field]?.['en'] || '';
   };
 
   if (isLoading) {
