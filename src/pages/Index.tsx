@@ -339,7 +339,7 @@ export default function Index() {
       {/* Hero Section - Video (Full viewport) */}
       <section className="relative w-full overflow-hidden" style={{ height: '100vh', minHeight: '700px' }}>
         <VideoBackground 
-          videoSrc="/13 SENTYA.MP4"
+          videoSrc="/Comp 1ren.mp4"
           className="w-full h-full flex items-center justify-center"
         >
           <div className="w-full relative z-10 px-4 py-16 mt-16 md:mt-20">
@@ -743,10 +743,153 @@ export default function Index() {
         </div>
       </section>
 
+      {/* 5 Reasons Why Finnish Model - BLUE BACKGROUND with WHITE PARTICLES */}
+      <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
+        {/* White particles on blue background */}
+        <AdaptiveParticleBackground color="blue" />
+        
+        <div className="container mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
+              {language === 'uz' && "Nima uchun aynan Finlandiya ta'lim modeli?"}
+              {language === 'ru' && 'Почему именно финская модель образования?'}
+              {language === 'en' && 'Why the Finnish Education Model?'}
+            </h2>
+            <p className="text-xl text-white/90 max-w-3xl mx-auto">
+              {language === 'uz' && "Finlandiya ta'lim tizimi dunyodagi eng ilg'or va samarali modellardan biri hisoblanadi"}
+              {language === 'ru' && 'Финская система образования считается одной из самых передовых и эффективных в мире'}
+              {language === 'en' && 'The Finnish education system is considered one of the most advanced and effective in the world'}
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Reason 1: Internationally Recognized */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <Globe className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-display font-bold text-foreground mb-4 text-center">
+                {language === 'uz' && "Xalqaro tan olingan"}
+                {language === 'ru' && 'Международно признанная'}
+                {language === 'en' && 'Internationally Recognized'}
+              </h3>
+              <p className="text-muted-foreground text-center leading-relaxed">
+                {language === 'uz' && "Finlandiya ta'lim modeli o'zining yuqori samaradorligi va barqaror natijalari bilan xalqaro miqyosda tan olingan. PISA testlari bo'yicha doimiy ravishda yuqori o'rinlarda turadi va dunyoning ko'plab mamlakatlari uchun namuna bo'lib xizmat qiladi."}
+                {language === 'ru' && 'Финская модель образования признана на международном уровне благодаря своей высокой эффективности и стабильным результатам. Постоянно занимает высокие позиции по тестам PISA и служит образцом для многих стран мира.'}
+                {language === 'en' && 'The Finnish education model is internationally recognized for its high efficiency and consistent results. It consistently ranks high in PISA tests and serves as a model for many countries around the world.'}
+              </p>
+            </motion.div>
+
+            {/* Reason 2: Competency-Based Approach */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <Target className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-display font-bold text-foreground mb-4 text-center">
+                {language === 'uz' && "Kompetensiyaviy yondashuv"}
+                {language === 'ru' && 'Компетентностный подход'}
+                {language === 'en' && 'Competency-Based Approach'}
+              </h3>
+              <p className="text-muted-foreground text-center leading-relaxed">
+                {language === 'uz' && "Finlandiya ta'limi kompetensiyaviy yondashuvga tayanadi, ya'ni o'quvchilar nafaqat bilim olishadi, balki real hayotda qo'llash uchun zarur bo'lgan ko'nikmalarni egallaydilar. Bu yondashuv o'quvchilarni kelajakdagi kasbiy faoliyatga tayyorlaydi."}
+                {language === 'ru' && 'Финское образование основано на компетентностном подходе, то есть студенты не только получают знания, но и приобретают навыки, необходимые для применения в реальной жизни. Этот подход готовит студентов к будущей профессиональной деятельности.'}
+                {language === 'en' && 'Finnish education is based on a competency-based approach, meaning students not only gain knowledge but also acquire skills necessary for real-life application. This approach prepares students for future professional activities.'}
+              </p>
+            </motion.div>
+
+            {/* Reason 3: Phenomenon-Based Learning */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <Lightbulb className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-display font-bold text-foreground mb-4 text-center">
+                {language === 'uz' && "Fenomen asosida o'qitish"}
+                {language === 'ru' && 'Феноменальное обучение'}
+                {language === 'en' && 'Phenomenon-Based Learning'}
+              </h3>
+              <p className="text-muted-foreground text-center leading-relaxed">
+                {language === 'uz' && "Mazkur modelda fenomen yondashuv muhim o'rin tutadi, ya'ni o'quvchilar real hayotdagi hodisalar va muammolarni o'rganish orqali bilim olishadi. Bu usul o'quvchilarning tanqidiy fikrlash va muammolarni hal qilish qobiliyatlarini rivojlantiradi."}
+                {language === 'ru' && 'В данной модели феноменальный подход занимает важное место, то есть студенты получают знания через изучение реальных явлений и проблем. Этот метод развивает критическое мышление и способность решать проблемы.'}
+                {language === 'en' && 'This model emphasizes phenomenon-based learning, where students gain knowledge by studying real-life phenomena and problems. This method develops critical thinking and problem-solving abilities.'}
+              </p>
+            </motion.div>
+
+            {/* Reason 4: Trust and Freedom */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <Users className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-display font-bold text-foreground mb-4 text-center">
+                {language === 'uz' && "Ishonch va erkinlik"}
+                {language === 'ru' && 'Доверие и свобода'}
+                {language === 'en' && 'Trust and Freedom'}
+              </h3>
+              <p className="text-muted-foreground text-center leading-relaxed">
+                {language === 'uz' && "Finlandiya ta'limi ishonch va erkinlik tamoyiliga asoslanadi. O'qituvchilarga yuqori darajada avtonomiya beriladi va o'quvchilar o'z ta'lim yo'llarini tanlashda erkinlikka ega. Bu yondashuv o'quvchilarning motivatsiyasini oshiradi va o'z-o'zini boshqarish ko'nikmalarini rivojlantiradi."}
+                {language === 'ru' && 'Финское образование основано на принципах доверия и свободы. Учителям предоставляется высокая степень автономии, а студенты имеют свободу в выборе своего образовательного пути. Этот подход повышает мотивацию студентов и развивает навыки самоуправления.'}
+                {language === 'en' && 'Finnish education is based on principles of trust and freedom. Teachers are given a high degree of autonomy, and students have freedom in choosing their educational path. This approach increases student motivation and develops self-management skills.'}
+              </p>
+            </motion.div>
+
+            {/* Reason 5: Equality and Justice */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 md:col-span-2 lg:col-span-1"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 mx-auto">
+                <Award className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-display font-bold text-foreground mb-4 text-center">
+                {language === 'uz' && "Tenglik va adolat"}
+                {language === 'ru' && 'Равенство и справедливость'}
+                {language === 'en' && 'Equality and Justice'}
+              </h3>
+              <p className="text-muted-foreground text-center leading-relaxed">
+                {language === 'uz' && "Finlandiya modeli tenglik va adolat tamoyillariga tayanadi. Barcha o'quvchilar ijtimoiy-iqtisodiy holatidan qat'i nazar, sifatli ta'lim olish imkoniyatiga ega. Bu yondashuv jamiyatda tenglik va adolatni ta'minlashga yordam beradi."}
+                {language === 'ru' && 'Финская модель основана на принципах равенства и справедливости. Все студенты, независимо от социально-экономического положения, имеют возможность получить качественное образование. Этот подход способствует обеспечению равенства и справедливости в обществе.'}
+                {language === 'en' && 'The Finnish model is based on principles of equality and justice. All students, regardless of socio-economic status, have the opportunity to receive quality education. This approach helps ensure equality and justice in society.'}
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Finland Education Laboratory Video Section */}
       <section className="relative z-10 min-h-screen">
         <VideoBackground 
-          videoSrc="/13 SENTYA.MP4" 
+          videoSrc="/Comp 1ren.mp4" 
           posterSrc={gallery1}
           className="min-h-screen flex items-center"
         >
@@ -1192,17 +1335,21 @@ export default function Index() {
                   </div>
                   <div>
                     <h5 className="font-semibold text-foreground">
-                      {language === 'uz' && "Gulnora Karimova - Maktab direktori"}
-                      {language === 'ru' && 'Гульнора Каримова - Директор школы'}
-                      {language === 'en' && 'Gulnora Karimova - School Director'}
+                      {language === 'uz' && "Prime Education Finland"}
+                      {language === 'ru' && 'Prime Education Finland'}
+                      {language === 'en' && 'Prime Education Finland'}
                     </h5>
-                    <p className="text-sm text-muted-foreground">288 soatlik kurs bitiruvchisi</p>
+                    <p className="text-sm text-muted-foreground">
+                      {language === 'uz' && "Hamkorlik markazi"}
+                      {language === 'ru' && 'Центр партнерства'}
+                      {language === 'en' && 'Partnership Center'}
+                    </p>
                   </div>
                 </div>
                 <p className="text-muted-foreground italic">
-                  {language === 'uz' && "\"Finlandiya metodikasi bizning maktabimizda o'quvchilarning o'zlashtirish darajasini 40% ga oshirdi. Zamonaviy yondashuvlar juda samarali.\""}
-                  {language === 'ru' && '"Финская методика повысила уровень усвоения учащихся в нашей школе на 40%. Современные подходы очень эффективны."'}
-                  {language === 'en' && '"Finnish methodology increased student achievement in our school by 40%. Modern approaches are very effective."'}
+                  {language === 'uz' && "\"Laboratoriya Finlandiya ta'lim modeli asosida ta'lim tizimini transformatsiya qilish, innovatsion metodik yechimlarni rivojlantirish, ilmiy tadqiqotlar olib borish hamda pedagog kadrlarning kasbiy rivojlanishini qo'llab-quvvatlash maqsadida \"Prime Education Finland\" markazi bilan hamkorlikda faoliyat yuritadi.\""}
+                  {language === 'ru' && '"Лаборатория работает в сотрудничестве с центром "Prime Education Finland" с целью трансформации системы образования на основе финской модели образования, разработки инновационных методических решений, проведения научных исследований и поддержки профессионального развития педагогических кадров."'}
+                  {language === 'en' && '"The Laboratory operates in partnership with the "Prime Education Finland" center to transform the education system based on the Finnish education model, develop innovative methodological solutions, conduct scientific research, and support the professional development of teaching staff."'}
                 </p>
               </motion.div>
 
@@ -1219,17 +1366,53 @@ export default function Index() {
                   </div>
                   <div>
                     <h5 className="font-semibold text-foreground">
-                      {language === 'uz' && "Aziz Rahimov - Oliy ta'lim o'qituvchisi"}
-                      {language === 'ru' && 'Азиз Рахимов - Преподаватель вуза'}
-                      {language === 'en' && 'Aziz Rahimov - University Lecturer'}
+                      {language === 'uz' && "Nodira Yusupova Firnafasovna"}
+                      {language === 'ru' && 'Нодира Юсупова Фирнафасовна'}
+                      {language === 'en' && 'Nodira Yusupova Firnafasovna'}
                     </h5>
-                    <p className="text-sm text-muted-foreground">72 soatlik kurs bitiruvchisi</p>
+                    <p className="text-sm text-muted-foreground">
+                      {language === 'uz' && "Yunusobod tumani 302-umumta'lim maktabi direktor o'rinbosari"}
+                      {language === 'ru' && 'Заместитель директора общеобразовательной школы №302 Юнусабадского района'}
+                      {language === 'en' && 'Deputy Director of General Education School No. 302 of Yunusabad District'}
+                    </p>
                   </div>
                 </div>
                 <p className="text-muted-foreground italic">
-                  {language === 'uz' && "\"VR texnologiyalari yordamida talabalarimga murakkab mavzularni oson tushuntirish imkoniyati paydo bo'ldi. Juda innovatsion yondashuv!\""}
-                  {language === 'ru' && '"С помощью VR технологий появилась возможность легко объяснять студентам сложные темы. Очень инновационный подход!"'}
-                  {language === 'en' && '"VR technologies made it possible to easily explain complex topics to students. Very innovative approach!"'}
+                  {language === 'uz' && "\"Laboratoriya faoliyati zamonaviy pedagogik yondashuvlar va Finlandiya ta'lim modeli asosida tashkil etilgani bilan ajralib turadi. Mashg'ulotlar o'qituvchilarning kasbiy rivojlanishiga xizmat qiladi, amaliy metodikalar esa dars jarayonida samarali qo'llash imkonini beradi. Laboratoriya ta'lim sifatini oshirishga yo'naltirilgan muhim innovatsion platforma hisoblanadi.\""}
+                  {language === 'ru' && '"Деятельность лаборатории отличается тем, что организована на основе современных педагогических подходов и финской модели образования. Занятия способствуют профессиональному развитию учителей, а практические методики позволяют эффективно применять их в учебном процессе. Лаборатория является важной инновационной платформой, направленной на повышение качества образования."'}
+                  {language === 'en' && '"The Laboratory\'s activities are distinguished by being organized based on modern pedagogical approaches and the Finnish education model. The classes serve the professional development of teachers, and practical methodologies enable effective application in the learning process. The Laboratory is an important innovative platform aimed at improving the quality of education."'}
+                </p>
+              </motion.div>
+
+              {/* Blue Section - Sirdaryo Director Testimonial */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.8 }}
+                className="md:col-span-2 bg-gradient-to-br from-primary via-primary/95 to-secondary p-8 rounded-2xl shadow-xl"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <Award className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <h5 className="font-semibold text-white text-lg">
+                      {language === 'uz' && "Gulasal Berdaliyeva"}
+                      {language === 'ru' && 'Гуласал Бердалиева'}
+                      {language === 'en' && 'Gulasal Berdaliyeva'}
+                    </h5>
+                    <p className="text-sm text-white/90">
+                      {language === 'uz' && "Sirdaryo viloyati Pedagogik mahorat markazi direktori"}
+                      {language === 'ru' && 'Директор Центра педагогического мастерства Сырдарьинской области'}
+                      {language === 'en' && 'Director of the Pedagogical Excellence Center of Syrdarya Region'}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-white/95 italic text-lg leading-relaxed">
+                  {language === 'uz' && "\"Sirdaryo viloyatida o'tkazilgan seminar-trening zamonaviy pedagogik yondashuvlar, xususan Finlandiya ta'lim modeli asosidagi metodikalar bilan ajralib turdi. Tadbir davomida o'qituvchilar uchun amaliy mashg'ulotlar, innovatsion yondashuvlar va kasbiy rivojlanishga xizmat qiluvchi samarali tajribalar taqdim etildi. Seminar-trening hudud pedagoglarining kasbiy salohiyatini oshirishda muhim ahamiyat kasb etdi.\""}
+                  {language === 'ru' && '"Семинар-тренинг, проведенный в Сырдарьинской области, отличался современными педагогическими подходами, в частности методиками на основе финской модели образования. В ходе мероприятия были представлены практические занятия для учителей, инновационные подходы и эффективный опыт, способствующий профессиональному развитию. Семинар-тренинг имел важное значение в повышении профессионального потенциала педагогов региона."'}
+                  {language === 'en' && '"The seminar-training held in Syrdarya region was distinguished by modern pedagogical approaches, particularly methodologies based on the Finnish education model. During the event, practical classes for teachers, innovative approaches, and effective practices serving professional development were presented. The seminar-training was of great importance in enhancing the professional capacity of regional educators."'}
                 </p>
               </motion.div>
             </div>
@@ -1409,7 +1592,7 @@ export default function Index() {
                     
                     <CardContent className="pt-6 flex-1 flex flex-col">
                       <div className="text-4xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300">
-                        40
+                        {course.hours || 40}
                         <span className="text-lg font-normal text-muted-foreground ml-2">
                           {t('courses.hours')}
                         </span>

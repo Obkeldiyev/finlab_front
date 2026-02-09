@@ -113,7 +113,7 @@ export default function Courses() {
       {/* Hero with Video Background */}
       <section className="relative min-h-[70vh] flex items-center justify-center">
         <VideoBackground 
-          videoSrc="/13 SENTYA.MP4"
+          videoSrc="/Comp 1ren.mp4"
           className="min-h-[70vh] flex items-center justify-center"
         >
           <div className="container mx-auto px-4 text-center relative z-10">
@@ -221,7 +221,7 @@ export default function Courses() {
                   <div className="md:flex">
                     {/* Hours Badge */}
                     <div className="md:w-48 bg-gradient-primary p-6 flex flex-col items-center justify-center text-center group-hover:scale-105 transition-transform duration-300">
-                      <div className="text-5xl font-bold text-primary-foreground">40</div>
+                      <div className="text-5xl font-bold text-primary-foreground">{course.hours || 40}</div>
                       <div className="text-primary-foreground/80">
                         {language === 'uz' ? 'soat' : language === 'ru' ? 'часов' : 'hours'}
                       </div>

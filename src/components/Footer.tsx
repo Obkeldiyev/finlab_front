@@ -26,7 +26,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              <img src="/PRIME EDUCATION FINLAND.png" alt="FinLab" className="h-12 w-auto brightness-0 invert" />
+              <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.svg" alt="FinLab" className="h-12 w-auto" />
               <span className="font-display text-2xl font-bold">FinLab</span>
             </Link>
             <p className="text-secondary-foreground/80 text-sm leading-relaxed">

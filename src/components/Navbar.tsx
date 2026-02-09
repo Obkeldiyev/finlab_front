@@ -38,7 +38,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src="/PRIME EDUCATION FINLAND.png" alt="Finland Education Laboratory" className="h-10 md:h-12 w-auto" />
+            <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.svg" alt="Finland Education Laboratory" className="h-10 md:h-12 w-auto" />
             <span className="font-display text-xl md:text-2xl font-bold text-primary">
               FinLab
             </span>

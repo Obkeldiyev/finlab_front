@@ -121,6 +121,16 @@ const CourseForm = ({
           </SelectContent>
         </Select>
       </div>
+      <div className="space-y-2">
+        <Label>Soatlar soni</Label>
+        <Input
+          type="number"
+          value={formData.hours}
+          onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
+          placeholder="40"
+          min="1"
+        />
+      </div>
     </div>
 
     <div className="grid grid-cols-2 gap-4">
@@ -175,6 +185,7 @@ export default function AdminCourses() {
     description_uz: '',
     start_date: '',
     ends_at: '',
+    hours: '40',
     direction_id: '',
   });
 
@@ -213,6 +224,7 @@ export default function AdminCourses() {
       description_uz: '',
       start_date: '',
       ends_at: '',
+      hours: '40',
       direction_id: '',
     });
   };
@@ -258,6 +270,7 @@ export default function AdminCourses() {
       description_uz: course.description_uz,
       start_date: course.start_date.split('T')[0],
       ends_at: course.ends_at.split('T')[0],
+      hours: String(course.hours || 40),
       direction_id: String(course.direction_id),
     });
     setIsEditDialogOpen(true);
