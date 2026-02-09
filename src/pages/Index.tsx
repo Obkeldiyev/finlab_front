@@ -339,7 +339,7 @@ export default function Index() {
       {/* Hero Section - Video (Full viewport) */}
       <section className="relative w-full overflow-hidden" style={{ height: '100vh', minHeight: '700px' }}>
         <VideoBackground 
-          videoSrc="/Comp 1ren.mp4"
+          videoSrc="/Comp 1.mp4"
           className="w-full h-full flex items-center justify-center"
         >
           <div className="w-full relative z-10 px-4 py-16 mt-16 md:mt-20">
@@ -889,7 +889,7 @@ export default function Index() {
       {/* Finland Education Laboratory Video Section */}
       <section className="relative z-10 min-h-screen">
         <VideoBackground 
-          videoSrc="/Comp 1ren.mp4" 
+          videoSrc="/Comp 1.mp4" 
           posterSrc={gallery1}
           className="min-h-screen flex items-center"
         >
@@ -1499,11 +1499,11 @@ export default function Index() {
                           </div>
                           
                           <h3 className="text-2xl font-display font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
-                            {getLocalizedField(direction, 'title', language)}
+                            {direction ? getLocalizedField(direction, 'title', language) : 'Untitled'}
                           </h3>
                           
                           <p className="text-muted-foreground mb-4 line-clamp-3 group-hover:text-foreground transition-colors duration-300">
-                            {getLocalizedField(direction, 'description', language)}
+                            {direction ? getLocalizedField(direction, 'description', language) : ''}
                           </p>
                           
                           <div className="flex items-center justify-between pt-4 border-t border-border">
@@ -1598,7 +1598,7 @@ export default function Index() {
                         </span>
                       </div>
                       <h3 className="text-xl font-display font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
-                        {getLocalizedField(course, 'title', language)}
+                        {course ? getLocalizedField(course, 'title', language) : 'Untitled Course'}
                       </h3>
                       
                       {/* Sticker explanation text */}
@@ -1633,7 +1633,7 @@ export default function Index() {
                       )}
 
                       <p className="text-muted-foreground mb-4 flex-1 group-hover:text-foreground transition-colors duration-300 line-clamp-4">
-                        {getLocalizedField(course, 'description', language)}
+                        {course ? getLocalizedField(course, 'description', language) : ''}
                       </p>
                       
                       {/* Course dates */}
@@ -1653,7 +1653,7 @@ export default function Index() {
                         {course.direction && (
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span className="w-2 h-2 bg-primary rounded-full"></span>
-                            {getLocalizedField(course.direction, 'title', language)}
+                            {course.direction ? getLocalizedField(course.direction, 'title', language) : ''}
                           </div>
                         )}
                       </div>

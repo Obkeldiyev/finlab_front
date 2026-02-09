@@ -169,7 +169,7 @@ export default function AdminOpportunities() {
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-border">
         <Link to="/" className="flex items-center gap-3">
-          <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.svg" alt="FinLab" className="h-10 w-auto" />
+          <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.png" alt="FinLab" className="h-10 w-auto" />
           <span className="font-display text-xl font-bold text-primary">FinLab Admin</span>
         </Link>
       </div>

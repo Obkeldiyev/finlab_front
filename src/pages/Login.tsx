@@ -125,7 +125,7 @@ export default function Login() {
         <Card className="card-elevated backdrop-blur-sm bg-white/80 border-blue-200/40 shadow-lg">
           <CardHeader className="text-center">
             <Link to="/" className="flex justify-center mb-4">
-              <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.svg" alt="FinLab" className="h-16 w-auto" />
+              <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.png" alt="FinLab" className="h-16 w-auto" />
             </Link>
             <CardTitle className="text-2xl font-display">{t('auth.login')}</CardTitle>
             <CardDescription>

@@ -113,7 +113,7 @@ export default function Courses() {
       {/* Hero with Video Background */}
       <section className="relative min-h-[70vh] flex items-center justify-center">
         <VideoBackground 
-          videoSrc="/Comp 1ren.mp4"
+          videoSrc="/Comp 1.mp4"
           className="min-h-[70vh] flex items-center justify-center"
         >
           <div className="container mx-auto px-4 text-center relative z-10">

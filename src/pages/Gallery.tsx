@@ -27,7 +27,7 @@ const galleryImages = [
 
 const galleryVideos = [
   { 
-    src: '/Comp 1ren.mp4', 
+    src: '/Comp 1.mp4', 
     thumbnail: gallery1,
     title: { uz: 'Laboratoriya taqdimoti', ru: 'Презентация лаборатории', en: 'Laboratory Presentation' } 
   },

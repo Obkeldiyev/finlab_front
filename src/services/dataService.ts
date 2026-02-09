@@ -26,6 +26,7 @@ export interface Course {
   published_at: string;
   start_date: string;
   ends_at: string;
+  hours?: number;
   direction?: Direction;
 }
 

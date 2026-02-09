@@ -57,7 +57,7 @@ export function AdminSidebar() {
     <div className="flex flex-col h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       <div className="p-4 border-b border-slate-700">
         <Link to="/" className="flex items-center gap-3">
-          <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.svg" alt="FinLab" className="h-10 w-auto" />
+          <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.png" alt="FinLab" className="h-10 w-auto" />
           <span className="font-display text-xl font-bold text-white">FinLab Admin</span>
         </Link>
       </div>
