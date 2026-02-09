@@ -214,10 +214,11 @@ export function useLanguage() {
 }
 
 export function getLocalizedField<T extends Record<string, any>>(
-  item: T,
+  item: T | null | undefined,
   field: string,
   language: Language
 ): string {
+  if (!item) return '';
   const localizedKey = `${field}_${language}`;
   return item[localizedKey] || item[`${field}_en`] || '';
 }
