@@ -387,7 +387,7 @@ export default function AdminDirections() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredDirections.map((item) => (
+                        {filteredDirections.filter(item => item != null).map((item) => (
                           <TableRow key={item.id} className="hover:bg-slate-50">
                             <TableCell className="font-medium">
                               {item ? getLocalizedField(item, 'title', language) : '-'}

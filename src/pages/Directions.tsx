@@ -156,7 +156,7 @@ export default function Directions() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredDirections.map((direction, index) => {
+            {filteredDirections.filter(d => d != null).map((direction, index) => {
               const IconComponent = getIcon(index);
               return (
               <motion.div

@@ -1473,7 +1473,7 @@ export default function Index() {
                 </p>
               </div>
             ) : (
-              directions.map((direction, index) => {
+              directions.filter(d => d != null).map((direction, index) => {
                 const icons = [GraduationCap, BookOpen, Microscope];
                 const IconComponent = icons[index % icons.length];
                 return (
@@ -1574,7 +1574,7 @@ export default function Index() {
                 </p>
               </div>
             ) : (
-              courses.map((course, index) => (
+              courses.filter(c => c != null).map((course, index) => (
                 <motion.div
                   key={course.id}
                   initial={{ opacity: 0, y: 30 }}

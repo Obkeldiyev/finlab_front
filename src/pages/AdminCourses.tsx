@@ -113,7 +113,7 @@ const CourseForm = ({
             <SelectValue placeholder="Yo'nalishni tanlang" />
           </SelectTrigger>
           <SelectContent>
-            {directions.map((direction) => (
+            {directions.filter(d => d != null).map((direction) => (
               <SelectItem key={direction.id} value={String(direction.id)}>
                 {getLocalizedField(direction, 'title', language)}
               </SelectItem>
@@ -455,7 +455,7 @@ export default function AdminCourses() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredCourses.map((item) => (
+                        {filteredCourses.filter(item => item != null).map((item) => (
                           <TableRow key={item.id} className="hover:bg-slate-50">
                             <TableCell className="font-medium">
                               {item ? getLocalizedField(item, 'title', language) : '-'}

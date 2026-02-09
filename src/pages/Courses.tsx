@@ -164,7 +164,7 @@ export default function Courses() {
                   <SelectItem value="all">
                     {language === 'uz' ? "Barcha yo'nalishlar" : language === 'ru' ? 'Все направления' : 'All Directions'}
                   </SelectItem>
-                  {directions.map((direction) => (
+                  {directions.filter(d => d != null).map((direction) => (
                     <SelectItem key={direction.id} value={String(direction.id)}>
                       {getLocalizedField(direction, 'title', language)}
                     </SelectItem>
@@ -200,7 +200,7 @@ export default function Courses() {
           </div>
 
           <div className="space-y-8">
-            {filteredCourses.map((course, index) => (
+            {filteredCourses.filter(c => c != null).map((course, index) => (
               <motion.div
                 key={course.id}
                 initial={{ opacity: 0, y: 30 }}

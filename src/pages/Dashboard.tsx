@@ -531,7 +531,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {availableCourses.map((course, index) => (
+                  {availableCourses.filter(c => c != null).map((course, index) => (
                     <motion.div
                       key={course.id}
                       initial={{ opacity: 0, y: 30 }}
@@ -741,7 +741,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {availableDirections.map((direction, index) => (
+                  {availableDirections.filter(d => d != null).map((direction, index) => (
                     <motion.div
                       key={direction.id}
                       initial={{ opacity: 0, y: 30 }}
