@@ -23,7 +23,14 @@ export default function News() {
     const loadNews = async () => {
       try {
         const newsData = await dataService.getNews();
-        setNews(newsData);
+        console.log('Loaded news data:', newsData);
+        console.log('Number of news items:', newsData.length);
+        // Remove any duplicates based on ID
+        const uniqueNews = newsData.filter((item, index, self) => 
+          index === self.findIndex((t) => t.id === item.id)
+        );
+        console.log('Unique news items:', uniqueNews.length);
+        setNews(uniqueNews);
       } catch (error) {
         console.error('Failed to load news:', error);
         toast.error('Failed to load news');
