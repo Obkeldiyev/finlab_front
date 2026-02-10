@@ -35,14 +35,22 @@ class ApiService {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+    const headers: HeadersInit = {};
 
+    // Only set Content-Type for non-FormData requests
+    if (!(options.body instanceof FormData)) {
+      (headers as Record<string, string>)['Content-Type'] = 'application/json';
+    }
+
+    // Add any custom headers
+    if (options.headers) {
+      Object.assign(headers, options.headers);
+    }
+
+    // Add authorization token
     if (this.token) {
       (headers as Record<string, string>)['Authorization'] = `Bearer ${this.token}`;
-      console.log('Making request to', endpoint, 'with token:', this.token.substring(0, 20) + '...'); // Debug log
+      console.log('Making request to', endpoint, 'with token'); // Debug log
     } else {
       console.log('Making request to', endpoint, 'without token'); // Debug log
     }
@@ -52,6 +60,14 @@ class ApiService {
         ...options,
         headers,
       });
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}`);
+      }
 
       const data = await response.json();
       console.log('Response from', endpoint, ':', data); // Debug log
@@ -221,10 +237,7 @@ class ApiService {
     return this.request('/news', {
       method: 'POST',
       body: formData,
-      headers: {
-        // Remove Content-Type to let browser set it with boundary for FormData
-        'Authorization': this.token ? `Bearer ${this.token}` : '',
-      },
+      // Don't set headers - let browser set Content-Type with boundary
     });
   }
 
@@ -247,9 +260,7 @@ class ApiService {
     return this.request(`/news/${id}`, {
       method: 'PATCH',
       body: formData,
-      headers: {
-        'Authorization': this.token ? `Bearer ${this.token}` : '',
-      },
+      // Don't set headers - let browser set Content-Type with boundary
     });
   }
 
@@ -362,9 +373,7 @@ class ApiService {
     return this.request('/elon', {
       method: 'POST',
       body: formData,
-      headers: {
-        'Authorization': this.token ? `Bearer ${this.token}` : '',
-      },
+      // Don't set headers - let browser set Content-Type with boundary
     });
   }
 
@@ -388,9 +397,7 @@ class ApiService {
     return this.request(`/elon/${id}`, {
       method: 'PATCH',
       body: formData,
-      headers: {
-        'Authorization': this.token ? `Bearer ${this.token}` : '',
-      },
+      // Don't set headers - let browser set Content-Type with boundary
     });
   }
 
