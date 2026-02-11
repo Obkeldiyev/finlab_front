@@ -43,6 +43,8 @@ export default function AdminNews() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [viewingNews, setViewingNews] = useState<NewsItem | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title_en: '',
     title_ru: '',
@@ -432,7 +434,15 @@ export default function AdminNews() {
 
                           {/* Actions */}
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="flex-1">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex-1"
+                              onClick={() => {
+                                setViewingNews(newsItem);
+                                setIsViewDialogOpen(true);
+                              }}
+                            >
                               <Eye className="h-4 w-4 mr-2" />
                               {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
                             </Button>
@@ -564,6 +574,95 @@ export default function AdminNews() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View News Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>View News</DialogTitle>
+          </DialogHeader>
+          {viewingNews && (
+            <div className="space-y-6">
+              {/* Date */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                {formatDate(viewingNews.published_at)}
+              </div>
+
+              {/* Media */}
+              {viewingNews.medias && viewingNews.medias.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Media ({viewingNews.medias.length})</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {viewingNews.medias.map((media, index) => (
+                      <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+                        {media.type === 'image' ? (
+                          <img
+                            src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
+                            alt={`Media ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <video
+                            src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
+                            controls
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* English */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">English</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Title:</p>
+                  <p className="text-muted-foreground">{viewingNews.title_en}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Content:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingNews.content_en}</p>
+                </div>
+              </div>
+
+              {/* Russian */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Русский</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Заголовок:</p>
+                  <p className="text-muted-foreground">{viewingNews.title_ru}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Содержание:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingNews.content_ru}</p>
+                </div>
+              </div>
+
+              {/* Uzbek */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">O'zbek</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Sarlavha:</p>
+                  <p className="text-muted-foreground">{viewingNews.title_uz}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Mazmun:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingNews.content_uz}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button onClick={() => setIsViewDialogOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

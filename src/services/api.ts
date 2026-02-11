@@ -454,15 +454,9 @@ class ApiService {
     return this.request(`/gallery/${id}`);
   }
 
-  async createGalleryItem(data: {
-    title_en: string;
-    title_ru: string;
-    title_uz: string;
-  }, file: File) {
+  async createGalleryItem(title: string, file: File) {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+    formData.append('title', title);
     formData.append('media', file);
 
     return this.request('/gallery', {
@@ -471,15 +465,9 @@ class ApiService {
     });
   }
 
-  async updateGalleryItem(id: number, data: {
-    title_en?: string;
-    title_ru?: string;
-    title_uz?: string;
-  }, file?: File | null) {
+  async updateGalleryItem(id: number, title: string, file?: File | null) {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (value) formData.append(key, value);
-    });
+    formData.append('title', title);
     if (file) {
       formData.append('media', file);
     }

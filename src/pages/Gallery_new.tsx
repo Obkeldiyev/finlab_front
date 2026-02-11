@@ -11,9 +11,7 @@ import { toast } from 'sonner';
 
 interface GalleryItem {
   id: number;
-  title_en: string;
-  title_ru: string;
-  title_uz: string;
+  title: string;
   url: string;
   type: string;
   created_at: string;
@@ -46,11 +44,6 @@ export default function Gallery() {
 
   const galleryImages = galleryItems.filter(item => item.type === 'image');
   const galleryVideos = galleryItems.filter(item => item.type === 'video');
-
-  const getLocalizedTitle = (item: GalleryItem) => {
-    if (!item) return '';
-    return language === 'uz' ? item.title_uz : language === 'ru' ? item.title_ru : item.title_en;
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100/60 via-blue-50/40 to-indigo-100/50">
@@ -122,11 +115,11 @@ export default function Gallery() {
                           <div className="relative aspect-video overflow-hidden">
                             <img
                               src={`${import.meta.env.VITE_API_URL || '/api'}${image.url}`}
-                              alt={getLocalizedTitle(image)}
+                              alt={image.title}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                              <p className="text-white font-medium">{getLocalizedTitle(image)}</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                              <p className="text-white font-medium">{image.title}</p>
                             </div>
                           </div>
                         </Card>
@@ -162,8 +155,8 @@ export default function Gallery() {
                               muted
                               preload="metadata"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                              <p className="text-white font-medium">{getLocalizedTitle(video)}</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                              <p className="text-white font-medium">{video.title}</p>
                             </div>
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -200,7 +193,7 @@ export default function Gallery() {
           </button>
           <img
             src={`${import.meta.env.VITE_API_URL || '/api'}${galleryImages[selectedImage].url}`}
-            alt={getLocalizedTitle(galleryImages[selectedImage])}
+            alt={galleryImages[selectedImage].title}
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
           />

@@ -7,7 +7,8 @@ import {
   Shield,
   FileText,
   Building,
-  Award
+  Award,
+  Image
 } from 'lucide-react';
 import { api } from '@/services/api';
 
@@ -51,18 +52,23 @@ export function AdminSidebar() {
       label: 'Elon', 
       path: '/admin/opportunities'
     },
+    { 
+      icon: Image, 
+      label: 'Galereya', 
+      path: '/admin/gallery'
+    },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      <div className="p-4 border-b border-slate-700">
+    <div className="flex flex-col h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 sticky top-0">
+      <div className="p-4 border-b border-slate-700 flex-shrink-0">
         <Link to="/" className="flex items-center gap-3">
           <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.png" alt="FinLab" className="h-10 w-auto" />
           <span className="font-display text-xl font-bold text-white">FinLab Admin</span>
         </Link>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.path;
           return (
@@ -82,7 +88,7 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-700">
+      <div className="p-4 border-t border-slate-700 flex-shrink-0">
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200"

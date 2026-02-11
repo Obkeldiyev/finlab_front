@@ -30,9 +30,7 @@ import { toast } from 'sonner';
 
 interface GalleryItem {
   id: number;
-  title_en: string;
-  title_ru: string;
-  title_uz: string;
+  title: string;
   url: string;
   type: string;
   created_at: string;
@@ -48,19 +46,11 @@ export default function AdminGallery() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [createFormData, setCreateFormData] = useState({
-    title_en: '',
-    title_ru: '',
-    title_uz: '',
-  });
+  
+  const [createTitle, setCreateTitle] = useState('');
   const [createFile, setCreateFile] = useState<File | null>(null);
-
-  const [editFormData, setEditFormData] = useState({
-    title_en: '',
-    title_ru: '',
-    title_uz: '',
-  });
+  
+  const [editTitle, setEditTitle] = useState('');
   const [editFile, setEditFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -91,13 +81,17 @@ export default function AdminGallery() {
       toast.error('Please select a file');
       return;
     }
+    if (!createTitle.trim()) {
+      toast.error('Please enter a title');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await api.createGalleryItem(createFormData, createFile);
+      await api.createGalleryItem(createTitle, createFile);
       toast.success('Gallery item created successfully');
       setIsCreateDialogOpen(false);
-      setCreateFormData({ title_en: '', title_ru: '', title_uz: '' });
+      setCreateTitle('');
       setCreateFile(null);
       loadGallery();
     } catch (error) {
@@ -110,11 +104,7 @@ export default function AdminGallery() {
 
   const handleEdit = (item: GalleryItem) => {
     setEditingItem(item);
-    setEditFormData({
-      title_en: item.title_en,
-      title_ru: item.title_ru,
-      title_uz: item.title_uz,
-    });
+    setEditTitle(item.title);
     setEditFile(null);
     setIsEditDialogOpen(true);
   };
@@ -122,14 +112,18 @@ export default function AdminGallery() {
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
+    if (!editTitle.trim()) {
+      toast.error('Please enter a title');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await api.updateGalleryItem(editingItem.id, editFormData, editFile);
+      await api.updateGalleryItem(editingItem.id, editTitle, editFile);
       toast.success('Gallery item updated successfully');
       setIsEditDialogOpen(false);
       setEditingItem(null);
-      setEditFormData({ title_en: '', title_ru: '', title_uz: '' });
+      setEditTitle('');
       setEditFile(null);
       loadGallery();
     } catch (error) {
@@ -278,7 +272,7 @@ export default function AdminGallery() {
 
                         <CardHeader>
                           <CardTitle className="text-sm line-clamp-2">
-                            {language === 'uz' ? item.title_uz : language === 'ru' ? item.title_ru : item.title_en}
+                            {item.title}
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -289,7 +283,8 @@ export default function AdminGallery() {
                               className="flex-1"
                               onClick={() => handleEdit(item)}
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-4 w-4 mr-1" />
+                              Edit
                             </Button>
                             <Button 
                               variant="outline" 
@@ -313,37 +308,22 @@ export default function AdminGallery() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Add Gallery Item</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Title (English)</Label>
+              <Label>Title</Label>
               <Input
-                value={createFormData.title_en}
-                onChange={(e) => setCreateFormData({ ...createFormData, title_en: e.target.value })}
+                value={createTitle}
+                onChange={(e) => setCreateTitle(e.target.value)}
+                placeholder="Enter title"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label>Заголовок (Русский)</Label>
-              <Input
-                value={createFormData.title_ru}
-                onChange={(e) => setCreateFormData({ ...createFormData, title_ru: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Sarlavha (O'zbek)</Label>
-              <Input
-                value={createFormData.title_uz}
-                onChange={(e) => setCreateFormData({ ...createFormData, title_uz: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Media File</Label>
+              <Label>Media File (Photo or Video)</Label>
               <Input
                 type="file"
                 accept="image/*,video/*"
@@ -361,7 +341,7 @@ export default function AdminGallery() {
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Creating...' : 'Create'}
+                {isSubmitting ? 'Uploading...' : 'Upload'}
               </Button>
             </div>
           </form>
@@ -370,32 +350,17 @@ export default function AdminGallery() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Gallery Item</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEditSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Title (English)</Label>
+              <Label>Title</Label>
               <Input
-                value={editFormData.title_en}
-                onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Заголовок (Русский)</Label>
-              <Input
-                value={editFormData.title_ru}
-                onChange={(e) => setEditFormData({ ...editFormData, title_ru: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Sarlavha (O'zbek)</Label>
-              <Input
-                value={editFormData.title_uz}
-                onChange={(e) => setEditFormData({ ...editFormData, title_uz: e.target.value })}
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                placeholder="Enter title"
                 required
               />
             </div>
