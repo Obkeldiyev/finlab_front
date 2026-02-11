@@ -8,7 +8,9 @@ import {
   FileText,
   Building,
   Award,
-  Image
+  Image,
+  Handshake,
+  MessageSquare
 } from 'lucide-react';
 import { api } from '@/services/api';
 
@@ -56,6 +58,16 @@ export function AdminSidebar() {
       icon: Image, 
       label: 'Galereya', 
       path: '/admin/gallery'
+    },
+    { 
+      icon: Handshake, 
+      label: 'Hamkorlar', 
+      path: '/admin/partners'
+    },
+    { 
+      icon: MessageSquare, 
+      label: 'Fikrlar', 
+      path: '/admin/feedback'
     },
   ];
 

@@ -484,6 +484,65 @@ class ApiService {
     });
   }
 
+  // Partners
+  async getPartners() {
+    return this.request('/partners');
+  }
+
+  async getPartner(id: number) {
+    return this.request(`/partners/${id}`);
+  }
+
+  async createPartner(name: string, website_url: string, logo: File) {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('website_url', website_url);
+    formData.append('logo', logo);
+
+    return this.request('/partners', {
+      method: 'POST',
+      body: formData,
+    });
+  }
+
+  async updatePartner(id: number, name: string, website_url: string, logo?: File | null) {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('website_url', website_url);
+    if (logo) {
+      formData.append('logo', logo);
+    }
+
+    return this.request(`/partners/${id}`, {
+      method: 'PATCH',
+      body: formData,
+    });
+  }
+
+  async deletePartner(id: number) {
+    return this.request(`/partners/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Feedback
+  async getFeedback(page = 1, limit = 50) {
+    return this.request(`/feedback?page=${page}&limit=${limit}`);
+  }
+
+  async submitFeedback(phone_number: string, email: string, message: string) {
+    return this.request('/feedback', {
+      method: 'POST',
+      body: JSON.stringify({ phone_number, email, message }),
+    });
+  }
+
+  async deleteFeedback(id: number) {
+    return this.request(`/feedback/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Logout
   logout() {
     this.clearToken();

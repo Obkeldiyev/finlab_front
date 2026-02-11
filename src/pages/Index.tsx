@@ -30,6 +30,7 @@ import { Sticker } from '@/components/ui/sticker';
 import { opportunities as opportunitiesData } from '@/data/opportunities';
 import { OpportunityDialog } from '@/components/OpportunityDialog';
 import { dataService, type Course } from '@/services/dataService';
+import { api } from '@/services/api';
 import { toast } from 'sonner';
 
 // Import gallery images
@@ -98,6 +99,8 @@ export default function Index() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(true);
   const [directions, setDirections] = useState<any[]>([]);
+  const [partners, setPartners] = useState<any[]>([]);
+  const [isLoadingPartners, setIsLoadingPartners] = useState(true);
   const [isLoadingDirections, setIsLoadingDirections] = useState(true);
 
   // Load courses from backend
@@ -134,6 +137,24 @@ export default function Index() {
       }
     };
     loadDirections();
+  }, []);
+
+  // Load partners from backend
+  useEffect(() => {
+    const loadPartners = async () => {
+      try {
+        const response = await api.getPartners();
+        if (response.success) {
+          setPartners(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to load partners:', error);
+        setPartners([]);
+      } finally {
+        setIsLoadingPartners(false);
+      }
+    };
+    loadPartners();
   }, []);
 
   const handleOpportunityClick = (opportunity: typeof opportunitiesData[0]) => {
@@ -1732,6 +1753,57 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Partners Section */}
+      {!isLoadingPartners && partners.length > 0 && (
+        <section className="section-padding relative z-10 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+          <div className="container mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+                {language === 'uz' && 'Bizning Hamkorlarimiz'}
+                {language === 'ru' && 'Наши Партнеры'}
+                {language === 'en' && 'Our Partners'}
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                {language === 'uz' && 'Biz ishonchli tashkilotlar bilan hamkorlik qilamiz'}
+                {language === 'ru' && 'Мы сотрудничаем с надежными организациями'}
+                {language === 'en' && 'We partner with trusted organizations'}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {partners.map((partner, index) => (
+                <motion.a
+                  key={partner.id}
+                  href={partner.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group"
+                >
+                  <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50">
+                    <CardContent className="p-6 flex items-center justify-center h-32">
+                      <img
+                        src={`${import.meta.env.VITE_API_URL || '/api'}${partner.logo_url}`}
+                        alt={partner.name}
+                        className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                      />
+                    </CardContent>
+                  </Card>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* CTA Section - WHITE BACKGROUND with BLUE PARTICLES */}
       <section className="section-padding relative z-10 bg-white overflow-hidden">
         {/* Blue particles on white background */}
@@ -1764,7 +1836,152 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Feedback Section */}
+      <FeedbackSection language={language} />
+
       <Footer />
     </div>
+  );
+}
+
+// Feedback Section Component
+function FeedbackSection({ language }: { language: string }) {
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!phoneNumber || !email || !message) {
+      toast.error(language === 'uz' ? 'Barcha maydonlarni to\'ldiring' : language === 'ru' ? 'Заполните все поля' : 'Fill all fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await api.submitFeedback(phoneNumber, email, message);
+      if (response.success) {
+        toast.success(language === 'uz' ? 'Fikringiz yuborildi!' : language === 'ru' ? 'Ваш отзыв отправлен!' : 'Feedback submitted!');
+        setPhoneNumber('');
+        setEmail('');
+        setMessage('');
+      } else {
+        toast.error(language === 'uz' ? 'Xatolik yuz berdi' : language === 'ru' ? 'Произошла ошибка' : 'An error occurred');
+      }
+    } catch (error) {
+      console.error('Feedback error:', error);
+      toast.error(language === 'uz' ? 'Xatolik yuz berdi' : language === 'ru' ? 'Произошла ошибка' : 'An error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <section className="section-padding relative z-10 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <div className="container mx-auto max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+            {language === 'uz' && 'Fikringizni bildiring'}
+            {language === 'ru' && 'Поделитесь своим мнением'}
+            {language === 'en' && 'Share Your Feedback'}
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            {language === 'uz' && 'Sizning fikringiz biz uchun muhim'}
+            {language === 'ru' && 'Ваше мнение важно для нас'}
+            {language === 'en' && 'Your opinion matters to us'}
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="shadow-xl">
+            <CardContent className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      {language === 'uz' && 'Telefon raqam'}
+                      {language === 'ru' && 'Номер телефона'}
+                      {language === 'en' && 'Phone Number'}
+                    </label>
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="+998901234567"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      {language === 'uz' && 'Email'}
+                      {language === 'ru' && 'Электронная почта'}
+                      {language === 'en' && 'Email'}
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="example@email.com"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    {language === 'uz' && 'Sizning fikringiz'}
+                    {language === 'ru' && 'Ваше мнение'}
+                    {language === 'en' && 'Your Feedback'}
+                  </label>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={6}
+                    placeholder={
+                      language === 'uz' ? 'Veb-sayt haqida fikringizni yozing...' :
+                      language === 'ru' ? 'Напишите свое мнение о сайте...' :
+                      'Write your opinion about the website...'
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    required
+                  />
+                </div>
+                <div className="flex justify-center">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={isSubmitting}
+                    className="px-8"
+                  >
+                    {isSubmitting ? (
+                      language === 'uz' ? 'Yuborilmoqda...' :
+                      language === 'ru' ? 'Отправка...' :
+                      'Submitting...'
+                    ) : (
+                      language === 'uz' ? 'Yuborish' :
+                      language === 'ru' ? 'Отправить' :
+                      'Submit'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
   );
 }
