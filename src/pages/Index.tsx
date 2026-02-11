@@ -565,18 +565,42 @@ export default function Index() {
                 {[
                   { 
                     icon: BookOpen, 
-                    text: { uz: "Finlandiya ta'lim modeli", ru: 'Финская модель образования', en: 'Finnish education model' },
-                    desc: { uz: 'Dunyodagi eng yaxshi ta\'lim tizimi', ru: 'Лучшая система образования в мире', en: 'World\'s best education system' }
+                    text: { 
+                      uz: "Ilmiy-metodik faoliyat", 
+                      ru: 'Научно-методическая деятельность', 
+                      en: 'Scientific and methodological activities' 
+                    },
+                    desc: { 
+                      uz: 'Zamonaviy ta\'lim metodlari va texnologiyalari', 
+                      ru: 'Современные методы и технологии обучения', 
+                      en: 'Modern teaching methods and technologies' 
+                    }
                   },
                   { 
                     icon: Users, 
-                    text: { uz: 'Professional pedagoglar jamoasi', ru: 'Команда профессиональных педагогов', en: 'Team of professional educators' },
-                    desc: { uz: 'Xalqaro tajribaga ega mutaxassislar', ru: 'Специалисты с международным опытом', en: 'Specialists with international experience' }
+                    text: { 
+                      uz: 'Malaka oshirish kurslari', 
+                      ru: 'Курсы повышения квалификации', 
+                      en: 'Professional development courses' 
+                    },
+                    desc: { 
+                      uz: 'O\'qituvchilar uchun maxsus dasturlar', 
+                      ru: 'Специальные программы для учителей', 
+                      en: 'Special programs for teachers' 
+                    }
                   },
                   { 
                     icon: Globe, 
-                    text: { uz: 'Xalqaro hamkorlik', ru: 'Международное сотрудничество', en: 'International cooperation' },
-                    desc: { uz: 'Finlandiya va Yevropa universitetlari bilan', ru: 'С университетами Финляндии и Европы', en: 'With Finnish and European universities' }
+                    text: { 
+                      uz: 'Xalqaro hamkorlik', 
+                      ru: 'Международное сотрудничество', 
+                      en: 'International cooperation' 
+                    },
+                    desc: { 
+                      uz: 'Finlandiya va Yevropa universitetlari bilan', 
+                      ru: 'С университетами Финляндии и Европы', 
+                      en: 'With Finnish and European universities' 
+                    }
                   },
                 ].map((item, index) => (
                   <motion.div 
