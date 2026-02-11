@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowRight, 
-  GraduationCap, 
-  Users, 
-  Award, 
+import {
+  ArrowRight,
+  GraduationCap,
+  Users,
+  Award,
   Lightbulb,
   BookOpen,
   Cpu,
@@ -67,11 +67,11 @@ const useCounter = (end: number, duration: number = 2000, start: number = 0) => 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      
+
       // Use easeOutCubic for smoother animation
       const easeOutCubic = 1 - Math.pow(1 - progress, 3);
       const currentCount = Math.floor(easeOutCubic * (end - start) + start);
-      
+
       setCount(currentCount);
 
       if (progress < 1) {
@@ -183,12 +183,12 @@ export default function Index() {
     return (
       <motion.div
         initial={{ opacity: 0, y: 50, scale: 0.8 }}
-        whileInView={{ 
-          opacity: 1, 
-          y: 0, 
+        whileInView={{
+          opacity: 1,
+          y: 0,
           scale: 1,
-          transition: { 
-            duration: 0.6, 
+          transition: {
+            duration: 0.6,
             delay: index * 0.1,
             type: "spring",
             stiffness: 100
@@ -206,7 +206,7 @@ export default function Index() {
         <Card className="text-center hover-lift hover-glow cursor-pointer group relative overflow-hidden h-full border-2 border-slate-200 hover:border-primary shadow-xl bg-white transition-all duration-300">
           {/* Animated background gradient */}
           <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-all duration-500`} />
-          
+
           {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -235,7 +235,7 @@ export default function Index() {
                   {stat.suffix}
                 </span>
               </div>
-              
+
               {/* Progress bar animation */}
               <div className="mt-2 h-1 bg-muted rounded-full overflow-hidden">
                 <motion.div
@@ -267,7 +267,7 @@ export default function Index() {
     {
       icon: GraduationCap,
       title: { uz: '288 soatlik kurs', ru: '288-часовой курс', en: '288-hour course' },
-      description: { 
+      description: {
         uz: "Xalqaro darajadagi malaka oshirish kursi Finlandiya ta'lim modeli asosida",
         ru: 'Международный курс повышения квалификации на основе финской модели образования',
         en: 'International qualification course based on Finnish education model'
@@ -303,11 +303,11 @@ export default function Index() {
   ];
 
   const stats = [
-    { 
-      value: 250, 
+    {
+      value: 250,
       suffix: '+',
       label: { uz: 'Ilmiy ishlar', ru: 'Научных работ', en: 'Research Papers' },
-      description: { 
+      description: {
         uz: 'Nashr etilgan va amaliyotga joriy etilgan ilmiy-metodik ishlar soni',
         ru: 'Количество опубликованных и внедренных научно-методических работ',
         en: 'Number of published and implemented scientific-methodological works'
@@ -316,11 +316,11 @@ export default function Index() {
       color: 'from-blue-500 to-cyan-500',
       sticker: 'popular'
     },
-    { 
-      value: 500, 
+    {
+      value: 500,
       suffix: '+',
       label: { uz: 'Bitiruvchilar', ru: 'Выпускников', en: 'Graduates' },
-      description: { 
+      description: {
         uz: 'Muvaffaqiyatli tugatgan va ishga joylashgan bitiruvchilar soni',
         ru: 'Количество успешно окончивших и трудоустроенных выпускников',
         en: 'Number of successfully graduated and employed alumni'
@@ -329,11 +329,11 @@ export default function Index() {
       color: 'from-green-500 to-emerald-500',
       sticker: 'bestseller'
     },
-    { 
-      value: 15, 
+    {
+      value: 15,
       suffix: '+',
       label: { uz: "Xorijiy hamkorlar", ru: 'Иностранных партнеров', en: 'Foreign Partners' },
-      description: { 
+      description: {
         uz: 'Finlandiya va boshqa Yevropa davlatlari bilan hamkorlik',
         ru: 'Сотрудничество с Финляндией и другими европейскими странами',
         en: 'Partnerships with Finland and other European countries'
@@ -342,11 +342,11 @@ export default function Index() {
       color: 'from-purple-500 to-pink-500',
       sticker: 'exclusive'
     },
-    { 
-      value: 10, 
+    {
+      value: 10,
       suffix: '+',
       label: { uz: "Yillik tajriba", ru: 'Лет опыта', en: 'Years Experience' },
-      description: { 
+      description: {
         uz: 'Zamonaviy ta\'lim texnologiyalari sohasidagi tajriba',
         ru: 'Опыт в области современных образовательных технологий',
         en: 'Experience in modern educational technologies'
@@ -363,7 +363,7 @@ export default function Index() {
 
       {/* Hero Section - Video (Full viewport) */}
       <section className="relative w-full overflow-hidden" style={{ height: '100vh', minHeight: '700px' }}>
-        <VideoBackground 
+        <VideoBackground
           videoSrc="/Comp 1.mp4"
           className="w-full h-full flex items-center justify-center"
         >
@@ -446,10 +446,10 @@ export default function Index() {
       <section className="relative z-10 pt-16 pb-20 bg-white overflow-hidden">
         {/* Blue particles on white background */}
         <AdaptiveParticleBackground color="white" />
-        
+
         {/* Background decoration */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-        
+
         <div className="container mx-auto px-4 relative z-10">
           {/* Section Header */}
           <motion.div
@@ -466,7 +466,7 @@ export default function Index() {
                 {language === 'en' && 'Our Results'}
               </span>
             </div>
-            
+
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
               {language === 'uz' && 'Raqamlar orqasidagi muvaffaqiyat'}
               {language === 'ru' && 'Успех за цифрами'}
@@ -503,7 +503,7 @@ export default function Index() {
                   {language === 'en' && '25% annual growth'}
                 </span>
               </div>
-              
+
               <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-white shadow-lg">
                 <Target className="h-5 w-5" />
                 <span className="font-medium">
@@ -521,73 +521,7 @@ export default function Index() {
       <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
         {/* White particles on blue background */}
         <AdaptiveParticleBackground color="blue" />
-        
-        {/* Floating Icon Buttons on Left */}
-        <div className="absolute left-8 top-1/2 -translate-y-1/2 z-20 hidden lg:flex flex-col gap-4">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="group relative"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg">
-              <BookOpen className="h-6 w-6 text-white group-hover:text-primary transition-colors duration-300" />
-            </div>
-            <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              <div className="bg-white px-4 py-2 rounded-lg shadow-xl whitespace-nowrap">
-                <p className="text-sm font-semibold text-foreground">
-                  {language === 'uz' && 'Ilmiy-metodik faoliyat'}
-                  {language === 'ru' && 'Научно-методическая деятельность'}
-                  {language === 'en' && 'Scientific and methodological activities'}
-                </p>
-              </div>
-            </div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="group relative"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg">
-              <Users className="h-6 w-6 text-white group-hover:text-primary transition-colors duration-300" />
-            </div>
-            <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              <div className="bg-white px-4 py-2 rounded-lg shadow-xl whitespace-nowrap">
-                <p className="text-sm font-semibold text-foreground">
-                  {language === 'uz' && 'Malaka oshirish kurslari'}
-                  {language === 'ru' && 'Курсы повышения квалификации'}
-                  {language === 'en' && 'Professional development courses'}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="group relative"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg">
-              <Globe className="h-6 w-6 text-white group-hover:text-primary transition-colors duration-300" />
-            </div>
-            <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              <div className="bg-white px-4 py-2 rounded-lg shadow-xl whitespace-nowrap">
-                <p className="text-sm font-semibold text-foreground">
-                  {language === 'uz' && 'Xalqaro hamkorlik'}
-                  {language === 'ru' && 'Международное сотрудничество'}
-                  {language === 'en' && 'International cooperation'}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-        
         <div className="container mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -608,12 +542,12 @@ export default function Index() {
               <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-6">
                 {t('about.title')}
               </h2>
-              
+
               <div className="space-y-4 mb-8">
                 <p className="text-lg text-white/90 leading-relaxed">
                   {t('about.description')}
                 </p>
-                
+
                 <p className="text-base text-white/80 leading-relaxed">
                   {language === 'uz' && 'Bizning laboratoriyamiz Finlandiya Ta\'lim vazirligining rasmiy hamkorligi ostida faoliyat yuritadi va dunyodagi eng ilg\'or ta\'lim texnologiyalarini O\'zbekistonga olib keladi. Biz har bir o\'quvchining individual ehtiyojlarini hisobga olgan holda, zamonaviy VR/AR texnologiyalar, 3D printing va robototexnika orqali ta\'lim beramiz.'}
                   {language === 'ru' && 'Наша лаборатория работает под официальным партнерством Министерства образования Финляндии и привносит самые передовые образовательные технологии в Узбекистан. Мы обучаем с учетом индивидуальных потребностей каждого студента, используя современные VR/AR технологии, 3D-печать и робототехнику.'}
@@ -627,69 +561,81 @@ export default function Index() {
                 </p>
               </div>
 
-              <div className="space-y-4">
-                {[
-                  { 
-                    icon: BookOpen, 
-                    text: { 
-                      uz: "Ilmiy-metodik faoliyat", 
-                      ru: 'Научно-методическая деятельность', 
-                      en: 'Scientific and methodological activities' 
-                    },
-                    desc: { 
-                      uz: 'Zamonaviy ta\'lim metodlari va texnologiyalari', 
-                      ru: 'Современные методы и технологии обучения', 
-                      en: 'Modern teaching methods and technologies' 
-                    }
-                  },
-                  { 
-                    icon: Users, 
-                    text: { 
-                      uz: 'Malaka oshirish kurslari', 
-                      ru: 'Курсы повышения квалификации', 
-                      en: 'Professional development courses' 
-                    },
-                    desc: { 
-                      uz: 'O\'qituvchilar uchun maxsus dasturlar', 
-                      ru: 'Специальные программы для учителей', 
-                      en: 'Special programs for teachers' 
-                    }
-                  },
-                  { 
-                    icon: Globe, 
-                    text: { 
-                      uz: 'Xalqaro hamkorlik', 
-                      ru: 'Международное сотрудничество', 
-                      en: 'International cooperation' 
-                    },
-                    desc: { 
-                      uz: 'Finlandiya va Yevropa universitetlari bilan', 
-                      ru: 'С университетами Финляндии и Европы', 
-                      en: 'With Finnish and European universities' 
-                    }
-                  },
-                ].map((item, index) => (
-                  <motion.div 
-                    key={index} 
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
-                    className="flex items-start gap-4 hover-lift cursor-pointer group p-4 rounded-xl hover:bg-white/10 transition-all duration-300"
-                  >
-                    <div className="p-3 rounded-xl bg-white/20 group-hover:bg-white group-hover:scale-110 transition-all duration-300 flex-shrink-0">
-                      <item.icon className="h-6 w-6 text-white group-hover:text-primary group-hover:rotate-12 transition-all duration-300" />
-                    </div>
-                    <div className="flex-1">
-                      <span className="text-white font-semibold group-hover:translate-x-2 transition-all duration-300 block">
-                        {getLocalizedField(item, 'text', language)}
-                      </span>
-                      <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">
-                        {getLocalizedField(item, 'desc', language)}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
+              <div className="space-y-6 bg-white/5 p-6 rounded-2xl backdrop-blur-sm">
+                {/* Item 1: Scientific and methodological activities */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0, duration: 0.5 }}
+                  className="flex items-start gap-4 hover-lift cursor-pointer group p-6 rounded-xl bg-white/5 hover:bg-white/15 transition-all duration-300 border border-white/10"
+                >
+                  <div className="p-4 rounded-xl bg-white/30 group-hover:bg-white group-hover:scale-110 transition-all duration-300 flex-shrink-0 shadow-lg">
+                    <BookOpen className="h-7 w-7 text-white group-hover:text-primary group-hover:rotate-12 transition-all duration-300" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-white font-bold text-xl group-hover:translate-x-2 transition-all duration-300 block mb-3 drop-shadow-lg">
+                      {language === 'uz' && "Ilmiy-metodik faoliyat"}
+                      {language === 'ru' && 'Научно-методическая деятельность'}
+                      {language === 'en' && 'Scientific and methodological activities'}
+                    </h4>
+                    <p className="text-lg text-white group-hover:text-white transition-colors duration-300 leading-relaxed drop-shadow-md">
+                      {language === 'uz' && 'Zamonaviy ta\'lim metodlari va texnologiyalari'}
+                      {language === 'ru' && 'Современные методы и технологии обучения'}
+                      {language === 'en' && 'Modern teaching methods and technologies'}
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Item 2: Professional development courses */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1, duration: 0.5 }}
+                  className="flex items-start gap-4 hover-lift cursor-pointer group p-6 rounded-xl bg-white/5 hover:bg-white/15 transition-all duration-300 border border-white/10"
+                >
+                  <div className="p-4 rounded-xl bg-white/30 group-hover:bg-white group-hover:scale-110 transition-all duration-300 flex-shrink-0 shadow-lg">
+                    <Users className="h-7 w-7 text-white group-hover:text-primary group-hover:rotate-12 transition-all duration-300" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-white font-bold text-xl group-hover:translate-x-2 transition-all duration-300 block mb-3 drop-shadow-lg">
+                      {language === 'uz' && 'Malaka oshirish kurslari'}
+                      {language === 'ru' && 'Курсы повышения квалификации'}
+                      {language === 'en' && 'Professional development courses'}
+                    </h4>
+                    <p className="text-lg text-white group-hover:text-white transition-colors duration-300 leading-relaxed drop-shadow-md">
+                      {language === 'uz' && 'O\'qituvchilar uchun maxsus dasturlar'}
+                      {language === 'ru' && 'Специальные программы для учителей'}
+                      {language === 'en' && 'Special programs for teachers'}
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Item 3: International cooperation */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                  className="flex items-start gap-4 hover-lift cursor-pointer group p-6 rounded-xl bg-white/5 hover:bg-white/15 transition-all duration-300 border border-white/10"
+                >
+                  <div className="p-4 rounded-xl bg-white/30 group-hover:bg-white group-hover:scale-110 transition-all duration-300 flex-shrink-0 shadow-lg">
+                    <Globe className="h-7 w-7 text-white group-hover:text-primary group-hover:rotate-12 transition-all duration-300" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-white font-bold text-xl group-hover:translate-x-2 transition-all duration-300 block mb-3 drop-shadow-lg">
+                      {language === 'uz' && 'Xalqaro hamkorlik'}
+                      {language === 'ru' && 'Международное сотрудничество'}
+                      {language === 'en' && 'International cooperation'}
+                    </h4>
+                    <p className="text-lg text-white group-hover:text-white transition-colors duration-300 leading-relaxed drop-shadow-md">
+                      {language === 'uz' && 'Finlandiya va Yevropa universitetlari bilan'}
+                      {language === 'ru' && 'С университетами Финляндии и Европы'}
+                      {language === 'en' && 'With Finnish and European universities'}
+                    </p>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
 
@@ -737,7 +683,7 @@ export default function Index() {
       <section className="section-padding bg-white relative z-10 overflow-hidden">
         {/* Blue particles on white background */}
         <AdaptiveParticleBackground color="white" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -750,7 +696,7 @@ export default function Index() {
               {language === 'ru' && 'Почему именно финская модель образования?'}
               {language === 'en' && 'Why Finnish Education Model?'}
             </h3>
-            
+
             <div className="grid md:grid-cols-2 gap-8 text-left">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -862,7 +808,7 @@ export default function Index() {
       <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
         {/* White particles on blue background */}
         <AdaptiveParticleBackground color="blue" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1003,8 +949,8 @@ export default function Index() {
 
       {/* Finland Education Laboratory Video Section */}
       <section className="relative z-10 min-h-screen">
-        <VideoBackground 
-          videoSrc="/Comp 1.mp4" 
+        <VideoBackground
+          videoSrc="/Comp 1.mp4"
           posterSrc={gallery1}
           className="min-h-screen flex items-center"
         >
@@ -1021,19 +967,19 @@ export default function Index() {
                 <GraduationCap className="h-12 w-12 text-white" />
                 <span className="text-5xl">🔬</span>
               </div>
-              
+
               <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
                 {language === 'uz' && "Finlandiya Ta'lim Laboratoriyasi"}
                 {language === 'ru' && 'Финская Образовательная Лаборатория'}
                 {language === 'en' && 'Finland Education Laboratory'}
               </h2>
-              
+
               <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
                 {language === 'uz' && "Zamonaviy texnologiyalar va innovatsion ta'lim metodlari bilan jihozlangan laboratoriya"}
                 {language === 'ru' && 'Лаборатория, оснащенная современными технологиями и инновационными методами обучения'}
                 {language === 'en' && 'Laboratory equipped with modern technologies and innovative teaching methods'}
               </p>
-              
+
               <div className="grid md:grid-cols-3 gap-6 mb-12">
                 {[
                   {
@@ -1070,7 +1016,7 @@ export default function Index() {
                   </motion.div>
                 ))}
               </div>
-              
+
               <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -1102,7 +1048,7 @@ export default function Index() {
       <section className="section-padding bg-white relative z-10 overflow-hidden">
         {/* Blue particles on white background */}
         <AdaptiveParticleBackground color="white" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1114,7 +1060,7 @@ export default function Index() {
               <Lightbulb className="h-4 w-4" />
               <span>Imkoniyatlar</span>
             </div>
-            
+
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
               Laboratoriya Imkoniyatlari
             </h2>
@@ -1132,7 +1078,7 @@ export default function Index() {
                 'from-green-500 to-emerald-500',
                 'from-purple-500 to-pink-500'
               ];
-              
+
               return (
                 <motion.div
                   key={opportunity.id}
@@ -1166,8 +1112,8 @@ export default function Index() {
 
                       {/* Read More Button */}
                       <div className="flex justify-center">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300 border-2"
                         >
                           Batafsil o'qish
@@ -1187,7 +1133,7 @@ export default function Index() {
       </section>
 
       {/* Opportunity Dialog */}
-      <OpportunityDialog 
+      <OpportunityDialog
         opportunity={selectedOpportunity}
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
@@ -1197,7 +1143,7 @@ export default function Index() {
       <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
         {/* White particles on blue background */}
         <AdaptiveParticleBackground color="blue" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1232,7 +1178,7 @@ export default function Index() {
                     <Users className="h-24 w-24 text-white" />
                   </div>
                 </div>
-                
+
                 {/* Director Info */}
                 <div className="flex-1 p-8">
                   <h3 className="text-2xl font-display font-bold text-foreground mb-2">
@@ -1248,7 +1194,7 @@ export default function Index() {
                     {language === 'ru' && 'Доктор философии (PhD) по педагогическим наукам, доцент, поэтесса, член Союза писателей Узбекистана'}
                     {language === 'en' && 'Doctor of Philosophy (PhD) in Pedagogical Sciences, Associate Professor, Poet, Member of the Writers\' Union of Uzbekistan'}
                   </p>
-                  
+
                   <div className="space-y-3 mb-6">
                     <div className="flex items-start gap-3">
                       <Award className="h-5 w-5 text-primary mt-0.5" />
@@ -1265,7 +1211,7 @@ export default function Index() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start gap-3">
                       <Lightbulb className="h-5 w-5 text-primary mt-0.5" />
                       <div>
@@ -1276,7 +1222,7 @@ export default function Index() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start gap-3">
                       <BookOpen className="h-5 w-5 text-primary mt-0.5" />
                       <div>
@@ -1292,7 +1238,7 @@ export default function Index() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start gap-3">
                       <Cpu className="h-5 w-5 text-primary mt-0.5" />
                       <div>
@@ -1309,7 +1255,7 @@ export default function Index() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <Link to="/team">
                     <Button variant="outline" className="w-full md:w-auto">
                       {language === 'uz' && 'Batafsil ma\'lumot'}
@@ -1329,7 +1275,7 @@ export default function Index() {
       <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
         {/* White particles on blue background */}
         <AdaptiveParticleBackground color="blue" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1435,7 +1381,7 @@ export default function Index() {
               {language === 'ru' && 'Истории успеха'}
               {language === 'en' && 'Success Stories'}
             </h4>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -1539,7 +1485,7 @@ export default function Index() {
       <section className="section-padding relative z-10 bg-white overflow-hidden">
         {/* Blue particles on white background */}
         <AdaptiveParticleBackground color="white" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1555,7 +1501,7 @@ export default function Index() {
                 {language === 'en' && 'Educational Directions'}
               </span>
             </div>
-            
+
             <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
               {language === 'uz' && "Kasbiy rivojlanish yo'nalishlari"}
               {language === 'ru' && 'Направления профессионального развития'}
@@ -1607,20 +1553,20 @@ export default function Index() {
                           {index === 1 && <Sticker type="recommended" size="md" />}
                           {index === 2 && <Sticker type="new" size="md" />}
                         </div>
-                        
+
                         <CardContent className="pt-6">
                           <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 w-fit mb-4 group-hover:scale-110 transition-transform duration-300">
                             <IconComponent className="h-8 w-8 text-primary" />
                           </div>
-                          
+
                           <h3 className="text-2xl font-display font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
                             {direction ? getLocalizedField(direction, 'title', language) : 'Untitled'}
                           </h3>
-                          
+
                           <p className="text-muted-foreground mb-4 line-clamp-3 group-hover:text-foreground transition-colors duration-300">
                             {direction ? getLocalizedField(direction, 'description', language) : ''}
                           </p>
-                          
+
                           <div className="flex items-center justify-between pt-4 border-t border-border">
                             <div className="flex items-center gap-2">
                               <BookOpen className="h-5 w-5 text-primary" />
@@ -1656,7 +1602,7 @@ export default function Index() {
       <section className="section-padding relative z-10 bg-white overflow-hidden">
         {/* Blue particles on white background */}
         <AdaptiveParticleBackground color="white" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1704,7 +1650,7 @@ export default function Index() {
                       {index === 1 && <Sticker type="recommended" size="md" />}
                       {index === 2 && <Sticker type="new" size="md" />}
                     </div>
-                    
+
                     <CardContent className="pt-6 flex-1 flex flex-col">
                       <div className="text-4xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300">
                         {course.hours || 40}
@@ -1715,7 +1661,7 @@ export default function Index() {
                       <h3 className="text-xl font-display font-semibold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
                         {course ? getLocalizedField(course, 'title', language) : 'Untitled Course'}
                       </h3>
-                      
+
                       {/* Sticker explanation text */}
                       {index === 0 && (
                         <div className="mb-3 p-2 bg-orange-50 rounded-lg border-l-4 border-orange-500">
@@ -1726,7 +1672,7 @@ export default function Index() {
                           </p>
                         </div>
                       )}
-                      
+
                       {index === 1 && (
                         <div className="mb-3 p-2 bg-teal-50 rounded-lg border-l-4 border-teal-500">
                           <p className="text-sm text-teal-800 font-medium">
@@ -1736,7 +1682,7 @@ export default function Index() {
                           </p>
                         </div>
                       )}
-                      
+
                       {index === 2 && (
                         <div className="mb-3 p-2 bg-green-50 rounded-lg border-l-4 border-green-500">
                           <p className="text-sm text-green-800 font-medium">
@@ -1750,7 +1696,7 @@ export default function Index() {
                       <p className="text-muted-foreground mb-4 flex-1 group-hover:text-foreground transition-colors duration-300 line-clamp-4">
                         {course ? getLocalizedField(course, 'description', language) : ''}
                       </p>
-                      
+
                       {/* Course dates */}
                       <div className="mb-4 space-y-2">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -1791,7 +1737,7 @@ export default function Index() {
       <section className="section-padding bg-gradient-to-br from-primary via-primary/95 to-secondary relative z-10 overflow-hidden">
         {/* White particles on blue background */}
         <AdaptiveParticleBackground color="blue" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1898,7 +1844,7 @@ export default function Index() {
       <section className="section-padding relative z-10 bg-white overflow-hidden">
         {/* Blue particles on white background */}
         <AdaptiveParticleBackground color="white" />
-        
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1943,7 +1889,7 @@ function FeedbackSection({ language }: { language: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!phoneNumber || !email || !message) {
       toast.error(language === 'uz' ? 'Barcha maydonlarni to\'ldiring' : language === 'ru' ? 'Заполните все поля' : 'Fill all fields');
       return;
@@ -2042,8 +1988,8 @@ function FeedbackSection({ language }: { language: string }) {
                     rows={6}
                     placeholder={
                       language === 'uz' ? 'Veb-sayt haqida fikringizni yozing...' :
-                      language === 'ru' ? 'Напишите свое мнение о сайте...' :
-                      'Write your opinion about the website...'
+                        language === 'ru' ? 'Напишите свое мнение о сайте...' :
+                          'Write your opinion about the website...'
                     }
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                     required
@@ -2058,12 +2004,12 @@ function FeedbackSection({ language }: { language: string }) {
                   >
                     {isSubmitting ? (
                       language === 'uz' ? 'Yuborilmoqda...' :
-                      language === 'ru' ? 'Отправка...' :
-                      'Submitting...'
+                        language === 'ru' ? 'Отправка...' :
+                          'Submitting...'
                     ) : (
                       language === 'uz' ? 'Yuborish' :
-                      language === 'ru' ? 'Отправить' :
-                      'Submit'
+                        language === 'ru' ? 'Отправить' :
+                          'Submit'
                     )}
                   </Button>
                 </div>
