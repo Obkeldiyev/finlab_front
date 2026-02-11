@@ -25,6 +25,7 @@ import AdminNews from "./pages/AdminNews";
 import AdminDirections from "./pages/AdminDirections";
 import AdminCourses from "./pages/AdminCourses";
 import AdminOpportunities from "./pages/AdminOpportunities";
+import AdminGallery from "./pages/AdminGallery";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ function AppContent() {
           <Route path="/admin/directions" element={<AdminDirections />} />
           <Route path="/admin/courses" element={<AdminCourses />} />
           <Route path="/admin/opportunities" element={<AdminOpportunities />} />
+          <Route path="/admin/gallery" element={<AdminGallery />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

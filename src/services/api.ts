@@ -445,6 +445,57 @@ class ApiService {
     return this.request(`/elon/${id}`);
   }
 
+  // Gallery
+  async getGallery(page = 1, limit = 50) {
+    return this.request(`/gallery?page=${page}&limit=${limit}`);
+  }
+
+  async getGalleryItem(id: number) {
+    return this.request(`/gallery/${id}`);
+  }
+
+  async createGalleryItem(data: {
+    title_en: string;
+    title_ru: string;
+    title_uz: string;
+  }, file: File) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    formData.append('media', file);
+
+    return this.request('/gallery', {
+      method: 'POST',
+      body: formData,
+    });
+  }
+
+  async updateGalleryItem(id: number, data: {
+    title_en?: string;
+    title_ru?: string;
+    title_uz?: string;
+  }, file?: File | null) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value) formData.append(key, value);
+    });
+    if (file) {
+      formData.append('media', file);
+    }
+
+    return this.request(`/gallery/${id}`, {
+      method: 'PATCH',
+      body: formData,
+    });
+  }
+
+  async deleteGalleryItem(id: number) {
+    return this.request(`/gallery/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Logout
   logout() {
     this.clearToken();

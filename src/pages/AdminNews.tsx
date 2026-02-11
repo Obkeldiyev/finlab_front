@@ -25,6 +25,9 @@ import { NewsForm } from '@/components/admin/NewsForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { dataService, type NewsItem } from '@/services/dataService';
@@ -38,6 +41,18 @@ export default function AdminNews() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    title_en: '',
+    title_ru: '',
+    title_uz: '',
+    content_en: '',
+    content_ru: '',
+    content_uz: '',
+  });
+  const [editFiles, setEditFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navItems = [
     { 
@@ -118,6 +133,48 @@ export default function AdminNews() {
     } catch (error) {
       console.error('Failed to load news:', error);
       toast.error('Failed to load news');
+    }
+  };
+
+  const handleEdit = (newsItem: NewsItem) => {
+    setEditingNews(newsItem);
+    setEditFormData({
+      title_en: newsItem.title_en,
+      title_ru: newsItem.title_ru,
+      title_uz: newsItem.title_uz,
+      content_en: newsItem.content_en,
+      content_ru: newsItem.content_ru,
+      content_uz: newsItem.content_uz,
+    });
+    setEditFiles([]);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingNews) return;
+    
+    setIsSubmitting(true);
+    try {
+      await api.updateNews(editingNews.id, editFormData, editFiles);
+      toast.success('News updated successfully');
+      setIsEditDialogOpen(false);
+      setEditingNews(null);
+      setEditFormData({
+        title_en: '',
+        title_ru: '',
+        title_uz: '',
+        content_en: '',
+        content_ru: '',
+        content_uz: '',
+      });
+      setEditFiles([]);
+      loadNews();
+    } catch (error) {
+      console.error('Update news error:', error);
+      toast.error('Failed to update news');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -379,7 +436,11 @@ export default function AdminNews() {
                               <Eye className="h-4 w-4 mr-2" />
                               {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
                             </Button>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEdit(newsItem)}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button 
@@ -401,6 +462,110 @@ export default function AdminNews() {
           </div>
         </main>
       </div>
+
+      {/* Edit News Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit News</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditSubmit} className="space-y-6">
+            {/* English Fields */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">English</h3>
+              <div className="space-y-2">
+                <Label>Title (English)</Label>
+                <Input
+                  value={editFormData.title_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Content (English)</Label>
+                <Textarea
+                  value={editFormData.content_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_en: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Russian Fields */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Русский</h3>
+              <div className="space-y-2">
+                <Label>Заголовок (Русский)</Label>
+                <Input
+                  value={editFormData.title_ru}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_ru: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Содержание (Русский)</Label>
+                <Textarea
+                  value={editFormData.content_ru}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_ru: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Uzbek Fields */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">O'zbek</h3>
+              <div className="space-y-2">
+                <Label>Sarlavha (O'zbek)</Label>
+                <Input
+                  value={editFormData.title_uz}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_uz: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Mazmun (O'zbek)</Label>
+                <Textarea
+                  value={editFormData.content_uz}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_uz: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* File Upload */}
+            <div className="space-y-2">
+              <Label>Replace Media Files (Optional)</Label>
+              <Input
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                onChange={(e) => setEditFiles(Array.from(e.target.files || []))}
+              />
+              <p className="text-sm text-muted-foreground">
+                Leave empty to keep existing media. Upload new files to replace all media.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Updating...' : 'Update News'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
