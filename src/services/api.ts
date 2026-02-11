@@ -526,14 +526,24 @@ class ApiService {
   }
 
   // Feedback
-  async getFeedback(page = 1, limit = 50) {
+  async getApprovedFeedbacks() {
+    return this.request('/feedback/approved');
+  }
+
+  async getAllFeedbacks(page = 1, limit = 50) {
     return this.request(`/feedback?page=${page}&limit=${limit}`);
   }
 
-  async submitFeedback(phone_number: string, email: string, message: string) {
+  async submitFeedback(full_name: string, workplace: string, phone_number: string, email: string, rating: number, message: string) {
     return this.request('/feedback', {
       method: 'POST',
-      body: JSON.stringify({ phone_number, email, message }),
+      body: JSON.stringify({ full_name, workplace, phone_number, email, rating, message }),
+    });
+  }
+
+  async approveFeedback(id: number) {
+    return this.request(`/feedback/${id}/approve`, {
+      method: 'PATCH',
     });
   }
 

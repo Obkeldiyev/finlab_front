@@ -435,6 +435,19 @@ export default function AdminDashboard() {
                       <ChevronRight className="h-5 w-5 text-blue-600" />
                     </Link>
 
+                    <Link
+                      to="/admin/feedback"
+                      className="flex items-center justify-between p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-left border border-blue-200"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Eye className="h-5 w-5 text-blue-600" />
+                        <span className="font-medium text-blue-900">
+                          {language === 'uz' ? 'Fikrlar' : language === 'ru' ? 'Отзывы' : 'Feedbacks'}
+                        </span>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-blue-600" />
+                    </Link>
+
                     <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white border border-blue-700">
                       <div className="flex items-center gap-3">
                         <TrendingUp className="h-5 w-5" />
