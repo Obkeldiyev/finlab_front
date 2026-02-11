@@ -522,6 +522,72 @@ export default function Index() {
         {/* White particles on blue background */}
         <AdaptiveParticleBackground color="blue" />
         
+        {/* Floating Icon Buttons on Left */}
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 z-20 hidden lg:flex flex-col gap-4">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="group relative"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg">
+              <BookOpen className="h-6 w-6 text-white group-hover:text-primary transition-colors duration-300" />
+            </div>
+            <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div className="bg-white px-4 py-2 rounded-lg shadow-xl whitespace-nowrap">
+                <p className="text-sm font-semibold text-foreground">
+                  {language === 'uz' && 'Ilmiy-metodik faoliyat'}
+                  {language === 'ru' && 'Научно-методическая деятельность'}
+                  {language === 'en' && 'Scientific and methodological activities'}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="group relative"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg">
+              <Users className="h-6 w-6 text-white group-hover:text-primary transition-colors duration-300" />
+            </div>
+            <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div className="bg-white px-4 py-2 rounded-lg shadow-xl whitespace-nowrap">
+                <p className="text-sm font-semibold text-foreground">
+                  {language === 'uz' && 'Malaka oshirish kurslari'}
+                  {language === 'ru' && 'Курсы повышения квалификации'}
+                  {language === 'en' && 'Professional development courses'}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="group relative"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg">
+              <Globe className="h-6 w-6 text-white group-hover:text-primary transition-colors duration-300" />
+            </div>
+            <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div className="bg-white px-4 py-2 rounded-lg shadow-xl whitespace-nowrap">
+                <p className="text-sm font-semibold text-foreground">
+                  {language === 'uz' && 'Xalqaro hamkorlik'}
+                  {language === 'ru' && 'Международное сотрудничество'}
+                  {language === 'en' && 'International cooperation'}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+        
         <div className="container mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
