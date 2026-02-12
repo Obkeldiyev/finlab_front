@@ -23,9 +23,9 @@ export function FeedbackCarousel() {
     try {
       const response = await api.getApprovedFeedbacks();
       if (response.success && response.data && response.data.length > 0) {
-        // Triple the feedbacks for seamless infinite loop
-        const tripled = [...response.data, ...response.data, ...response.data];
-        setFeedbacks(tripled);
+        // Quadruple the feedbacks for seamless infinite loop
+        const quadrupled = [...response.data, ...response.data, ...response.data, ...response.data];
+        setFeedbacks(quadrupled);
       }
     } catch (error) {
       console.error('Failed to load feedbacks:', error);
@@ -34,30 +34,27 @@ export function FeedbackCarousel() {
 
   if (feedbacks.length === 0) return null;
 
-  // Calculate total width for seamless loop
-  const cardWidth = 384 + 24; // 96 * 4 (w-96) + gap-6
-  const totalWidth = cardWidth * (feedbacks.length / 3);
-
   return (
     <div className="relative overflow-hidden py-8">
       <motion.div
         className="flex gap-6"
         animate={{
-          x: [-totalWidth, 0],
+          x: [0, -1920], // Move left (negative direction)
         }}
         transition={{
           x: {
             repeat: Infinity,
             repeatType: "loop",
-            duration: feedbacks.length * 3,
+            duration: 30,
             ease: "linear",
           },
         }}
+        style={{ willChange: 'transform' }}
       >
         {feedbacks.map((feedback, index) => (
           <div
             key={`${feedback.id}-${index}`}
-            className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg p-6 border-2 border-slate-200"
+            className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg p-6 border-2 border-slate-200 pointer-events-auto"
           >
             <div className="flex items-center gap-1 mb-3">
               {[...Array(5)].map((_, i) => (
