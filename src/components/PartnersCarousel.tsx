@@ -58,15 +58,15 @@ export function PartnersCarousel() {
 
   if (partners.length === 0) return null;
 
-  // Duplicate content for seamless looping
-  const duplicatedContent = [...partners, ...partners];
+  // Duplicate content many times to ensure full screen coverage
+  const duplicatedContent = Array(20).fill(partners).flat();
 
   return (
-    <div className="relative overflow-hidden py-8">
+    <div className="relative overflow-hidden py-8 w-full">
       <div 
         ref={containerRef}
         className="flex gap-8 items-center"
-        style={{ willChange: 'transform' }}
+        style={{ willChange: 'transform', display: 'flex' }}
       >
         {duplicatedContent.map((partner, index) => (
           <a

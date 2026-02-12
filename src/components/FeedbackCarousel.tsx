@@ -61,15 +61,15 @@ export function FeedbackCarousel() {
 
   if (feedbacks.length === 0) return null;
 
-  // Duplicate content for seamless looping
-  const duplicatedContent = [...feedbacks, ...feedbacks];
+  // Duplicate content many times to ensure full screen coverage
+  const duplicatedContent = Array(20).fill(feedbacks).flat();
 
   return (
-    <div className="relative overflow-hidden py-8">
+    <div className="relative overflow-hidden py-8 w-full">
       <div 
         ref={containerRef}
         className="flex gap-6"
-        style={{ willChange: 'transform' }}
+        style={{ willChange: 'transform', display: 'flex' }}
       >
         {duplicatedContent.map((feedback, index) => (
           <div
