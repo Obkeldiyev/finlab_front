@@ -14,7 +14,6 @@ interface Feedback {
 export function FeedbackCarousel() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     loadFeedbacks();
@@ -24,33 +23,28 @@ export function FeedbackCarousel() {
     if (feedbacks.length === 0 || !containerRef.current) return;
 
     const container = containerRef.current;
-    const firstChild = container.firstElementChild as HTMLElement;
-    if (!firstChild) return;
-
-    // Calculate the width of one set of items (including gap)
     const itemWidth = 384 + 24; // w-96 (384px) + gap-6 (24px)
     const setWidth = itemWidth * feedbacks.length;
-
+    
+    let position = 0;
     let animationFrameId: number;
 
     const animate = () => {
-      scrollPositionRef.current += 0.5; // Speed of scroll
+      position += 0.5;
       
-      // Reset position when we've scrolled past one complete set
-      if (scrollPositionRef.current >= setWidth) {
-        scrollPositionRef.current = 0;
+      // When we've scrolled one full set, instantly jump back
+      if (position >= setWidth) {
+        position -= setWidth;
       }
       
-      container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
+      container.style.transform = `translateX(-${position}px)`;
       animationFrameId = requestAnimationFrame(animate);
     };
 
     animationFrameId = requestAnimationFrame(animate);
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
+      cancelAnimationFrame(animationFrameId);
     };
   }, [feedbacks]);
 
@@ -67,8 +61,8 @@ export function FeedbackCarousel() {
 
   if (feedbacks.length === 0) return null;
 
-  // Triple the content for seamless looping
-  const tripleContent = [...feedbacks, ...feedbacks, ...feedbacks];
+  // Duplicate content for seamless looping
+  const duplicatedContent = [...feedbacks, ...feedbacks];
 
   return (
     <div className="relative overflow-hidden py-8">
@@ -77,7 +71,7 @@ export function FeedbackCarousel() {
         className="flex gap-6"
         style={{ willChange: 'transform' }}
       >
-        {tripleContent.map((feedback, index) => (
+        {duplicatedContent.map((feedback, index) => (
           <div
             key={`${feedback.id}-${index}`}
             className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg p-6 border-2 border-slate-200"

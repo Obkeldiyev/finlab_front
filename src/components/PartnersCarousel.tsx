@@ -11,7 +11,6 @@ interface Partner {
 export function PartnersCarousel() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     loadPartners();
@@ -21,33 +20,28 @@ export function PartnersCarousel() {
     if (partners.length === 0 || !containerRef.current) return;
 
     const container = containerRef.current;
-    const firstChild = container.firstElementChild as HTMLElement;
-    if (!firstChild) return;
-
-    // Calculate the width of one set of items (including gap)
     const itemWidth = 256 + 32; // w-64 (256px) + gap-8 (32px)
     const setWidth = itemWidth * partners.length;
-
+    
+    let position = 0;
     let animationFrameId: number;
 
     const animate = () => {
-      scrollPositionRef.current += 0.7; // Speed of scroll
+      position += 0.7;
       
-      // Reset position when we've scrolled past one complete set
-      if (scrollPositionRef.current >= setWidth) {
-        scrollPositionRef.current = 0;
+      // When we've scrolled one full set, instantly jump back
+      if (position >= setWidth) {
+        position -= setWidth;
       }
       
-      container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
+      container.style.transform = `translateX(-${position}px)`;
       animationFrameId = requestAnimationFrame(animate);
     };
 
     animationFrameId = requestAnimationFrame(animate);
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
+      cancelAnimationFrame(animationFrameId);
     };
   }, [partners]);
 
@@ -64,8 +58,8 @@ export function PartnersCarousel() {
 
   if (partners.length === 0) return null;
 
-  // Triple the content for seamless looping
-  const tripleContent = [...partners, ...partners, ...partners];
+  // Duplicate content for seamless looping
+  const duplicatedContent = [...partners, ...partners];
 
   return (
     <div className="relative overflow-hidden py-8">
@@ -74,7 +68,7 @@ export function PartnersCarousel() {
         className="flex gap-8 items-center"
         style={{ willChange: 'transform' }}
       >
-        {tripleContent.map((partner, index) => (
+        {duplicatedContent.map((partner, index) => (
           <a
             key={`${partner.id}-${index}`}
             href={partner.website_url}
