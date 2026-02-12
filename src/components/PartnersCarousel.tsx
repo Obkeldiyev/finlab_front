@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { api } from '@/services/api';
 
 interface Partner {
@@ -10,10 +10,46 @@ interface Partner {
 
 export function PartnersCarousel() {
   const [partners, setPartners] = useState<Partner[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     loadPartners();
   }, []);
+
+  useEffect(() => {
+    if (partners.length === 0 || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const firstChild = container.firstElementChild as HTMLElement;
+    if (!firstChild) return;
+
+    // Calculate the width of one set of items (including gap)
+    const itemWidth = 256 + 32; // w-64 (256px) + gap-8 (32px)
+    const setWidth = itemWidth * partners.length;
+
+    let animationFrameId: number;
+
+    const animate = () => {
+      scrollPositionRef.current += 0.7; // Speed of scroll
+      
+      // Reset position when we've scrolled past one complete set
+      if (scrollPositionRef.current >= setWidth) {
+        scrollPositionRef.current = 0;
+      }
+      
+      container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [partners]);
 
   const loadPartners = async () => {
     try {
@@ -28,28 +64,17 @@ export function PartnersCarousel() {
 
   if (partners.length === 0) return null;
 
+  // Triple the content for seamless looping
+  const tripleContent = [...partners, ...partners, ...partners];
+
   return (
     <div className="relative overflow-hidden py-8">
-      <style>{`
-        @keyframes scroll-left {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-scroll-partners {
-          animation: scroll-left 30s linear infinite;
-        }
-        .animate-scroll-partners:hover {
-          animation-play-state: running;
-        }
-      `}</style>
-      
-      <div className="flex gap-8 items-center animate-scroll-partners">
-        {/* Render twice for seamless loop */}
-        {[...partners, ...partners].map((partner, index) => (
+      <div 
+        ref={containerRef}
+        className="flex gap-8 items-center"
+        style={{ willChange: 'transform' }}
+      >
+        {tripleContent.map((partner, index) => (
           <a
             key={`${partner.id}-${index}`}
             href={partner.website_url}

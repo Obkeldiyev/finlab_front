@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Star } from 'lucide-react';
 import { api } from '@/services/api';
 
@@ -13,10 +13,46 @@ interface Feedback {
 
 export function FeedbackCarousel() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     loadFeedbacks();
   }, []);
+
+  useEffect(() => {
+    if (feedbacks.length === 0 || !containerRef.current) return;
+
+    const container = containerRef.current;
+    const firstChild = container.firstElementChild as HTMLElement;
+    if (!firstChild) return;
+
+    // Calculate the width of one set of items (including gap)
+    const itemWidth = 384 + 24; // w-96 (384px) + gap-6 (24px)
+    const setWidth = itemWidth * feedbacks.length;
+
+    let animationFrameId: number;
+
+    const animate = () => {
+      scrollPositionRef.current += 0.5; // Speed of scroll
+      
+      // Reset position when we've scrolled past one complete set
+      if (scrollPositionRef.current >= setWidth) {
+        scrollPositionRef.current = 0;
+      }
+      
+      container.style.transform = `translateX(-${scrollPositionRef.current}px)`;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [feedbacks]);
 
   const loadFeedbacks = async () => {
     try {
@@ -31,28 +67,17 @@ export function FeedbackCarousel() {
 
   if (feedbacks.length === 0) return null;
 
+  // Triple the content for seamless looping
+  const tripleContent = [...feedbacks, ...feedbacks, ...feedbacks];
+
   return (
     <div className="relative overflow-hidden py-8">
-      <style>{`
-        @keyframes scroll-left {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-scroll {
-          animation: scroll-left 40s linear infinite;
-        }
-        .animate-scroll:hover {
-          animation-play-state: running;
-        }
-      `}</style>
-      
-      <div className="flex gap-6 animate-scroll">
-        {/* Render twice for seamless loop */}
-        {[...feedbacks, ...feedbacks].map((feedback, index) => (
+      <div 
+        ref={containerRef}
+        className="flex gap-6"
+        style={{ willChange: 'transform' }}
+      >
+        {tripleContent.map((feedback, index) => (
           <div
             key={`${feedback.id}-${index}`}
             className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg p-6 border-2 border-slate-200"
