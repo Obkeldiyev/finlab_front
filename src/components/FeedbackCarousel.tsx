@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { api } from '@/services/api';
 
@@ -23,9 +22,7 @@ export function FeedbackCarousel() {
     try {
       const response = await api.getApprovedFeedbacks();
       if (response.success && response.data && response.data.length > 0) {
-        // Quadruple the feedbacks for seamless infinite loop
-        const quadrupled = [...response.data, ...response.data, ...response.data, ...response.data];
-        setFeedbacks(quadrupled);
+        setFeedbacks(response.data);
       }
     } catch (error) {
       console.error('Failed to load feedbacks:', error);
@@ -36,25 +33,29 @@ export function FeedbackCarousel() {
 
   return (
     <div className="relative overflow-hidden py-8">
-      <motion.div
-        className="flex gap-6"
-        animate={{
-          x: [0, -1920], // Move left (negative direction)
-        }}
-        transition={{
-          x: {
-            repeat: Infinity,
-            repeatType: "loop",
-            duration: 30,
-            ease: "linear",
-          },
-        }}
-        style={{ willChange: 'transform' }}
-      >
-        {feedbacks.map((feedback, index) => (
+      <style>{`
+        @keyframes scroll-left {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-scroll {
+          animation: scroll-left 40s linear infinite;
+        }
+        .animate-scroll:hover {
+          animation-play-state: running;
+        }
+      `}</style>
+      
+      <div className="flex gap-6 animate-scroll">
+        {/* Render twice for seamless loop */}
+        {[...feedbacks, ...feedbacks].map((feedback, index) => (
           <div
             key={`${feedback.id}-${index}`}
-            className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg p-6 border-2 border-slate-200 pointer-events-auto"
+            className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg p-6 border-2 border-slate-200"
           >
             <div className="flex items-center gap-1 mb-3">
               {[...Array(5)].map((_, i) => (
@@ -77,7 +78,7 @@ export function FeedbackCarousel() {
             </div>
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
