@@ -22,9 +22,10 @@ export function FeedbackCarousel() {
   const loadFeedbacks = async () => {
     try {
       const response = await api.getApprovedFeedbacks();
-      if (response.success && response.data) {
-        // Duplicate feedbacks for seamless loop
-        setFeedbacks([...response.data, ...response.data, ...response.data]);
+      if (response.success && response.data && response.data.length > 0) {
+        // Triple the feedbacks for seamless infinite loop
+        const tripled = [...response.data, ...response.data, ...response.data];
+        setFeedbacks(tripled);
       }
     } catch (error) {
       console.error('Failed to load feedbacks:', error);
@@ -33,18 +34,22 @@ export function FeedbackCarousel() {
 
   if (feedbacks.length === 0) return null;
 
+  // Calculate total width for seamless loop
+  const cardWidth = 384 + 24; // 96 * 4 (w-96) + gap-6
+  const totalWidth = cardWidth * (feedbacks.length / 3);
+
   return (
     <div className="relative overflow-hidden py-8">
       <motion.div
         className="flex gap-6"
         animate={{
-          x: [0, -100 * (feedbacks.length / 3) + '%'],
+          x: [-totalWidth, 0],
         }}
         transition={{
           x: {
             repeat: Infinity,
             repeatType: "loop",
-            duration: feedbacks.length * 5,
+            duration: feedbacks.length * 3,
             ease: "linear",
           },
         }}

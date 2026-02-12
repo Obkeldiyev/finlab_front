@@ -33,6 +33,7 @@ import { dataService, type Course } from '@/services/dataService';
 import { api } from '@/services/api';
 import { toast } from 'sonner';
 import { FeedbackSection } from '@/components/FeedbackSection';
+import { PartnersCarousel } from '@/components/PartnersCarousel';
 
 // Import gallery images
 import gallery1 from '@/assets/gallery/gallery-1.jpg';
@@ -1456,55 +1457,29 @@ export default function Index() {
       </section>
 
       {/* Partners Section */}
-      {!isLoadingPartners && partners.length > 0 && (
-        <section className="section-padding relative z-10 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-          <div className="container mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-                {language === 'uz' && 'Bizning Hamkorlarimiz'}
-                {language === 'ru' && 'Наши Партнеры'}
-                {language === 'en' && 'Our Partners'}
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {language === 'uz' && 'Biz ishonchli tashkilotlar bilan hamkorlik qilamiz'}
-                {language === 'ru' && 'Мы сотрудничаем с надежными организациями'}
-                {language === 'en' && 'We partner with trusted organizations'}
-              </p>
-            </motion.div>
+      <section className="section-padding relative z-10 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="container mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
+              {language === 'uz' && 'Bizning Hamkorlarimiz'}
+              {language === 'ru' && 'Наши Партнеры'}
+              {language === 'en' && 'Our Partners'}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {language === 'uz' && 'Biz ishonchli tashkilotlar bilan hamkorlik qilamiz'}
+              {language === 'ru' && 'Мы сотрудничаем с надежными организациями'}
+              {language === 'en' && 'We partner with trusted organizations'}
+            </p>
+          </motion.div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {partners.map((partner, index) => (
-                <motion.a
-                  key={partner.id}
-                  href={partner.website_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group"
-                >
-                  <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50">
-                    <CardContent className="p-6 flex items-center justify-center h-32">
-                      <img
-                        src={`${import.meta.env.VITE_API_URL || '/api'}${partner.logo_url}`}
-                        alt={partner.name}
-                        className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
-                      />
-                    </CardContent>
-                  </Card>
-                </motion.a>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+          <PartnersCarousel />
+        </div>
+      </section>
 
       {/* CTA Section - WHITE BACKGROUND with BLUE PARTICLES */}
       <section className="section-padding relative z-10 bg-white overflow-hidden">
