@@ -1050,14 +1050,12 @@ export default function Index() {
             <Card className="card-feature overflow-hidden">
               <div className="md:flex">
                 {/* Director Photo */}
-                <div className="md:w-80 bg-gradient-primary p-8 flex items-center justify-center">
-                  <div className="w-48 h-48 rounded-full overflow-hidden bg-white shadow-lg">
-                    <img 
-                      src="/photo_2026-02-16_10-55-13.jpg" 
-                      alt="Supiyeva Buxolida Abduvaliyevna"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                <div className="md:w-80 bg-gradient-primary flex items-center justify-center">
+                  <img 
+                    src="/photo_2026-02-16_10-55-13.jpg" 
+                    alt="Supiyeva Buxolida Abduvaliyevna"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
                 {/* Director Info */}
