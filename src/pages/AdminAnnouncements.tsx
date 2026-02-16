@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Calendar, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Edit, Trash2, Calendar, Clock, Menu } from 'lucide-react';
+import { AdminSidebar } from '@/components/AdminSidebar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { api } from '@/services/api';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface Announcement {
   id: number;
@@ -22,6 +26,8 @@ interface Announcement {
 }
 
 export default function AdminAnnouncements() {
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
@@ -35,7 +41,6 @@ export default function AdminAnnouncements() {
     ends_at: '',
   });
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     loadAnnouncements();
@@ -48,11 +53,7 @@ export default function AdminAnnouncements() {
         setAnnouncements(response.data);
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to load announcements',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load announcements');
     }
   };
 
@@ -77,20 +78,13 @@ export default function AdminAnnouncements() {
       }
 
       if (response.success) {
-        toast({
-          title: 'Success',
-          description: editingAnnouncement ? 'Announcement updated' : 'Announcement created',
-        });
+        toast.success(editingAnnouncement ? 'Announcement updated' : 'Announcement created');
         setIsModalOpen(false);
         resetForm();
         loadAnnouncements();
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to save announcement',
-        variant: 'destructive',
-      });
+      toast.error('Failed to save announcement');
     }
   };
 
@@ -100,18 +94,11 @@ export default function AdminAnnouncements() {
     try {
       const response = await api.deleteAnnouncement(id);
       if (response.success) {
-        toast({
-          title: 'Success',
-          description: 'Announcement deleted',
-        });
+        toast.success('Announcement deleted');
         loadAnnouncements();
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete announcement',
-        variant: 'destructive',
-      });
+      toast.error('Failed to delete announcement');
     }
   };
 
@@ -144,51 +131,80 @@ export default function AdminAnnouncements() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">E'lonlar / Announcements</h1>
-        <Button onClick={() => { resetForm(); setIsModalOpen(true); }}>
-          <Plus className="mr-2 h-4 w-4" /> Add Announcement
-        </Button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-white shadow-sm">
+        <h1 className="text-xl font-bold">E'lonlar</h1>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64">
+            <AdminSidebar />
+          </SheetContent>
+        </Sheet>
       </div>
 
-      <div className="grid gap-4">
-        {announcements.map((announcement) => (
-          <Card key={announcement.id} className="p-6">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">{announcement.title_uz}</h3>
-                <p className="text-muted-foreground mb-4 line-clamp-2">{announcement.content_uz}</p>
-                <div className="flex gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {new Date(announcement.published_at).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    Ends: {new Date(announcement.ends_at).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => handleEdit(announcement)}>
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleDelete(announcement.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block">
+          <AdminSidebar />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold">E'lonlar / Announcements</h1>
+              <Button onClick={() => { resetForm(); setIsModalOpen(true); }}>
+                <Plus className="mr-2 h-4 w-4" /> Add Announcement
+              </Button>
             </div>
-          </Card>
-        ))}
+
+            <div className="grid gap-4">
+              {announcements.map((announcement) => (
+                <Card key={announcement.id} className="p-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold mb-2">{announcement.title_uz}</h3>
+                      <p className="text-muted-foreground mb-4 line-clamp-2">{announcement.content_uz}</p>
+                      <div className="flex gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          {new Date(announcement.published_at).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          Ends: {new Date(announcement.ends_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => handleEdit(announcement)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDelete(announcement.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
-            <h2 className="text-2xl font-bold mb-4">
+      {/* Edit/Create Dialog */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
               {editingAnnouncement ? 'Edit Announcement' : 'Add Announcement'}
-            </h2>
+            </DialogTitle>
+          </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
@@ -276,9 +292,8 @@ export default function AdminAnnouncements() {
                 </Button>
               </div>
             </form>
-          </Card>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
