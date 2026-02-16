@@ -22,6 +22,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminNews from "./pages/AdminNews";
+import AdminAnnouncements from "./pages/AdminAnnouncements";
 import AdminDirections from "./pages/AdminDirections";
 import AdminCourses from "./pages/AdminCourses";
 import AdminOpportunities from "./pages/AdminOpportunities";
@@ -80,6 +81,7 @@ function AppContent() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/news" element={<AdminNews />} />
+          <Route path="/admin/announcements" element={<AdminAnnouncements />} />
           <Route path="/admin/directions" element={<AdminDirections />} />
           <Route path="/admin/courses" element={<AdminCourses />} />
           <Route path="/admin/opportunities" element={<AdminOpportunities />} />

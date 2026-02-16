@@ -141,6 +141,12 @@ export default function AdminDashboard() {
       path: '/admin/news'
     },
     { 
+      icon: FileText, 
+      label: { uz: "E'lonlar", ru: 'Объявления', en: 'Announcements' }, 
+      active: false,
+      path: '/admin/announcements'
+    },
+    { 
       icon: Building, 
       label: { uz: 'Yo\'nalishlar', ru: 'Направления', en: 'Directions' }, 
       active: false,

@@ -445,6 +445,30 @@ class ApiService {
     return this.request(`/elon/${id}`);
   }
 
+  async getAnnouncements() {
+    return this.request('/elon');
+  }
+
+  async createAnnouncement(formData: FormData) {
+    return this.request('/elon', {
+      method: 'POST',
+      body: formData,
+    });
+  }
+
+  async updateAnnouncement(id: number, formData: FormData) {
+    return this.request(`/elon/${id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+  }
+
+  async deleteAnnouncement(id: number) {
+    return this.request(`/elon/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Gallery
   async getGallery(page = 1, limit = 50) {
     return this.request(`/gallery?page=${page}&limit=${limit}`);

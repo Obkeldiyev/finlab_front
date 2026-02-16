@@ -34,6 +34,7 @@ import { api } from '@/services/api';
 import { toast } from 'sonner';
 import { FeedbackSection } from '@/components/FeedbackSection';
 import { PartnersCarousel } from '@/components/PartnersCarousel';
+import { AnnouncementsSection } from '@/components/AnnouncementsSection';
 
 // Import gallery images
 import gallery1 from '@/assets/gallery/gallery-1.jpg';
@@ -518,6 +519,9 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
+
+      {/* Announcements Section */}
+      <AnnouncementsSection />
 
       {/* About Section - BLUE BACKGROUND with WHITE PARTICLES */}
       <section className="section-padding relative z-10 bg-gradient-to-br from-primary via-primary/95 to-secondary overflow-hidden">
