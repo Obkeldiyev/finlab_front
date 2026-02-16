@@ -66,7 +66,7 @@ export default function AdminAnnouncements() {
       });
       
       mediaFiles.forEach((file) => {
-        formDataToSend.append('media', file);
+        formDataToSend.append('medias', file);
       });
 
       let response;

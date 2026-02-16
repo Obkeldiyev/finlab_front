@@ -458,7 +458,7 @@ class ApiService {
 
   async updateAnnouncement(id: number, formData: FormData) {
     return this.request(`/elon/${id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: formData,
     });
   }
