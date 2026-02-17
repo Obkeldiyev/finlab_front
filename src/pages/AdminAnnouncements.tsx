@@ -126,6 +126,7 @@ export default function AdminAnnouncements() {
   };
 
   const handleEdit = (announcement: Announcement) => {
+    console.log('Edit clicked for announcement:', announcement.id);
     setEditingAnnouncement(announcement);
     setFormData({
       title_uz: announcement.title_uz,
@@ -138,6 +139,7 @@ export default function AdminAnnouncements() {
     });
     setMediaFiles([]);
     setIsEditDialogOpen(true);
+    console.log('Edit dialog should be open now');
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -439,9 +441,12 @@ export default function AdminAnnouncements() {
                               variant="outline" 
                               size="sm" 
                               className="flex-1"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('View clicked for announcement:', announcement.id);
                                 setViewingAnnouncement(announcement);
                                 setIsViewDialogOpen(true);
+                                console.log('View dialog state set to true');
                               }}
                             >
                               <Eye className="h-4 w-4 mr-2" />
@@ -450,14 +455,20 @@ export default function AdminAnnouncements() {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => handleEdit(announcement)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(announcement);
+                              }}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => handleDelete(announcement.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(announcement.id);
+                              }}
                               className="text-destructive hover:text-destructive"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -475,6 +486,7 @@ export default function AdminAnnouncements() {
       </div>
 
       {/* Edit Dialog */}
+      {console.log('Edit Dialog render - isEditDialogOpen:', isEditDialogOpen, 'editingAnnouncement:', editingAnnouncement?.id)}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -587,6 +599,7 @@ export default function AdminAnnouncements() {
       </Dialog>
 
       {/* View Dialog */}
+      {console.log('View Dialog render - isViewDialogOpen:', isViewDialogOpen, 'viewingAnnouncement:', viewingAnnouncement?.id)}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
