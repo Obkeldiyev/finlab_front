@@ -126,7 +126,7 @@ export default function AdminAnnouncements() {
   };
 
   const handleEdit = (announcement: Announcement) => {
-    console.log('Edit clicked for announcement:', announcement.id);
+    alert('Edit clicked for: ' + announcement.title_uz);
     setEditingAnnouncement(announcement);
     setFormData({
       title_uz: announcement.title_uz,
@@ -139,7 +139,6 @@ export default function AdminAnnouncements() {
     });
     setMediaFiles([]);
     setIsEditDialogOpen(true);
-    console.log('Edit dialog should be open now');
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -443,10 +442,9 @@ export default function AdminAnnouncements() {
                               className="flex-1"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log('View clicked for announcement:', announcement.id);
+                                alert('View clicked for: ' + announcement.title_uz);
                                 setViewingAnnouncement(announcement);
                                 setIsViewDialogOpen(true);
-                                console.log('View dialog state set to true');
                               }}
                             >
                               <Eye className="h-4 w-4 mr-2" />
