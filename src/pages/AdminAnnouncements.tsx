@@ -72,6 +72,7 @@ export default function AdminAnnouncements() {
   };
 
   const handleEdit = (item: Announcement) => {
+    console.log('handleEdit called with:', item);
     setEditingItem(item);
     setFormData({
       title_en: item.title_en,
@@ -82,12 +83,17 @@ export default function AdminAnnouncements() {
       content_uz: item.content_uz,
       ends_at: item.ends_at.split('T')[0],
     });
+    console.log('Setting isEditDialogOpen to true');
     setIsEditDialogOpen(true);
+    console.log('isEditDialogOpen should now be true');
   };
 
   const handleView = (item: Announcement) => {
+    console.log('handleView called with:', item);
     setViewingItem(item);
+    console.log('Setting isViewDialogOpen to true');
     setIsViewDialogOpen(true);
+    console.log('isViewDialogOpen should now be true');
   };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -227,9 +233,9 @@ export default function AdminAnnouncements() {
                     <CardContent>
                       <p className="text-muted-foreground text-sm line-clamp-3 mb-4">{getLocalizedField(item, 'content', language)}</p>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1" onClick={() => handleView(item)}><Eye className="h-4 w-4 mr-2" />View</Button>
-                        <Button variant="outline" size="sm" onClick={() => handleEdit(item)}><Edit className="h-4 w-4" /></Button>
-                        <Button variant="outline" size="sm" onClick={() => handleDelete(item.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        <Button variant="outline" size="sm" className="flex-1" onClick={() => { console.log('VIEW CLICKED', item.id); handleView(item); }}><Eye className="h-4 w-4 mr-2" />View</Button>
+                        <Button variant="outline" size="sm" onClick={() => { console.log('EDIT CLICKED', item.id); handleEdit(item); }}><Edit className="h-4 w-4" /></Button>
+                        <Button variant="outline" size="sm" onClick={() => { console.log('DELETE CLICKED', item.id); handleDelete(item.id); }} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -240,7 +246,7 @@ export default function AdminAnnouncements() {
         </main>
       </div>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => { console.log('Edit dialog onOpenChange:', open); setIsEditDialogOpen(open); }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Edit Announcement</DialogTitle></DialogHeader>
           <form onSubmit={handleEditSubmit} className="space-y-4">
@@ -259,7 +265,7 @@ export default function AdminAnnouncements() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+      <Dialog open={isViewDialogOpen} onOpenChange={(open) => { console.log('View dialog onOpenChange:', open); setIsViewDialogOpen(open); }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>View Announcement</DialogTitle></DialogHeader>
           {viewingItem && (
