@@ -89,8 +89,12 @@ export default function Team() {
                 <div className="lg:flex">
                   {/* Photo Section */}
                   <div className="lg:w-96 bg-gradient-primary p-8 flex flex-col items-center justify-center text-center">
-                    <div className="w-48 h-48 rounded-full bg-white/20 flex items-center justify-center mb-6">
-                      <Users className="h-24 w-24 text-white" />
+                    <div className="w-48 h-48 rounded-full overflow-hidden bg-white shadow-lg mb-6">
+                      <img 
+                        src="/photo_2026-02-16_10-55-13.jpg" 
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="text-2xl font-display font-bold text-white mb-2">
                       {member.name}

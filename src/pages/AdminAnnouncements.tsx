@@ -79,6 +79,9 @@ export default function AdminAnnouncements() {
   };
 
   const handleEdit = (item: Announcement) => {
+    console.log('=== EDIT CLICKED ===');
+    console.log('Item:', item);
+    console.log('Setting editingItem and opening dialog...');
     setEditingItem(item);
     setEditFormData({
       title_en: item.title_en,
@@ -91,6 +94,10 @@ export default function AdminAnnouncements() {
     });
     setEditFiles([]);
     setIsEditDialogOpen(true);
+    console.log('isEditDialogOpen set to TRUE');
+    setTimeout(() => {
+      console.log('After timeout - isEditDialogOpen should be:', isEditDialogOpen);
+    }, 100);
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -250,8 +257,11 @@ export default function AdminAnnouncements() {
                           size="sm"
                           className="flex-1"
                           onClick={() => {
+                            console.log('=== VIEW BUTTON CLICKED ===');
+                            console.log('Item:', item);
                             setViewingItem(item);
                             setIsViewDialogOpen(true);
+                            console.log('isViewDialogOpen set to TRUE');
                           }}
                         >
                           <Eye className="h-4 w-4 mr-2" />
@@ -260,7 +270,10 @@ export default function AdminAnnouncements() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleEdit(item)}
+                          onClick={() => {
+                            console.log('=== EDIT BUTTON CLICKED ===');
+                            handleEdit(item);
+                          }}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -283,7 +296,11 @@ export default function AdminAnnouncements() {
       </div>
 
       {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      {console.log('Rendering Edit Dialog - isEditDialogOpen:', isEditDialogOpen, 'editingItem:', editingItem?.id)}
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+        console.log('Edit Dialog onOpenChange called with:', open);
+        setIsEditDialogOpen(open);
+      }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Announcement</DialogTitle>
@@ -398,7 +415,11 @@ export default function AdminAnnouncements() {
       </Dialog>
 
       {/* View Dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+      {console.log('Rendering View Dialog - isViewDialogOpen:', isViewDialogOpen, 'viewingItem:', viewingItem?.id)}
+      <Dialog open={isViewDialogOpen} onOpenChange={(open) => {
+        console.log('View Dialog onOpenChange called with:', open);
+        setIsViewDialogOpen(open);
+      }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>View Announcement</DialogTitle>
