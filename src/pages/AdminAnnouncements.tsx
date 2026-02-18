@@ -96,13 +96,13 @@ export default function AdminAnnouncements() {
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
-    
+
     setIsSubmitting(true);
     try {
       const fd = new FormData();
       Object.entries(editFormData).forEach(([k, v]) => fd.append(k, v));
       editFiles.forEach(file => fd.append('medias', file));
-      
+
       const response = await api.updateAnnouncement(editingItem.id, fd);
       if (response.success) {
         toast.success('Announcement updated successfully');
@@ -206,7 +206,7 @@ export default function AdminAnnouncements() {
                       {language === 'uz' ? 'Yangi e\'lon' : language === 'ru' ? 'Новое объявление' : 'New Announcement'}
                     </DialogTitle>
                   </DialogHeader>
-                  <AnnouncementForm 
+                  <AnnouncementForm
                     onSuccess={handleCreateSuccess}
                     onCancel={() => setShowCreateForm(false)}
                   />
@@ -245,9 +245,9 @@ export default function AdminAnnouncements() {
                         {getLocalizedField(item, 'content', language)}
                       </p>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="flex-1"
                           onClick={() => {
                             setViewingItem(item);
@@ -257,16 +257,16 @@ export default function AdminAnnouncements() {
                           <Eye className="h-4 w-4 mr-2" />
                           {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleEdit(item)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleDelete(item.id)}
                           className="text-destructive hover:text-destructive"
                         >
@@ -392,40 +392,83 @@ export default function AdminAnnouncements() {
         </DialogContent>
       </Dialog>
 
-      {/* View Dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>View Announcement</DialogTitle>
-          </DialogHeader>
-          {viewingItem && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                {formatDate(viewingItem.published_at)}
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                Ends: {formatDate(viewingItem.ends_at)}
+      {/* View Modal */}
+      {isViewDialogOpen && viewingItem && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setIsViewDialogOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1rem',
+              maxWidth: '56rem',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>View Announcement</h2>
+              <button
+                onClick={() => setIsViewDialogOpen(false)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  padding: '0.5rem',
+                  borderRadius: '0.5rem',
+                  border: 'none',
+                  background: '#f3f4f6',
+                  cursor: 'pointer'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                  <span style={{ padding: '0.25rem 0.75rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+                    📅 Published: {formatDate(viewingItem.published_at)}
+                  </span>
+                  <span style={{ padding: '0.25rem 0.75rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
+                    ⏰ Ends: {formatDate(viewingItem.ends_at)}
+                  </span>
+                </div>
               </div>
 
               {viewingItem.medias && viewingItem.medias.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="font-semibold">Media ({viewingItem.medias.length})</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontWeight: '600', marginBottom: '1rem' }}>Media ({viewingItem.medias.length})</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                     {viewingItem.medias.map((media, index) => (
-                      <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+                      <div key={index} style={{ position: 'relative', aspectRatio: '16/9', borderRadius: '0.5rem', overflow: 'hidden' }}>
                         {media.type === 'image' ? (
                           <img
                             src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
                             alt={`Media ${index + 1}`}
-                            className="w-full h-full object-cover"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
                         ) : (
                           <video
                             src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
                             controls
-                            className="w-full h-full object-cover"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
                         )}
                       </div>
@@ -434,51 +477,37 @@ export default function AdminAnnouncements() {
                 </div>
               )}
 
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">English</h3>
-                <div className="space-y-1">
-                  <p className="font-medium">Title:</p>
-                  <p className="text-muted-foreground">{viewingItem.title_en}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="font-medium">Content:</p>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_en}</p>
-                </div>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>English</h3>
+                <p style={{ fontWeight: '500' }}>Title:</p>
+                <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>{viewingItem.title_en}</p>
+                <p style={{ fontWeight: '500' }}>Content:</p>
+                <p style={{ color: '#6b7280', whiteSpace: 'pre-wrap' }}>{viewingItem.content_en}</p>
               </div>
 
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Русский</h3>
-                <div className="space-y-1">
-                  <p className="font-medium">Заголовок:</p>
-                  <p className="text-muted-foreground">{viewingItem.title_ru}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="font-medium">Содержание:</p>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_ru}</p>
-                </div>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>Русский</h3>
+                <p style={{ fontWeight: '500' }}>Заголовок:</p>
+                <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>{viewingItem.title_ru}</p>
+                <p style={{ fontWeight: '500' }}>Содержание:</p>
+                <p style={{ color: '#6b7280', whiteSpace: 'pre-wrap' }}>{viewingItem.content_ru}</p>
               </div>
 
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">O'zbek</h3>
-                <div className="space-y-1">
-                  <p className="font-medium">Sarlavha:</p>
-                  <p className="text-muted-foreground">{viewingItem.title_uz}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="font-medium">Mazmun:</p>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_uz}</p>
-                </div>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>O'zbek</h3>
+                <p style={{ fontWeight: '500' }}>Sarlavha:</p>
+                <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>{viewingItem.title_uz}</p>
+                <p style={{ fontWeight: '500' }}>Mazmun:</p>
+                <p style={{ color: '#6b7280', whiteSpace: 'pre-wrap' }}>{viewingItem.content_uz}</p>
               </div>
 
-              <div className="flex justify-end">
-                <Button onClick={() => setIsViewDialogOpen(false)}>
-                  Close
-                </Button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button onClick={() => setIsViewDialogOpen(false)}>Close</Button>
               </div>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
