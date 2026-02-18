@@ -245,40 +245,44 @@ export default function AdminAnnouncements() {
                         {getLocalizedField(item, 'content', language)}
                       </p>
                       <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1"
-                          onClick={() => {
+                        <button
+                          vaassName="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground h-9 rounded-md px-3 flex-1"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             alert('VIEW CLICKED');
                             setViewingItem(item);
                             setIsViewDialogOpen(true);
                           }}
+                          type="button"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
+                        </button>
+                        <button
+                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground h-9 rounded-md px-3"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             alert('EDIT CLICKED');
                             handleEdit(item);
                           }}
+                          type="button"
                         >
                           <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
+                        </button>
+                        <button
+                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border-2 border-primary bg-transparent text-destructive hover:bg-destructive hover:text-white h-9 rounded-md px-3"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             alert('DELETE CLICKED');
                             handleDelete(item.id);
                           }}
-                          className="text-destructive hover:text-destructive"
+                          type="button"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </button>
                       </div>
                     </CardContent>
                   </Card>
