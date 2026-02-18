@@ -36,8 +36,12 @@ export function AnnouncementsSection() {
       console.log('Announcements API response:', response);
       if (response.success && response.data) {
         console.log('All announcements:', response.data);
-        // Show all announcements, don't filter by date
-        setAnnouncements(response.data.slice(0, 3)); // Show only 3 latest
+        // Filter active announcements (not expired)
+        const active = response.data.filter((a: Announcement) => 
+          new Date(a.ends_at) > new Date()
+        );
+        console.log('Active announcements:', active);
+        setAnnouncements(active.slice(0, 3)); // Show only 3 latest
       }
     } catch (error) {
       console.error('Failed to load announcements:', error);

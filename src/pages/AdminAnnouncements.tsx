@@ -282,115 +282,158 @@ export default function AdminAnnouncements() {
         </main>
       </div>
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Announcement</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleEditSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">English</h3>
-              <div className="space-y-2">
-                <Label>Title (English)</Label>
-                <Input
-                  value={editFormData.title_en}
-                  onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Content (English)</Label>
-                <Textarea
-                  value={editFormData.content_en}
-                  onChange={(e) => setEditFormData({ ...editFormData, content_en: e.target.value })}
-                  rows={4}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Русский</h3>
-              <div className="space-y-2">
-                <Label>Заголовок (Русский)</Label>
-                <Input
-                  value={editFormData.title_ru}
-                  onChange={(e) => setEditFormData({ ...editFormData, title_ru: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Содержание (Русский)</Label>
-                <Textarea
-                  value={editFormData.content_ru}
-                  onChange={(e) => setEditFormData({ ...editFormData, content_ru: e.target.value })}
-                  rows={4}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">O'zbek</h3>
-              <div className="space-y-2">
-                <Label>Sarlavha (O'zbek)</Label>
-                <Input
-                  value={editFormData.title_uz}
-                  onChange={(e) => setEditFormData({ ...editFormData, title_uz: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Mazmun (O'zbek)</Label>
-                <Textarea
-                  value={editFormData.content_uz}
-                  onChange={(e) => setEditFormData({ ...editFormData, content_uz: e.target.value })}
-                  rows={4}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>End Date</Label>
-              <Input
-                type="date"
-                value={editFormData.ends_at}
-                onChange={(e) => setEditFormData({ ...editFormData, ends_at: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Replace Media Files (Optional)</Label>
-              <Input
-                type="file"
-                multiple
-                accept="image/*,video/*"
-                onChange={(e) => setEditFiles(Array.from(e.target.files || []))}
-              />
-              <p className="text-sm text-muted-foreground">
-                Leave empty to keep existing media. Upload new files to replace all media.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
+      {/* Edit Modal */}
+      {isEditDialogOpen && editingItem && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setIsEditDialogOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1rem',
+              maxWidth: '56rem',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Edit Announcement</h2>
+              <button
                 onClick={() => setIsEditDialogOpen(false)}
-                disabled={isSubmitting}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  padding: '0.5rem',
+                  borderRadius: '0.5rem',
+                  border: 'none',
+                  background: '#f3f4f6',
+                  cursor: 'pointer'
+                }}
               >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Updating...' : 'Update Announcement'}
-              </Button>
+                ✕
+              </button>
             </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+            <form onSubmit={handleEditSubmit} style={{ padding: '1.5rem' }}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>English</h3>
+                <div style={{ marginBottom: '1rem' }}>
+                  <Label>Title (English)</Label>
+                  <Input
+                    value={editFormData.title_en}
+                    onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Content (English)</Label>
+                  <Textarea
+                    value={editFormData.content_en}
+                    onChange={(e) => setEditFormData({ ...editFormData, content_en: e.target.value })}
+                    rows={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>Русский</h3>
+                <div style={{ marginBottom: '1rem' }}>
+                  <Label>Заголовок (Русский)</Label>
+                  <Input
+                    value={editFormData.title_ru}
+                    onChange={(e) => setEditFormData({ ...editFormData, title_ru: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Содержание (Русский)</Label>
+                  <Textarea
+                    value={editFormData.content_ru}
+                    onChange={(e) => setEditFormData({ ...editFormData, content_ru: e.target.value })}
+                    rows={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>O'zbek</h3>
+                <div style={{ marginBottom: '1rem' }}>
+                  <Label>Sarlavha (O'zbek)</Label>
+                  <Input
+                    value={editFormData.title_uz}
+                    onChange={(e) => setEditFormData({ ...editFormData, title_uz: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>Mazmun (O'zbek)</Label>
+                  <Textarea
+                    value={editFormData.content_uz}
+                    onChange={(e) => setEditFormData({ ...editFormData, content_uz: e.target.value })}
+                    rows={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <Label>End Date</Label>
+                <Input
+                  type="date"
+                  value={editFormData.ends_at}
+                  onChange={(e) => setEditFormData({ ...editFormData, ends_at: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <Label>Replace Media Files (Optional)</Label>
+                <Input
+                  type="file"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={(e) => setEditFiles(Array.from(e.target.files || []))}
+                />
+                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                  Leave empty to keep existing media. Upload new files to replace all media.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Updating...' : 'Update Announcement'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* View Modal */}
       {isViewDialogOpen && viewingItem && (
