@@ -245,44 +245,33 @@ export default function AdminAnnouncements() {
                         {getLocalizedField(item, 'content', language)}
                       </p>
                       <div className="flex gap-2">
-                        <button
-                          vaassName="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground h-9 rounded-md px-3 flex-1"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('VIEW CLICKED');
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
                             setViewingItem(item);
                             setIsViewDialogOpen(true);
                           }}
-                          type="button"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
-                        </button>
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground h-9 rounded-md px-3"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('EDIT CLICKED');
-                            handleEdit(item);
-                          }}
-                          type="button"
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(item)}
                         >
                           <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border-2 border-primary bg-transparent text-destructive hover:bg-destructive hover:text-white h-9 rounded-md px-3"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('DELETE CLICKED');
-                            handleDelete(item.id);
-                          }}
-                          type="button"
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(item.id)}
+                          className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -293,236 +282,155 @@ export default function AdminAnnouncements() {
         </main>
       </div>
 
-      {/* Edit Modal */}
-      {isEditDialogOpen && editingItem && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            zIndex: 99999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-          onClick={() => setIsEditDialogOpen(false)}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '1rem',
-              maxWidth: '56rem',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              position: 'relative'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Edit Announcement</h2>
-              <button
-                onClick={() => setIsEditDialogOpen(false)}
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
-                  padding: '0.5rem',
-                  borderRadius: '0.5rem',
-                  border: 'none',
-                  background: '#f3f4f6',
-                  cursor: 'pointer'
-                }}
-              >
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleEditSubmit} style={{ padding: '1.5rem' }}>
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>English</h3>
-                <div style={{ marginBottom: '1rem' }}>
-                  <Label>Title (English)</Label>
-                  <Input
-                    value={editFormData.title_en}
-                    onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label>Content (English)</Label>
-                  <Textarea
-                    value={editFormData.content_en}
-                    onChange={(e) => setEditFormData({ ...editFormData, content_en: e.target.value })}
-                    rows={4}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>Русский</h3>
-                <div style={{ marginBottom: '1rem' }}>
-                  <Label>Заголовок (Русский)</Label>
-                  <Input
-                    value={editFormData.title_ru}
-                    onChange={(e) => setEditFormData({ ...editFormData, title_ru: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label>Содержание (Русский)</Label>
-                  <Textarea
-                    value={editFormData.content_ru}
-                    onChange={(e) => setEditFormData({ ...editFormData, content_ru: e.target.value })}
-                    rows={4}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem' }}>O'zbek</h3>
-                <div style={{ marginBottom: '1rem' }}>
-                  <Label>Sarlavha (O'zbek)</Label>
-                  <Input
-                    value={editFormData.title_uz}
-                    onChange={(e) => setEditFormData({ ...editFormData, title_uz: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label>Mazmun (O'zbek)</Label>
-                  <Textarea
-                    value={editFormData.content_uz}
-                    onChange={(e) => setEditFormData({ ...editFormData, content_uz: e.target.value })}
-                    rows={4}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <Label>End Date</Label>
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Announcement</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditSubmit} className="space-y-6">
+            {/* English Fields */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">English</h3>
+              <div className="space-y-2">
+                <Label>Title (English)</Label>
                 <Input
-                  type="date"
-                  value={editFormData.ends_at}
-                  onChange={(e) => setEditFormData({ ...editFormData, ends_at: e.target.value })}
+                  value={editFormData.title_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
                   required
                 />
               </div>
-
-              <div style={{ marginBottom: '1.5rem' }}>
-                <Label>Replace Media Files (Optional)</Label>
-                <Input
-                  type="file"
-                  multiple
-                  accept="image/*,video/*"
-                  onChange={(e) => setEditFiles(Array.from(e.target.files || []))}
+              <div className="space-y-2">
+                <Label>Content (English)</Label>
+                <Textarea
+                  value={editFormData.content_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_en: e.target.value })}
+                  rows={4}
+                  required
                 />
-                <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem' }}>
-                  Leave empty to keep existing media. Upload new files to replace all media.
-                </p>
               </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsEditDialogOpen(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Updating...' : 'Update Announcement'}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* View Modal */}
-      {isViewDialogOpen && viewingItem && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            zIndex: 99999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-          onClick={() => setIsViewDialogOpen(false)}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '1rem',
-              maxWidth: '56rem',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              position: 'relative'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e5e7eb' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>View Announcement</h2>
-              <button
-                onClick={() => setIsViewDialogOpen(false)}
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
-                  padding: '0.5rem',
-                  borderRadius: '0.5rem',
-                  border: 'none',
-                  background: '#f3f4f6',
-                  cursor: 'pointer'
-                }}
-              >
-                ✕
-              </button>
             </div>
-            <div style={{ padding: '1.5rem' }}>
-              <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                  <span style={{ padding: '0.25rem 0.75rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
-                    📅 Published: {formatDate(viewingItem.published_at)}
-                  </span>
-                  <span style={{ padding: '0.25rem 0.75rem', backgroundColor: '#f3f4f6', borderRadius: '0.5rem', fontSize: '0.875rem' }}>
-                    ⏰ Ends: {formatDate(viewingItem.ends_at)}
-                  </span>
-                </div>
+
+            {/* Russian Fields */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Русский</h3>
+              <div className="space-y-2">
+                <Label>Заголовок (Русский)</Label>
+                <Input
+                  value={editFormData.title_ru}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_ru: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Содержание (Русский)</Label>
+                <Textarea
+                  value={editFormData.content_ru}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_ru: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Uzbek Fields */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">O'zbek</h3>
+              <div className="space-y-2">
+                <Label>Sarlavha (O'zbek)</Label>
+                <Input
+                  value={editFormData.title_uz}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_uz: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Mazmun (O'zbek)</Label>
+                <Textarea
+                  value={editFormData.content_uz}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_uz: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* End Date */}
+            <div className="space-y-2">
+              <Label>End Date</Label>
+              <Input
+                type="date"
+                value={editFormData.ends_at}
+                onChange={(e) => setEditFormData({ ...editFormData, ends_at: e.target.value })}
+                required
+              />
+            </div>
+
+            {/* File Upload */}
+            <div className="space-y-2">
+              <Label>Replace Media Files (Optional)</Label>
+              <Input
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                onChange={(e) => setEditFiles(Array.from(e.target.files || []))}
+              />
+              <p className="text-sm text-muted-foreground">
+                Leave empty to keep existing media. Upload new files to replace all media.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Updating...' : 'Update Announcement'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>View Announcement</DialogTitle>
+          </DialogHeader>
+          {viewingItem && (
+            <div className="space-y-6">
+              {/* Date */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                Published: {formatDate(viewingItem.published_at)}
+                <Clock className="h-4 w-4 ml-4" />
+                Ends: {formatDate(viewingItem.ends_at)}
               </div>
 
+              {/* Media */}
               {viewingItem.medias && viewingItem.medias.length > 0 && (
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <h3 style={{ fontWeight: '600', marginBottom: '1rem' }}>Media ({viewingItem.medias.length})</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Media ({viewingItem.medias.length})</h3>
+                  <div className="grid grid-cols-2 gap-4">
                     {viewingItem.medias.map((media, index) => (
-                      <div key={index} style={{ position: 'relative', aspectRatio: '16/9', borderRadius: '0.5rem', overflow: 'hidden' }}>
+                      <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
                         {media.type === 'image' ? (
                           <img
                             src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
                             alt={`Media ${index + 1}`}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           <video
                             src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
                             controls
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            className="w-full h-full object-cover"
                           />
                         )}
                       </div>
@@ -531,37 +439,54 @@ export default function AdminAnnouncements() {
                 </div>
               )}
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>English</h3>
-                <p style={{ fontWeight: '500' }}>Title:</p>
-                <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>{viewingItem.title_en}</p>
-                <p style={{ fontWeight: '500' }}>Content:</p>
-                <p style={{ color: '#6b7280', whiteSpace: 'pre-wrap' }}>{viewingItem.content_en}</p>
+              {/* English */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">English</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Title:</p>
+                  <p className="text-muted-foreground">{viewingItem.title_en}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Content:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_en}</p>
+                </div>
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>Русский</h3>
-                <p style={{ fontWeight: '500' }}>Заголовок:</p>
-                <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>{viewingItem.title_ru}</p>
-                <p style={{ fontWeight: '500' }}>Содержание:</p>
-                <p style={{ color: '#6b7280', whiteSpace: 'pre-wrap' }}>{viewingItem.content_ru}</p>
+              {/* Russian */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Русский</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Заголовок:</p>
+                  <p className="text-muted-foreground">{viewingItem.title_ru}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Содержание:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_ru}</p>
+                </div>
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>O'zbek</h3>
-                <p style={{ fontWeight: '500' }}>Sarlavha:</p>
-                <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>{viewingItem.title_uz}</p>
-                <p style={{ fontWeight: '500' }}>Mazmun:</p>
-                <p style={{ color: '#6b7280', whiteSpace: 'pre-wrap' }}>{viewingItem.content_uz}</p>
+              {/* Uzbek */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">O'zbek</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Sarlavha:</p>
+                  <p className="text-muted-foreground">{viewingItem.title_uz}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Mazmun:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_uz}</p>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button onClick={() => setIsViewDialogOpen(false)}>Close</Button>
+              <div className="flex justify-end">
+                <Button onClick={() => setIsViewDialogOpen(false)}>
+                  Close
+                </Button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
