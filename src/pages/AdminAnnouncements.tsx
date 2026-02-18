@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Calendar, Clock, Eye, Menu } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, Clock, Eye, Menu, X } from 'lucide-react';
 import { useLanguage, getLocalizedField } from '@/contexts/LanguageContext';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { AdminSidebar } from '@/components/AdminSidebar';
@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { api } from '@/services/api';
 import { toast } from 'sonner';
 
@@ -33,12 +32,11 @@ export default function AdminAnnouncements() {
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingItem, setEditingItem] = useState<Announcement | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [viewingItem, setViewingItem] = useState<Announcement | null>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Announcement | null>(null);
+
   const [formData, setFormData] = useState({
     title_en: '',
     title_ru: '',
@@ -71,9 +69,13 @@ export default function AdminAnnouncements() {
     }
   };
 
-  const handleEdit = (item: Announcement) => {
-    console.log('handleEdit called with:', item);
-    setEditingItem(item);
+  const openViewModal = (item: Announcement) => {
+    setSelectedItem(item);
+    setShowViewModal(true);
+  };
+
+  const openEditModal = (item: Announcement) => {
+    setSelectedItem(item);
     setFormData({
       title_en: item.title_en,
       title_ru: item.title_ru,
@@ -83,17 +85,7 @@ export default function AdminAnnouncements() {
       content_uz: item.content_uz,
       ends_at: item.ends_at.split('T')[0],
     });
-    console.log('Setting isEditDialogOpen to true');
-    setIsEditDialogOpen(true);
-    console.log('isEditDialogOpen should now be true');
-  };
-
-  const handleView = (item: Announcement) => {
-    console.log('handleView called with:', item);
-    setViewingItem(item);
-    console.log('Setting isViewDialogOpen to true');
-    setIsViewDialogOpen(true);
-    console.log('isViewDialogOpen should now be true');
+    setShowEditModal(true);
   };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -105,7 +97,7 @@ export default function AdminAnnouncements() {
       const response = await api.createAnnouncement(fd);
       if (response.success) {
         toast.success('Created successfully');
-        setShowCreateDialog(false);
+        setShowCreateModal(false);
         setFormData({ title_en: '', title_ru: '', title_uz: '', content_en: '', content_ru: '', content_uz: '', ends_at: '' });
         loadData();
       }
@@ -118,16 +110,16 @@ export default function AdminAnnouncements() {
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingItem) return;
+    if (!selectedItem) return;
     setIsSubmitting(true);
     try {
       const fd = new FormData();
       Object.entries(formData).forEach(([k, v]) => fd.append(k, v));
-      const response = await api.updateAnnouncement(editingItem.id, fd);
+      const response = await api.updateAnnouncement(selectedItem.id, fd);
       if (response.success) {
         toast.success('Updated successfully');
-        setIsEditDialogOpen(false);
-        setEditingItem(null);
+        setShowEditModal(false);
+        setSelectedItem(null);
         loadData();
       }
     } catch (error) {
@@ -194,27 +186,9 @@ export default function AdminAnnouncements() {
                   <p className="text-slate-300">Manage announcements</p>
                 </div>
               </div>
-              <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                <DialogTrigger asChild>
-                  <Button><Plus className="h-4 w-4 mr-2" />Create</Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader><DialogTitle>Create Announcement</DialogTitle></DialogHeader>
-                  <form onSubmit={handleCreateSubmit} className="space-y-4">
-                    <div><Label>Title (EN)</Label><Input value={formData.title_en} onChange={(e) => setFormData({...formData, title_en: e.target.value})} required /></div>
-                    <div><Label>Content (EN)</Label><Textarea value={formData.content_en} onChange={(e) => setFormData({...formData, content_en: e.target.value})} required /></div>
-                    <div><Label>Title (RU)</Label><Input value={formData.title_ru} onChange={(e) => setFormData({...formData, title_ru: e.target.value})} required /></div>
-                    <div><Label>Content (RU)</Label><Textarea value={formData.content_ru} onChange={(e) => setFormData({...formData, content_ru: e.target.value})} required /></div>
-                    <div><Label>Title (UZ)</Label><Input value={formData.title_uz} onChange={(e) => setFormData({...formData, title_uz: e.target.value})} required /></div>
-                    <div><Label>Content (UZ)</Label><Textarea value={formData.content_uz} onChange={(e) => setFormData({...formData, content_uz: e.target.value})} required /></div>
-                    <div><Label>End Date</Label><Input type="date" value={formData.ends_at} onChange={(e) => setFormData({...formData, ends_at: e.target.value})} required /></div>
-                    <div className="flex justify-end gap-2">
-                      <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-                      <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Creating...' : 'Create'}</Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+              <Button onClick={() => setShowCreateModal(true)}>
+                <Plus className="h-4 w-4 mr-2" />Create
+              </Button>
             </div>
           </header>
 
@@ -233,9 +207,9 @@ export default function AdminAnnouncements() {
                     <CardContent>
                       <p className="text-muted-foreground text-sm line-clamp-3 mb-4">{getLocalizedField(item, 'content', language)}</p>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1" onClick={() => { console.log('VIEW CLICKED', item.id); handleView(item); }}><Eye className="h-4 w-4 mr-2" />View</Button>
-                        <Button variant="outline" size="sm" onClick={() => { console.log('EDIT CLICKED', item.id); handleEdit(item); }}><Edit className="h-4 w-4" /></Button>
-                        <Button variant="outline" size="sm" onClick={() => { console.log('DELETE CLICKED', item.id); handleDelete(item.id); }} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        <Button variant="outline" size="sm" className="flex-1" onClick={() => openViewModal(item)}><Eye className="h-4 w-4 mr-2" />View</Button>
+                        <Button variant="outline" size="sm" onClick={() => openEditModal(item)}><Edit className="h-4 w-4" /></Button>
+                        <Button variant="outline" size="sm" onClick={() => handleDelete(item.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -246,42 +220,77 @@ export default function AdminAnnouncements() {
         </main>
       </div>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={(open) => { console.log('Edit dialog onOpenChange:', open); setIsEditDialogOpen(open); }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Edit Announcement</DialogTitle></DialogHeader>
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <div><Label>Title (EN)</Label><Input value={formData.title_en} onChange={(e) => setFormData({...formData, title_en: e.target.value})} required /></div>
-            <div><Label>Content (EN)</Label><Textarea value={formData.content_en} onChange={(e) => setFormData({...formData, content_en: e.target.value})} required /></div>
-            <div><Label>Title (RU)</Label><Input value={formData.title_ru} onChange={(e) => setFormData({...formData, title_ru: e.target.value})} required /></div>
-            <div><Label>Content (RU)</Label><Textarea value={formData.content_ru} onChange={(e) => setFormData({...formData, content_ru: e.target.value})} required /></div>
-            <div><Label>Title (UZ)</Label><Input value={formData.title_uz} onChange={(e) => setFormData({...formData, title_uz: e.target.value})} required /></div>
-            <div><Label>Content (UZ)</Label><Textarea value={formData.content_uz} onChange={(e) => setFormData({...formData, content_uz: e.target.value})} required /></div>
-            <div><Label>End Date</Label><Input type="date" value={formData.ends_at} onChange={(e) => setFormData({...formData, ends_at: e.target.value})} required /></div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Updating...' : 'Update'}</Button>
+      {/* Create Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4" onClick={() => setShowCreateModal(false)}>
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Create Announcement</h2>
+              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
             </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isViewDialogOpen} onOpenChange={(open) => { console.log('View dialog onOpenChange:', open); setIsViewDialogOpen(open); }}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>View Announcement</DialogTitle></DialogHeader>
-          {viewingItem && (
-            <div className="space-y-6">
-              <div className="flex gap-4 text-sm">
-                <Badge><Calendar className="h-3 w-3 mr-1" />Published: {new Date(viewingItem.published_at).toLocaleDateString()}</Badge>
-                <Badge><Clock className="h-3 w-3 mr-1" />Ends: {new Date(viewingItem.ends_at).toLocaleDateString()}</Badge>
+            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
+              <div><Label>Title (EN)</Label><Input value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} required /></div>
+              <div><Label>Content (EN)</Label><Textarea value={formData.content_en} onChange={(e) => setFormData({ ...formData, content_en: e.target.value })} rows={3} required /></div>
+              <div><Label>Title (RU)</Label><Input value={formData.title_ru} onChange={(e) => setFormData({ ...formData, title_ru: e.target.value })} required /></div>
+              <div><Label>Content (RU)</Label><Textarea value={formData.content_ru} onChange={(e) => setFormData({ ...formData, content_ru: e.target.value })} rows={3} required /></div>
+              <div><Label>Title (UZ)</Label><Input value={formData.title_uz} onChange={(e) => setFormData({ ...formData, title_uz: e.target.value })} required /></div>
+              <div><Label>Content (UZ)</Label><Textarea value={formData.content_uz} onChange={(e) => setFormData({ ...formData, content_uz: e.target.value })} rows={3} required /></div>
+              <div><Label>End Date</Label><Input type="date" value={formData.ends_at} onChange={(e) => setFormData({ ...formData, ends_at: e.target.value })} required /></div>
+              <div className="flex justify-end gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Creating...' : 'Create'}</Button>
               </div>
-              <div><h3 className="font-semibold">English</h3><p className="font-medium">Title:</p><p className="text-muted-foreground">{viewingItem.title_en}</p><p className="font-medium mt-2">Content:</p><p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_en}</p></div>
-              <div><h3 className="font-semibold">Русский</h3><p className="font-medium">Заголовок:</p><p className="text-muted-foreground">{viewingItem.title_ru}</p><p className="font-medium mt-2">Содержание:</p><p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_ru}</p></div>
-              <div><h3 className="font-semibold">O'zbek</h3><p className="font-medium">Sarlavha:</p><p className="text-muted-foreground">{viewingItem.title_uz}</p><p className="font-medium mt-2">Mazmun:</p><p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_uz}</p></div>
-              <div className="flex justify-end"><Button onClick={() => setIsViewDialogOpen(false)}>Close</Button></div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && selectedItem && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4" onClick={() => setShowEditModal(false)}>
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Edit Announcement</h2>
+              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              <div><Label>Title (EN)</Label><Input value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} required /></div>
+              <div><Label>Content (EN)</Label><Textarea value={formData.content_en} onChange={(e) => setFormData({ ...formData, content_en: e.target.value })} rows={3} required /></div>
+              <div><Label>Title (RU)</Label><Input value={formData.title_ru} onChange={(e) => setFormData({ ...formData, title_ru: e.target.value })} required /></div>
+              <div><Label>Content (RU)</Label><Textarea value={formData.content_ru} onChange={(e) => setFormData({ ...formData, content_ru: e.target.value })} rows={3} required /></div>
+              <div><Label>Title (UZ)</Label><Input value={formData.title_uz} onChange={(e) => setFormData({ ...formData, title_uz: e.target.value })} required /></div>
+              <div><Label>Content (UZ)</Label><Textarea value={formData.content_uz} onChange={(e) => setFormData({ ...formData, content_uz: e.target.value })} rows={3} required /></div>
+              <div><Label>End Date</Label><Input type="date" value={formData.ends_at} onChange={(e) => setFormData({ ...formData, ends_at: e.target.value })} required /></div>
+              <div className="flex justify-end gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>Cancel</Button>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Updating...' : 'Update'}</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Modal */}
+      {showViewModal && selectedItem && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4" onClick={() => setShowViewModal(false)}>
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b flex items-center justify-between">
+              <h2 className="text-2xl font-bold">View Announcement</h2>
+              <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="p-6 space-y-6">
+              <div className="flex gap-4">
+                <Badge><Calendar className="h-3 w-3 mr-1" />Published: {new Date(selectedItem.published_at).toLocaleDateString()}</Badge>
+                <Badge><Clock className="h-3 w-3 mr-1" />Ends: {new Date(selectedItem.ends_at).toLocaleDateString()}</Badge>
+              </div>
+              <div><h3 className="font-semibold text-lg mb-2">English</h3><p className="font-medium">Title:</p><p className="text-muted-foreground mb-2">{selectedItem.title_en}</p><p className="font-medium">Content:</p><p className="text-muted-foreground whitespace-pre-wrap">{selectedItem.content_en}</p></div>
+              <div><h3 className="font-semibold text-lg mb-2">Русский</h3><p className="font-medium">Заголовок:</p><p className="text-muted-foreground mb-2">{selectedItem.title_ru}</p><p className="font-medium">Содержание:</p><p className="text-muted-foreground whitespace-pre-wrap">{selectedItem.content_ru}</p></div>
+              <div><h3 className="font-semibold text-lg mb-2">O'zbek</h3><p className="font-medium">Sarlavha:</p><p className="text-muted-foreground mb-2">{selectedItem.title_uz}</p><p className="font-medium">Mazmun:</p><p className="text-muted-foreground whitespace-pre-wrap">{selectedItem.content_uz}</p></div>
+              <div className="flex justify-end pt-4"><Button onClick={() => setShowViewModal(false)}>Close</Button></div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
