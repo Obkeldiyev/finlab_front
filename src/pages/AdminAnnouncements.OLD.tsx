@@ -252,46 +252,31 @@ export default function AdminAnnouncements() {
                         {getLocalizedField(item, 'content', language)}
                       </p>
                       <div className="flex gap-2">
-                      <div className="flex gap-2">
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 flex-1"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('VIEW CLICKED - ID: ' + item.id);
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            console.log('=== VIEW BUTTON CLICKED ===');
+                            console.log('Item:', item);
                             setViewingItem(item);
                             setIsViewDialogOpen(true);
+                            console.log('isViewDialogOpen set to TRUE');
                           }}
-                          type="button"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
-                        </button>
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('EDIT CLICKED - ID: ' + item.id);
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            console.log('=== EDIT BUTTON CLICKED ===');
                             handleEdit(item);
                           }}
-                          type="button"
                         >
                           <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-destructive hover:text-destructive"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('DELETE CLICKED - ID: ' + item.id);
-                            handleDelete(item.id);
-                          }}
-                          type="button"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
