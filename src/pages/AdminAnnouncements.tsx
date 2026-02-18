@@ -228,8 +228,30 @@ export default function AdminAnnouncements() {
 
       {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4" onClick={() => setShowCreateModal(false)}>
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          style={{
+            position: 'fixed',
+            inset: '0',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1rem',
+              maxWidth: '56rem',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6 border-b flex items-center justify-between">
               <h2 className="text-2xl font-bold">Create Announcement</h2>
               <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
@@ -253,8 +275,30 @@ export default function AdminAnnouncements() {
 
       {/* Edit Modal */}
       {showEditModal && selectedItem && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4" onClick={() => setShowEditModal(false)}>
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          style={{
+            position: 'fixed',
+            inset: '0',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setShowEditModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1rem',
+              maxWidth: '56rem',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6 border-b flex items-center justify-between">
               <h2 className="text-2xl font-bold">Edit Announcement</h2>
               <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
@@ -278,8 +322,30 @@ export default function AdminAnnouncements() {
 
       {/* View Modal */}
       {showViewModal && selectedItem && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4" onClick={() => setShowViewModal(false)}>
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          style={{
+            position: 'fixed',
+            inset: '0',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem'
+          }}
+          onClick={() => setShowViewModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1rem',
+              maxWidth: '56rem',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6 border-b flex items-center justify-between">
               <h2 className="text-2xl font-bold">View Announcement</h2>
               <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
