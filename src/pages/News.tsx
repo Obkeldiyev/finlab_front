@@ -8,7 +8,7 @@ import { ParticleBackground } from '@/components/ParticleBackground';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Calendar, Clock, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, X, ChevronLeft, ChevronRight, Share2, Copy, Check } from 'lucide-react';
 import { dataService, type NewsItem } from '@/services/dataService';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ export default function News() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const loadNews = async () => {
@@ -132,6 +133,37 @@ export default function News() {
       setSelectedMediaIndex((prev) => 
         prev > 0 ? prev - 1 : selectedNews.medias.length - 1
       );
+    }
+  };
+
+  const handleShare = async () => {
+    if (!selectedNews) return;
+    
+    const shareUrl = `${window.location.origin}/news/${selectedNews.id}`;
+    
+    // Try native share API first (mobile devices)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: getLocalizedField(selectedNews, 'title', language),
+          text: getLocalizedField(selectedNews, 'content', language).substring(0, 100) + '...',
+          url: shareUrl,
+        });
+        toast.success(language === 'uz' ? 'Ulashildi!' : language === 'ru' ? 'Поделились!' : 'Shared!');
+      } catch (error) {
+        // User cancelled or error occurred
+        console.log('Share cancelled or failed:', error);
+      }
+    } else {
+      // Fallback to copying link
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        toast.success(language === 'uz' ? 'Havola nusxalandi!' : language === 'ru' ? 'Ссылка скопирована!' : 'Link copied!');
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        toast.error(language === 'uz' ? 'Xatolik yuz berdi' : language === 'ru' ? 'Произошла ошибка' : 'An error occurred');
+      }
     }
   };
 
@@ -248,9 +280,29 @@ export default function News() {
           {selectedNews && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl font-display pr-8">
-                  {getLocalizedField(selectedNews, 'title', language)}
-                </DialogTitle>
+                <div className="flex items-start justify-between gap-4">
+                  <DialogTitle className="text-2xl font-display flex-1">
+                    {getLocalizedField(selectedNews, 'title', language)}
+                  </DialogTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShare}
+                    className="flex items-center gap-2"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4" />
+                        {language === 'uz' ? 'Nusxalandi' : language === 'ru' ? 'Скопировано' : 'Copied'}
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="h-4 w-4" />
+                        {language === 'uz' ? 'Ulashish' : language === 'ru' ? 'Поделиться' : 'Share'}
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
