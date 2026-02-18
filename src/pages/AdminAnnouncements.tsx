@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Calendar, Clock, Eye, Menu, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, Clock, Eye, Menu } from 'lucide-react';
 import { useLanguage, getLocalizedField } from '@/contexts/LanguageContext';
 import { ParticleBackground } from '@/components/ParticleBackground';
 import { AdminSidebar } from '@/components/AdminSidebar';
+import { AnnouncementForm } from '@/components/admin/AnnouncementForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { api } from '@/services/api';
 import { toast } from 'sonner';
 
@@ -25,6 +27,7 @@ interface Announcement {
   content_en: string;
   published_at: string;
   ends_at: string;
+  medias?: { id: number; url: string; type: string }[];
 }
 
 export default function AdminAnnouncements() {
@@ -32,12 +35,12 @@ export default function AdminAnnouncements() {
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Announcement | null>(null);
-
-  const [formData, setFormData] = useState({
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingItem, setEditingItem] = useState<Announcement | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [viewingItem, setViewingItem] = useState<Announcement | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
     title_en: '',
     title_ru: '',
     title_uz: '',
@@ -46,6 +49,7 @@ export default function AdminAnnouncements() {
     content_uz: '',
     ends_at: '',
   });
+  const [editFiles, setEditFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -69,19 +73,14 @@ export default function AdminAnnouncements() {
     }
   };
 
-  const openViewModal = (item: Announcement) => {
-    console.log('openViewModal called', item);
-    alert('Opening view modal for: ' + item.title_uz);
-    setSelectedItem(item);
-    setShowViewModal(true);
-    console.log('showViewModal set to:', true);
+  const handleCreateSuccess = () => {
+    setShowCreateForm(false);
+    loadData();
   };
 
-  const openEditModal = (item: Announcement) => {
-    console.log('openEditModal called', item);
-    alert('Opening edit modal for: ' + item.title_uz);
-    setSelectedItem(item);
-    setFormData({
+  const handleEdit = (item: Announcement) => {
+    setEditingItem(item);
+    setEditFormData({
       title_en: item.title_en,
       title_ru: item.title_ru,
       title_uz: item.title_uz,
@@ -90,62 +89,64 @@ export default function AdminAnnouncements() {
       content_uz: item.content_uz,
       ends_at: item.ends_at.split('T')[0],
     });
-    setShowEditModal(true);
-    console.log('showEditModal set to:', true);
-  };
-
-  const handleCreateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const fd = new FormData();
-      Object.entries(formData).forEach(([k, v]) => fd.append(k, v));
-      const response = await api.createAnnouncement(fd);
-      if (response.success) {
-        toast.success('Created successfully');
-        setShowCreateModal(false);
-        setFormData({ title_en: '', title_ru: '', title_uz: '', content_en: '', content_ru: '', content_uz: '', ends_at: '' });
-        loadData();
-      }
-    } catch (error) {
-      toast.error('Failed to create');
-    } finally {
-      setIsSubmitting(false);
-    }
+    setEditFiles([]);
+    setIsEditDialogOpen(true);
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedItem) return;
+    if (!editingItem) return;
+    
     setIsSubmitting(true);
     try {
       const fd = new FormData();
-      Object.entries(formData).forEach(([k, v]) => fd.append(k, v));
-      const response = await api.updateAnnouncement(selectedItem.id, fd);
+      Object.entries(editFormData).forEach(([k, v]) => fd.append(k, v));
+      editFiles.forEach(file => fd.append('medias', file));
+      
+      const response = await api.updateAnnouncement(editingItem.id, fd);
       if (response.success) {
-        toast.success('Updated successfully');
-        setShowEditModal(false);
-        setSelectedItem(null);
+        toast.success('Announcement updated successfully');
+        setIsEditDialogOpen(false);
+        setEditingItem(null);
+        setEditFormData({
+          title_en: '',
+          title_ru: '',
+          title_uz: '',
+          content_en: '',
+          content_ru: '',
+          content_uz: '',
+          ends_at: '',
+        });
+        setEditFiles([]);
         loadData();
       }
     } catch (error) {
-      toast.error('Failed to update');
+      toast.error('Failed to update announcement');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this announcement?')) return;
+    if (!confirm('Are you sure you want to delete this announcement?')) return;
     try {
       const response = await api.deleteAnnouncement(id);
       if (response.success) {
-        toast.success('Deleted successfully');
+        toast.success('Announcement deleted successfully');
         loadData();
       }
     } catch (error) {
-      toast.error('Failed to delete');
+      toast.error('Failed to delete announcement');
     }
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(language === 'ru' ? 'ru-RU' : language === 'uz' ? 'uz-UZ' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   if (isLoading) {
@@ -155,7 +156,7 @@ export default function AdminAnnouncements() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center bg-white p-8 rounded-2xl border shadow-lg">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading...</p>
+            <p className="text-muted-foreground">E'lonlar yuklanmoqda...</p>
           </div>
         </div>
       </div>
@@ -188,34 +189,89 @@ export default function AdminAnnouncements() {
                   </SheetTrigger>
                 </Sheet>
                 <div>
-                  <h1 className="text-2xl font-display font-bold text-white">E'lonlar</h1>
-                  <p className="text-slate-300">Manage announcements</p>
+                  <h1 className="text-2xl font-display font-bold text-white">E'lonlar boshqaruvi</h1>
+                  <p className="text-slate-300">E'lonlar yaratish va boshqarish</p>
                 </div>
               </div>
-              <Button onClick={() => setShowCreateModal(true)}>
-                <Plus className="h-4 w-4 mr-2" />Create
-              </Button>
+              <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    E'lon yaratish
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {language === 'uz' ? 'Yangi e\'lon' : language === 'ru' ? 'Новое объявление' : 'New Announcement'}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <AnnouncementForm 
+                    onSuccess={handleCreateSuccess}
+                    onCancel={() => setShowCreateForm(false)}
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
           </header>
 
           <div className="p-4 lg:p-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {announcements.map((item, index) => (
-                <motion.div key={item.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}>
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
                   <Card className="backdrop-blur-sm bg-white/75 border-blue-200/40 hover:shadow-lg transition-all">
                     <CardHeader>
                       <div className="flex items-center justify-between mb-2">
-                        <Badge variant="outline"><Calendar className="h-3 w-3 mr-1" />{new Date(item.published_at).toLocaleDateString()}</Badge>
-                        <Badge variant="outline"><Clock className="h-3 w-3 mr-1" />{new Date(item.ends_at).toLocaleDateString()}</Badge>
+                        <Badge variant="outline">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {formatDate(item.published_at)}
+                        </Badge>
+                        <Badge variant="outline">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {formatDate(item.ends_at)}
+                        </Badge>
                       </div>
-                      <CardTitle className="text-lg line-clamp-2">{getLocalizedField(item, 'title', language)}</CardTitle>
+                      <CardTitle className="text-lg line-clamp-2">
+                        {getLocalizedField(item, 'title', language)}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground text-sm line-clamp-3 mb-4">{getLocalizedField(item, 'content', language)}</p>
+                      <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
+                        {getLocalizedField(item, 'content', language)}
+                      </p>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1" onClick={() => openViewModal(item)}><Eye className="h-4 w-4 mr-2" />View</Button>
-                        <Button variant="outline" size="sm" onClick={() => openEditModal(item)}><Edit className="h-4 w-4" /></Button>
-                        <Button variant="outline" size="sm" onClick={() => handleDelete(item.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1"
+                          onClick={() => {
+                            setViewingItem(item);
+                            setIsViewDialogOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleEdit(item)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleDelete(item.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -226,143 +282,203 @@ export default function AdminAnnouncements() {
         </main>
       </div>
 
-      {/* Create Modal */}
-      {showCreateModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: '0',
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-          onClick={() => setShowCreateModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '1rem',
-              maxWidth: '56rem',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 border-b flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Create Announcement</h2>
-              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
-            </div>
-            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
-              <div><Label>Title (EN)</Label><Input value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} required /></div>
-              <div><Label>Content (EN)</Label><Textarea value={formData.content_en} onChange={(e) => setFormData({ ...formData, content_en: e.target.value })} rows={3} required /></div>
-              <div><Label>Title (RU)</Label><Input value={formData.title_ru} onChange={(e) => setFormData({ ...formData, title_ru: e.target.value })} required /></div>
-              <div><Label>Content (RU)</Label><Textarea value={formData.content_ru} onChange={(e) => setFormData({ ...formData, content_ru: e.target.value })} rows={3} required /></div>
-              <div><Label>Title (UZ)</Label><Input value={formData.title_uz} onChange={(e) => setFormData({ ...formData, title_uz: e.target.value })} required /></div>
-              <div><Label>Content (UZ)</Label><Textarea value={formData.content_uz} onChange={(e) => setFormData({ ...formData, content_uz: e.target.value })} rows={3} required /></div>
-              <div><Label>End Date</Label><Input type="date" value={formData.ends_at} onChange={(e) => setFormData({ ...formData, ends_at: e.target.value })} required /></div>
-              <div className="flex justify-end gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>Cancel</Button>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Creating...' : 'Create'}</Button>
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Announcement</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">English</h3>
+              <div className="space-y-2">
+                <Label>Title (English)</Label>
+                <Input
+                  value={editFormData.title_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
+                  required
+                />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+              <div className="space-y-2">
+                <Label>Content (English)</Label>
+                <Textarea
+                  value={editFormData.content_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_en: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
 
-      {/* Edit Modal */}
-      {showEditModal && selectedItem && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: '0',
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-          onClick={() => setShowEditModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '1rem',
-              maxWidth: '56rem',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 border-b flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Edit Announcement</h2>
-              <button onClick={() => setShowEditModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
-            </div>
-            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
-              <div><Label>Title (EN)</Label><Input value={formData.title_en} onChange={(e) => setFormData({ ...formData, title_en: e.target.value })} required /></div>
-              <div><Label>Content (EN)</Label><Textarea value={formData.content_en} onChange={(e) => setFormData({ ...formData, content_en: e.target.value })} rows={3} required /></div>
-              <div><Label>Title (RU)</Label><Input value={formData.title_ru} onChange={(e) => setFormData({ ...formData, title_ru: e.target.value })} required /></div>
-              <div><Label>Content (RU)</Label><Textarea value={formData.content_ru} onChange={(e) => setFormData({ ...formData, content_ru: e.target.value })} rows={3} required /></div>
-              <div><Label>Title (UZ)</Label><Input value={formData.title_uz} onChange={(e) => setFormData({ ...formData, title_uz: e.target.value })} required /></div>
-              <div><Label>Content (UZ)</Label><Textarea value={formData.content_uz} onChange={(e) => setFormData({ ...formData, content_uz: e.target.value })} rows={3} required /></div>
-              <div><Label>End Date</Label><Input type="date" value={formData.ends_at} onChange={(e) => setFormData({ ...formData, ends_at: e.target.value })} required /></div>
-              <div className="flex justify-end gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>Cancel</Button>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Updating...' : 'Update'}</Button>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Русский</h3>
+              <div className="space-y-2">
+                <Label>Заголовок (Русский)</Label>
+                <Input
+                  value={editFormData.title_ru}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_ru: e.target.value })}
+                  required
+                />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+              <div className="space-y-2">
+                <Label>Содержание (Русский)</Label>
+                <Textarea
+                  value={editFormData.content_ru}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_ru: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
+            </div>
 
-      {/* View Modal */}
-      {showViewModal && selectedItem && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: '0',
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-          onClick={() => setShowViewModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '1rem',
-              maxWidth: '56rem',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 border-b flex items-center justify-between">
-              <h2 className="text-2xl font-bold">View Announcement</h2>
-              <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="p-6 space-y-6">
-              <div className="flex gap-4">
-                <Badge><Calendar className="h-3 w-3 mr-1" />Published: {new Date(selectedItem.published_at).toLocaleDateString()}</Badge>
-                <Badge><Clock className="h-3 w-3 mr-1" />Ends: {new Date(selectedItem.ends_at).toLocaleDateString()}</Badge>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">O'zbek</h3>
+              <div className="space-y-2">
+                <Label>Sarlavha (O'zbek)</Label>
+                <Input
+                  value={editFormData.title_uz}
+                  onChange={(e) => setEditFormData({ ...editFormData, title_uz: e.target.value })}
+                  required
+                />
               </div>
-              <div><h3 className="font-semibold text-lg mb-2">English</h3><p className="font-medium">Title:</p><p className="text-muted-foreground mb-2">{selectedItem.title_en}</p><p className="font-medium">Content:</p><p className="text-muted-foreground whitespace-pre-wrap">{selectedItem.content_en}</p></div>
-              <div><h3 className="font-semibold text-lg mb-2">Русский</h3><p className="font-medium">Заголовок:</p><p className="text-muted-foreground mb-2">{selectedItem.title_ru}</p><p className="font-medium">Содержание:</p><p className="text-muted-foreground whitespace-pre-wrap">{selectedItem.content_ru}</p></div>
-              <div><h3 className="font-semibold text-lg mb-2">O'zbek</h3><p className="font-medium">Sarlavha:</p><p className="text-muted-foreground mb-2">{selectedItem.title_uz}</p><p className="font-medium">Mazmun:</p><p className="text-muted-foreground whitespace-pre-wrap">{selectedItem.content_uz}</p></div>
-              <div className="flex justify-end pt-4"><Button onClick={() => setShowViewModal(false)}>Close</Button></div>
+              <div className="space-y-2">
+                <Label>Mazmun (O'zbek)</Label>
+                <Textarea
+                  value={editFormData.content_uz}
+                  onChange={(e) => setEditFormData({ ...editFormData, content_uz: e.target.value })}
+                  rows={4}
+                  required
+                />
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+
+            <div className="space-y-2">
+              <Label>End Date</Label>
+              <Input
+                type="date"
+                value={editFormData.ends_at}
+                onChange={(e) => setEditFormData({ ...editFormData, ends_at: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Replace Media Files (Optional)</Label>
+              <Input
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                onChange={(e) => setEditFiles(Array.from(e.target.files || []))}
+              />
+              <p className="text-sm text-muted-foreground">
+                Leave empty to keep existing media. Upload new files to replace all media.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Updating...' : 'Update Announcement'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Dialog */}
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>View Announcement</DialogTitle>
+          </DialogHeader>
+          {viewingItem && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                {formatDate(viewingItem.published_at)}
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                Ends: {formatDate(viewingItem.ends_at)}
+              </div>
+
+              {viewingItem.medias && viewingItem.medias.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Media ({viewingItem.medias.length})</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {viewingItem.medias.map((media, index) => (
+                      <div key={index} className="relative aspect-video rounded-lg overflow-hidden">
+                        {media.type === 'image' ? (
+                          <img
+                            src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
+                            alt={`Media ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <video
+                            src={`${import.meta.env.VITE_API_URL || '/api'}${media.url}`}
+                            controls
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">English</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Title:</p>
+                  <p className="text-muted-foreground">{viewingItem.title_en}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Content:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_en}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Русский</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Заголовок:</p>
+                  <p className="text-muted-foreground">{viewingItem.title_ru}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Содержание:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_ru}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">O'zbek</h3>
+                <div className="space-y-1">
+                  <p className="font-medium">Sarlavha:</p>
+                  <p className="text-muted-foreground">{viewingItem.title_uz}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-medium">Mazmun:</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingItem.content_uz}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button onClick={() => setIsViewDialogOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
