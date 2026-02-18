@@ -64,7 +64,7 @@ export default function AdminAnnouncements() {
     try {
       const response = await api.getAnnouncements();
       if (response.success && response.data) {
-        setAnnouncements(response.data);
+        setAnnouncements(response.data as Announcement[]);
       }
     } catch (error) {
       toast.error('Failed to load announcements');
@@ -250,6 +250,7 @@ export default function AdminAnnouncements() {
                           size="sm"
                           className="flex-1"
                           onClick={() => {
+                            alert('VIEW CLICKED');
                             setViewingItem(item);
                             setIsViewDialogOpen(true);
                           }}
@@ -260,14 +261,20 @@ export default function AdminAnnouncements() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleEdit(item)}
+                          onClick={() => {
+                            alert('EDIT CLICKED');
+                            handleEdit(item);
+                          }}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => {
+                            alert('DELETE CLICKED');
+                            handleDelete(item.id);
+                          }}
                           className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
