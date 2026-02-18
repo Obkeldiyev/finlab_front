@@ -198,6 +198,22 @@ export default function AdminAnnouncements() {
                 <div>
                   <h1 className="text-2xl font-display font-bold text-white">E'lonlar boshqaruvi</h1>
                   <p className="text-slate-300">E'lonlar yaratish va boshqarish</p>
+                  <button 
+                    onClick={() => alert('TEST BUTTON WORKS!')} 
+                    style={{
+                      marginTop: '10px',
+                      padding: '8px 16px',
+                      backgroundColor: '#ff0000',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    TEST BUTTON - CLICK ME
+                  </button>
                 </div>
               </div>
               <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
