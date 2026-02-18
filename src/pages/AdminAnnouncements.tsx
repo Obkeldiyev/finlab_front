@@ -70,11 +70,16 @@ export default function AdminAnnouncements() {
   };
 
   const openViewModal = (item: Announcement) => {
+    console.log('openViewModal called', item);
+    alert('Opening view modal for: ' + item.title_uz);
     setSelectedItem(item);
     setShowViewModal(true);
+    console.log('showViewModal set to:', true);
   };
 
   const openEditModal = (item: Announcement) => {
+    console.log('openEditModal called', item);
+    alert('Opening edit modal for: ' + item.title_uz);
     setSelectedItem(item);
     setFormData({
       title_en: item.title_en,
@@ -86,6 +91,7 @@ export default function AdminAnnouncements() {
       ends_at: item.ends_at.split('T')[0],
     });
     setShowEditModal(true);
+    console.log('showEditModal set to:', true);
   };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {

@@ -31,12 +31,15 @@ export function AnnouncementsSection() {
 
   const loadAnnouncements = async () => {
     try {
+      console.log('Loading announcements for landing page...');
       const response = await api.getAnnouncements();
+      console.log('Announcements API response:', response);
       if (response.success && response.data) {
         // Filter active announcements (not expired)
         const active = response.data.filter((a: Announcement) => 
           new Date(a.ends_at) > new Date()
         );
+        console.log('Active announcements:', active);
         setAnnouncements(active.slice(0, 3)); // Show only 3 latest
       }
     } catch (error) {
@@ -44,7 +47,8 @@ export function AnnouncementsSection() {
     }
   };
 
-  if (announcements.length === 0) return null;
+  // Always show section even if no announcements for debugging
+  // if (announcements.length === 0) return null;
 
   const getTitle = (announcement: Announcement) => {
     if (language === 'uz') return announcement.title_uz;
@@ -84,7 +88,16 @@ export function AnnouncementsSection() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {announcements.map((announcement, index) => (
+            {announcements.length === 0 ? (
+              <div className="col-span-3 text-center py-12">
+                <p className="text-white/80 text-lg">
+                  {language === 'uz' && 'Hozircha e\'lonlar yo\'q'}
+                  {language === 'ru' && 'Пока нет объявлений'}
+                  {language === 'en' && 'No announcements yet'}
+                </p>
+              </div>
+            ) : (
+              announcements.map((announcement, index) => (
               <motion.div
                 key={announcement.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -148,7 +161,8 @@ export function AnnouncementsSection() {
                   </div>
                 </Card>
               </motion.div>
-            ))}
+            ))
+            )}
           </div>
         </div>
       </section>
