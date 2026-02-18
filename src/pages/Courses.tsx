@@ -209,15 +209,6 @@ export default function Courses() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card className="card-feature overflow-hidden hover-lift hover-glow cursor-pointer group relative">
-                  {/* Stickers */}
-                  <div className="absolute top-4 right-4 z-10">
-                    {index === 0 && <Sticker type="bestseller" size="md" />}
-                    {index === 1 && <Sticker type="premium" size="md" />}
-                    {index === 2 && <Sticker type="exclusive" size="md" />}
-                    {index > 2 && index % 2 === 0 && <Sticker type="limited" size="md" />}
-                    {index > 2 && index % 2 === 1 && <Sticker type="free" size="md" />}
-                  </div>
-                  
                   <div className="md:flex">
                     {/* Hours Badge */}
                     <div className="md:w-48 bg-gradient-primary p-6 flex flex-col items-center justify-center text-center group-hover:scale-105 transition-transform duration-300">
@@ -240,94 +231,9 @@ export default function Courses() {
                         {getLocalizedField(course, 'title', language)}
                       </CardTitle>
                       
-                      {/* Sticker explanation based on index */}
-                      {index === 0 && (
-                        <div className="mb-3 p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
-                          <p className="text-sm text-red-800 font-medium">
-                            {language === 'uz' && '🏆 Eng ko\'p sotilgan kurs! 1000+ muvaffaqiyatli bitiruvchi'}
-                            {language === 'ru' && '🏆 Самый продаваемый курс! 1000+ успешных выпускников'}
-                            {language === 'en' && '🏆 Best-selling course! 1000+ successful graduates'}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {index === 1 && (
-                        <div className="mb-3 p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-                          <p className="text-sm text-yellow-800 font-medium">
-                            {language === 'uz' && '💎 Premium kurs - individual mentorlik bilan'}
-                            {language === 'ru' && '💎 Премиум курс - с индивидуальным менторством'}
-                            {language === 'en' && '💎 Premium course - with individual mentorship'}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {index === 2 && (
-                        <div className="mb-3 p-3 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-                          <p className="text-sm text-purple-800 font-medium">
-                            {language === 'uz' && '🌟 Eksklyuziv dastur - faqat bizda mavjud'}
-                            {language === 'ru' && '🌟 Эксклюзивная программа - доступна только у нас'}
-                            {language === 'en' && '🌟 Exclusive program - available only here'}
-                          </p>
-                        </div>
-                      )}
-                      
                       <p className="text-muted-foreground mb-4 group-hover:text-foreground transition-colors duration-300">
                         {getLocalizedField(course, 'description', language)}
                       </p>
-                      
-                      {/* Additional benefits based on sticker */}
-                      <div className="mb-4 space-y-1">
-                        {index === 0 && (
-                          <>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                              {language === 'uz' && '98% ishga joylashish kafolati'}
-                              {language === 'ru' && '98% гарантия трудоустройства'}
-                              {language === 'en' && '98% job placement guarantee'}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                              {language === 'uz' && 'Davlat sertifikati + xalqaro sertifikat'}
-                              {language === 'ru' && 'Государственный + международный сертификат'}
-                              {language === 'en' && 'State + international certificate'}
-                            </div>
-                          </>
-                        )}
-                        
-                        {index === 1 && (
-                          <>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                              {language === 'uz' && '1:1 shaxsiy mentor bilan ishlash'}
-                              {language === 'ru' && 'Работа с персональным ментором 1:1'}
-                              {language === 'en' && '1:1 personal mentor sessions'}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                              {language === 'uz' && 'Finlandiyaga sayohat imkoniyati'}
-                              {language === 'ru' && 'Возможность поездки в Финляндию'}
-                              {language === 'en' && 'Opportunity to visit Finland'}
-                            </div>
-                          </>
-                        )}
-                        
-                        {index === 2 && (
-                          <>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                              {language === 'uz' && 'Finlandiya universitetlari bilan hamkorlik'}
-                              {language === 'ru' && 'Партнерство с университетами Финляндии'}
-                              {language === 'en' && 'Partnership with Finnish universities'}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                              {language === 'uz' && 'Maxsus laboratoriya jihozlari'}
-                              {language === 'ru' && 'Специальное лабораторное оборудование'}
-                              {language === 'en' && 'Special laboratory equipment'}
-                            </div>
-                          </>
-                        )}
-                      </div>
                       
                       <Link to="/register">
                         <Button className="hover-gradient group-hover:scale-105 transition-transform duration-300">

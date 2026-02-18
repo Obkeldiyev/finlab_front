@@ -79,9 +79,6 @@ export default function AdminAnnouncements() {
   };
 
   const handleEdit = (item: Announcement) => {
-    console.log('=== EDIT CLICKED ===');
-    console.log('Item:', item);
-    console.log('Setting editingItem and opening dialog...');
     setEditingItem(item);
     setEditFormData({
       title_en: item.title_en,
@@ -94,10 +91,6 @@ export default function AdminAnnouncements() {
     });
     setEditFiles([]);
     setIsEditDialogOpen(true);
-    console.log('isEditDialogOpen set to TRUE');
-    setTimeout(() => {
-      console.log('After timeout - isEditDialogOpen should be:', isEditDialogOpen);
-    }, 100);
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -198,22 +191,6 @@ export default function AdminAnnouncements() {
                 <div>
                   <h1 className="text-2xl font-display font-bold text-white">E'lonlar boshqaruvi</h1>
                   <p className="text-slate-300">E'lonlar yaratish va boshqarish</p>
-                  <button 
-                    onClick={() => alert('TEST BUTTON WORKS!')} 
-                    style={{
-                      marginTop: '10px',
-                      padding: '8px 16px',
-                      backgroundColor: '#ff0000',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    TEST BUTTON - CLICK ME
-                  </button>
                 </div>
               </div>
               <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
@@ -268,49 +245,28 @@ export default function AdminAnnouncements() {
                         {getLocalizedField(item, 'content', language)}
                       </p>
                       <div className="flex gap-2">
-                      <div className="flex gap-2">
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 flex-1"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('VIEW CLICKED - ID: ' + item.id);
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1"
+                          onClick={() => {
                             setViewingItem(item);
                             setIsViewDialogOpen(true);
                           }}
-                          type="button"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
-                        </button>
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('EDIT CLICKED - ID: ' + item.id);
-                            handleEdit(item);
-                          }}
-                          type="button"
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleEdit(item)}
                         >
                           <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-destructive hover:text-destructive"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            alert('DELETE CLICKED - ID: ' + item.id);
-                            handleDelete(item.id);
-                          }}
-                          type="button"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
                           onClick={() => handleDelete(item.id)}
                           className="text-destructive hover:text-destructive"
                         >
@@ -327,11 +283,7 @@ export default function AdminAnnouncements() {
       </div>
 
       {/* Edit Dialog */}
-      {console.log('Rendering Edit Dialog - isEditDialogOpen:', isEditDialogOpen, 'editingItem:', editingItem?.id)}
-      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
-        console.log('Edit Dialog onOpenChange called with:', open);
-        setIsEditDialogOpen(open);
-      }}>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Announcement</DialogTitle>
@@ -446,11 +398,7 @@ export default function AdminAnnouncements() {
       </Dialog>
 
       {/* View Dialog */}
-      {console.log('Rendering View Dialog - isViewDialogOpen:', isViewDialogOpen, 'viewingItem:', viewingItem?.id)}
-      <Dialog open={isViewDialogOpen} onOpenChange={(open) => {
-        console.log('View Dialog onOpenChange called with:', open);
-        setIsViewDialogOpen(open);
-      }}>
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>View Announcement</DialogTitle>

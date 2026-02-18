@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLanguage, getLocalizedField } from '@/contexts/LanguageContext';
 import { Navbar } from '@/components/Navbar';
@@ -14,6 +15,8 @@ import { Button } from '@/components/ui/button';
 
 export default function News() {
   const { t, language } = useLanguage();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
@@ -31,6 +34,19 @@ export default function News() {
         );
         console.log('Unique news items:', uniqueNews.length);
         setNews(uniqueNews);
+        
+        // If there's an ID in the URL, open that news item automatically
+        if (id) {
+          const newsId = parseInt(id, 10);
+          const newsItem = uniqueNews.find(n => n.id === newsId);
+          if (newsItem) {
+            setSelectedNews(newsItem);
+            setSelectedMediaIndex(0);
+          } else {
+            toast.error('News item not found');
+            navigate('/news');
+          }
+        }
       } catch (error) {
         console.error('Failed to load news:', error);
         toast.error('Failed to load news');
@@ -39,7 +55,7 @@ export default function News() {
       }
     };
     loadNews();
-  }, []);
+  }, [id, navigate]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -92,11 +108,15 @@ export default function News() {
   const openNewsModal = (newsItem: NewsItem) => {
     setSelectedNews(newsItem);
     setSelectedMediaIndex(0);
+    // Update URL without reloading the page
+    window.history.pushState({}, '', `/news/${newsItem.id}`);
   };
 
   const closeNewsModal = () => {
     setSelectedNews(null);
     setSelectedMediaIndex(0);
+    // Reset URL to /news when closing modal
+    window.history.pushState({}, '', '/news');
   };
 
   const nextMedia = () => {
