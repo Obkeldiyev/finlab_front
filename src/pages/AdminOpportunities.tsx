@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -26,6 +26,9 @@ import { OpportunityForm } from '@/components/admin/OpportunityForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { dataService, type Opportunity } from '@/services/dataService';
@@ -43,6 +46,9 @@ export default function AdminOpportunities() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [opportunityToDelete, setOpportunityToDelete] = useState<number | null>(null);
+  const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navItems = [
     { 
@@ -156,6 +162,11 @@ export default function AdminOpportunities() {
     setIsViewDialogOpen(true);
   };
 
+  const handleEdit = (opportunity: Opportunity) => {
+    setEditingOpportunity(opportunity);
+    setIsEditDialogOpen(true);
+  };
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString(language === 'ru' ? 'ru-RU' : language === 'uz' ? 'uz-UZ' : 'en-US', {
@@ -183,17 +194,17 @@ export default function AdminOpportunities() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-border">
-        <Link to="/" className="flex items-center gap-3">
+        <a href="/" className="flex items-center gap-3">
           <img src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.png" alt="FinLab" className="h-10 w-auto" />
           <span className="font-display text-xl font-bold text-primary">FinLab Admin</span>
-        </Link>
+        </a>
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
         {navItems.map((item, index) => (
-          <Link
+          <a
             key={index}
-            to={item.path}
+            href={item.path}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
               item.active
                 ? 'bg-primary text-primary-foreground'
@@ -202,7 +213,7 @@ export default function AdminOpportunities() {
           >
             <item.icon className="h-5 w-5" />
             <span className="font-medium">{item.label[language] || item.label.en}</span>
-          </Link>
+          </a>
         ))}
       </nav>
 
@@ -386,7 +397,7 @@ export default function AdminOpportunities() {
                         </CardHeader>
                         <CardContent>
                           <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-                            {opportunity ? getLocalizedField(opportunity, 'description', language) : ''}
+                            {opportunity ? getLocalizedField(opportunity, 'content', language) : ''}
                           </p>
                           
                           {/* End Date */}
@@ -421,14 +432,13 @@ export default function AdminOpportunities() {
                               <Eye className="h-4 w-4 mr-2" />
                               {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
                             </Button>
-                            <Link to={`/opportunities/${opportunity.id}`}>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </Link>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleEdit(opportunity)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
                             <Button 
                               variant="outline" 
                               size="sm" 
@@ -507,7 +517,7 @@ export default function AdminOpportunities() {
                 </div>
                 <div className="space-y-1">
                   <p className="font-medium">Description:</p>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingOpportunity.description_en}</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingOpportunity.content_en}</p>
                 </div>
               </div>
 
@@ -520,7 +530,7 @@ export default function AdminOpportunities() {
                 </div>
                 <div className="space-y-1">
                   <p className="font-medium">Описание:</p>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingOpportunity.description_ru}</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingOpportunity.content_ru}</p>
                 </div>
               </div>
 
@@ -533,7 +543,7 @@ export default function AdminOpportunities() {
                 </div>
                 <div className="space-y-1">
                   <p className="font-medium">Tavsif:</p>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingOpportunity.description_uz}</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{viewingOpportunity.content_uz}</p>
                 </div>
               </div>
 
@@ -543,6 +553,167 @@ export default function AdminOpportunities() {
                 </Button>
               </div>
             </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Opportunity</DialogTitle>
+          </DialogHeader>
+          {editingOpportunity && (
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setIsSubmitting(true);
+              
+              const form = e.currentTarget;
+              const formData = new FormData(form);
+              
+              const data = {
+                title_en: formData.get('title_en') as string,
+                title_ru: formData.get('title_ru') as string,
+                title_uz: formData.get('title_uz') as string,
+                content_en: formData.get('content_en') as string,
+                content_ru: formData.get('content_ru') as string,
+                content_uz: formData.get('content_uz') as string,
+                ends_at: formData.get('ends_at') as string,
+              };
+              
+              const fileInput = form.querySelector('input[type="file"]') as HTMLInputElement;
+              const files = fileInput?.files ? Array.from(fileInput.files) : undefined;
+              
+              try {
+                const response = await api.updateOpportunity(editingOpportunity.id, data, files);
+                if (response.success) {
+                  toast.success('Opportunity updated successfully');
+                  setIsEditDialogOpen(false);
+                  setEditingOpportunity(null);
+                  loadOpportunities();
+                } else {
+                  toast.error('Failed to update opportunity');
+                }
+              } catch (error) {
+                console.error('Update error:', error);
+                toast.error('Failed to update opportunity');
+              } finally {
+                setIsSubmitting(false);
+              }
+            }} className="space-y-6">
+              {/* English Fields */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">English</h3>
+                <div className="space-y-2">
+                  <Label>Title (English)</Label>
+                  <Input
+                    name="title_en"
+                    defaultValue={editingOpportunity.title_en}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description (English)</Label>
+                  <Textarea
+                    name="content_en"
+                    defaultValue={editingOpportunity.content_en}
+                    rows={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Russian Fields */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Русский</h3>
+                <div className="space-y-2">
+                  <Label>Заголовок (Русский)</Label>
+                  <Input
+                    name="title_ru"
+                    defaultValue={editingOpportunity.title_ru}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Описание (Русский)</Label>
+                  <Textarea
+                    name="content_ru"
+                    defaultValue={editingOpportunity.content_ru}
+                    rows={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Uzbek Fields */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">O'zbek</h3>
+                <div className="space-y-2">
+                  <Label>Sarlavha (O'zbek)</Label>
+                  <Input
+                    name="title_uz"
+                    defaultValue={editingOpportunity.title_uz}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Tavsif (O'zbek)</Label>
+                  <Textarea
+                    name="content_uz"
+                    defaultValue={editingOpportunity.content_uz}
+                    rows={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* End Date */}
+              <div className="space-y-2">
+                <Label>End Date</Label>
+                <Input
+                  type="date"
+                  name="ends_at"
+                  defaultValue={editingOpportunity.ends_at.split('T')[0]}
+                  required
+                />
+              </div>
+
+              {/* File Upload */}
+              <div className="space-y-2">
+                <Label>Replace Media Files (Optional)</Label>
+                <Input
+                  type="file"
+                  name="medias"
+                  multiple
+                  accept="image/*,video/*"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Leave empty to keep existing media. Upload new files to replace all media.
+                </p>
+                {editingOpportunity.medias && editingOpportunity.medias.length > 0 && (
+                  <div className="text-sm text-muted-foreground">
+                    Current files: {editingOpportunity.medias.length} file(s)
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setEditingOpportunity(null);
+                  }}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Updating...' : 'Update Opportunity'}
+                </Button>
+              </div>
+            </form>
           )}
         </DialogContent>
       </Dialog>

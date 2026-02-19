@@ -323,24 +323,10 @@ export default function Opportunities() {
             </h1>
             
             <p className="text-xl text-primary-foreground/80 mb-8">
-              {getLocalizedField(opportunity, 'description', language)}
+              {getLocalizedField(opportunity, 'content', language)}
             </p>
 
             <div className="flex flex-wrap gap-4">
-              {opportunity.hours && (
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                  <Clock className="h-5 w-5 text-primary-foreground" />
-                  <span className="text-primary-foreground font-medium">
-                    {typeof opportunity.hours === 'number' 
-                      ? `${opportunity.hours} ${language === 'uz' ? 'soat' : language === 'ru' ? 'часов' : 'hours'}`
-                      : Array.isArray(opportunity.hours)
-                      ? `${opportunity.hours.join(', ')} ${language === 'uz' ? 'soat' : language === 'ru' ? 'часов' : 'hours'}`
-                      : '40 hours'
-                    }
-                  </span>
-                </div>
-              )}
-              
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
                 <Users className="h-5 w-5 text-primary-foreground" />
                 <span className="text-primary-foreground font-medium">

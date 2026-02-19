@@ -70,9 +70,6 @@ export interface Opportunity {
   title_uz: string;
   title_ru: string;
   title_en: string;
-  description_uz: string;
-  description_ru: string;
-  description_en: string;
   content_uz: string;
   content_ru: string;
   content_en: string;
