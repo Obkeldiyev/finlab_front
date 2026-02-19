@@ -35,6 +35,7 @@ import { toast } from 'sonner';
 import { FeedbackSection } from '@/components/FeedbackSection';
 import { PartnersCarousel } from '@/components/PartnersCarousel';
 import { AnnouncementsSection } from '@/components/AnnouncementsSection';
+import { NewsSection } from '@/components/NewsSection';
 
 // Import gallery images
 import gallery1 from '@/assets/gallery/gallery-1.jpg';
@@ -519,6 +520,9 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
+
+      {/* News Section */}
+      <NewsSection />
 
       {/* Announcements Section */}
       <AnnouncementsSection />
