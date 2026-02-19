@@ -18,14 +18,21 @@ export function NewsSection() {
 
   const loadNews = async () => {
     try {
+      console.log('NewsSection: Loading news...');
       const newsData = await dataService.getNews();
+      console.log('NewsSection: Loaded news:', newsData.length, 'items');
       setNews(newsData.slice(0, 3)); // Show only 3 latest
     } catch (error) {
-      console.error('Failed to load news:', error);
+      console.error('NewsSection: Failed to load news:', error);
     }
   };
 
-  if (news.length === 0) return null;
+  console.log('NewsSection: Rendering with', news.length, 'news items');
+
+  if (news.length === 0) {
+    console.log('NewsSection: No news, returning null');
+    return null;
+  }
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);

@@ -144,8 +144,19 @@ export default function AdminOpportunities() {
   };
 
   const handleView = (opportunity: Opportunity) => {
+    console.log('=== handleView CALLED ===');
+    console.log('Opportunity:', opportunity);
+    console.log('Setting viewingOpportunity...');
     setViewingOpportunity(opportunity);
+    console.log('Setting isViewDialogOpen to true...');
     setIsViewDialogOpen(true);
+    console.log('State should be updated now');
+    
+    // Force a re-render check
+    setTimeout(() => {
+      console.log('After timeout - isViewDialogOpen:', isViewDialogOpen);
+      console.log('After timeout - viewingOpportunity:', viewingOpportunity);
+    }, 100);
   };
 
   const formatDate = (dateStr: string) => {
@@ -438,7 +449,16 @@ export default function AdminOpportunities() {
       </div>
 
       {/* View Dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+      <Dialog 
+        open={isViewDialogOpen} 
+        onOpenChange={(open) => {
+          console.log('Dialog onOpenChange called with:', open);
+          setIsViewDialogOpen(open);
+          if (!open) {
+            setViewingOpportunity(null);
+          }
+        }}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>View Opportunity</DialogTitle>

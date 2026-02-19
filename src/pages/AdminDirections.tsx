@@ -139,6 +139,7 @@ export default function AdminDirections() {
     description_en: '',
     description_ru: '',
     description_uz: '',
+    published_at: new Date().toISOString().split('T')[0],
     ends_at: '',
   });
 
@@ -171,6 +172,7 @@ export default function AdminDirections() {
       description_en: '',
       description_ru: '',
       description_uz: '',
+      published_at: new Date().toISOString().split('T')[0],
       ends_at: '',
     });
   };
@@ -211,6 +213,7 @@ export default function AdminDirections() {
       description_en: direction.description_en,
       description_ru: direction.description_ru,
       description_uz: direction.description_uz,
+      published_at: direction.published_at.split('T')[0],
       ends_at: direction.ends_at,
     });
     setIsEditDialogOpen(true);
