@@ -41,6 +41,8 @@ export default function AdminOpportunities() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [viewingOpportunity, setViewingOpportunity] = useState<Opportunity | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [opportunityToDelete, setOpportunityToDelete] = useState<number | null>(null);
 
   const navItems = [
     { 
@@ -125,12 +127,15 @@ export default function AdminOpportunities() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this opportunity?')) {
-      return;
-    }
+    setOpportunityToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!opportunityToDelete) return;
 
     try {
-      const response = await api.deleteOpportunity(id);
+      const response = await api.deleteOpportunity(opportunityToDelete);
       if (response.success) {
         toast.success('Opportunity deleted successfully');
         loadOpportunities();
@@ -140,23 +145,15 @@ export default function AdminOpportunities() {
     } catch (error) {
       console.error('Delete opportunity error:', error);
       toast.error('Failed to delete opportunity');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setOpportunityToDelete(null);
     }
   };
 
   const handleView = (opportunity: Opportunity) => {
-    console.log('=== handleView CALLED ===');
-    console.log('Opportunity:', opportunity);
-    console.log('Setting viewingOpportunity...');
     setViewingOpportunity(opportunity);
-    console.log('Setting isViewDialogOpen to true...');
     setIsViewDialogOpen(true);
-    console.log('State should be updated now');
-    
-    // Force a re-render check
-    setTimeout(() => {
-      console.log('After timeout - isViewDialogOpen:', isViewDialogOpen);
-      console.log('After timeout - viewingOpportunity:', viewingOpportunity);
-    }, 100);
   };
 
   const formatDate = (dateStr: string) => {
@@ -415,27 +412,31 @@ export default function AdminOpportunities() {
 
                           {/* Actions */}
                           <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                console.log('VIEW CLICKED', opportunity.id);
-                                alert('View clicked: ' + opportunity.id);
-                                handleView(opportunity);
-                              }}
-                              className="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="flex-1"
+                              onClick={() => handleView(opportunity)}
                             >
                               <Eye className="h-4 w-4 mr-2" />
                               {language === 'uz' ? 'Ko\'rish' : language === 'ru' ? 'Просмотр' : 'View'}
-                            </button>
-                            <button
-                              onClick={() => {
-                                console.log('DELETE CLICKED', opportunity.id);
-                                alert('Delete clicked: ' + opportunity.id);
-                                handleDelete(opportunity.id);
-                              }}
-                              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-destructive hover:text-destructive"
+                            </Button>
+                            <Link to={`/opportunities/${opportunity.id}`}>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleDelete(opportunity.id)}
+                              className="text-destructive hover:text-destructive"
                             >
                               <Trash2 className="h-4 w-4" />
-                            </button>
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
@@ -451,13 +452,7 @@ export default function AdminOpportunities() {
       {/* View Dialog */}
       <Dialog 
         open={isViewDialogOpen} 
-        onOpenChange={(open) => {
-          console.log('Dialog onOpenChange called with:', open);
-          setIsViewDialogOpen(open);
-          if (!open) {
-            setViewingOpportunity(null);
-          }
-        }}
+        onOpenChange={setIsViewDialogOpen}
       >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -549,6 +544,41 @@ export default function AdminOpportunities() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {language === 'uz' ? 'O\'chirishni tasdiqlang' : language === 'ru' ? 'Подтвердите удаление' : 'Confirm Delete'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              {language === 'uz' ? 'Ushbu imkoniyatni o\'chirishga ishonchingiz komilmi? Bu amalni qaytarib bo\'lmaydi.' : 
+               language === 'ru' ? 'Вы уверены, что хотите удалить эту возможность? Это действие нельзя отменить.' : 
+               'Are you sure you want to delete this opportunity? This action cannot be undone.'}
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setDeleteConfirmOpen(false);
+                  setOpportunityToDelete(null);
+                }}
+              >
+                {language === 'uz' ? 'Yo\'q' : language === 'ru' ? 'Нет' : 'No'}
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={confirmDelete}
+              >
+                {language === 'uz' ? 'Ha, o\'chirish' : language === 'ru' ? 'Да, удалить' : 'Yes, Delete'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
