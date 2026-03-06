@@ -387,6 +387,28 @@ export default function Index() {
                 <span className="text-4xl">🇺🇿</span>
               </motion.div>
 
+              {/* Partner Logos */}
+              <motion.div
+                variants={fadeInUp}
+                className="flex items-center justify-center gap-6 mb-8"
+              >
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 hover:bg-white/20 transition-all duration-300">
+                  <img 
+                    src="/main-logo.602cd3fa57577bd6675dd5cb6474efab.png" 
+                    alt="FinLab" 
+                    className="h-16 w-auto"
+                  />
+                </div>
+                <span className="text-white/60 text-3xl font-bold">×</span>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 hover:bg-white/20 transition-all duration-300">
+                  <img 
+                    src="/PRIME EDUCATION FINLAND.png" 
+                    alt="Prime Education Finland" 
+                    className="h-16 w-auto"
+                  />
+                </div>
+              </motion.div>
+
               <motion.h1
                 variants={fadeInUp}
                 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6"
@@ -559,9 +581,57 @@ export default function Index() {
                 </p>
 
                 <p className="text-base text-white/80 leading-relaxed">
-                  {language === 'uz' && 'Bizning laboratoriyamiz Finlandiya Ta\'lim vazirligining rasmiy hamkorligi ostida faoliyat yuritadi va dunyodagi eng ilg\'or ta\'lim texnologiyalarini O\'zbekistonga olib keladi. Biz har bir o\'quvchining individual ehtiyojlarini hisobga olgan holda, zamonaviy VR/AR texnologiyalar, 3D printing va robototexnika orqali ta\'lim beramiz.'}
-                  {language === 'ru' && 'Наша лаборатория работает под официальным партнерством Министерства образования Финляндии и привносит самые передовые образовательные технологии в Узбекистан. Мы обучаем с учетом индивидуальных потребностей каждого студента, используя современные VR/AR технологии, 3D-печать и робототехнику.'}
-                  {language === 'en' && 'Our laboratory operates under the official partnership of the Finnish Ministry of Education and brings the most advanced educational technologies to Uzbekistan. We teach considering the individual needs of each student, using modern VR/AR technologies, 3D printing and robotics.'}
+                  {language === 'uz' && (
+                    <>
+                      Bizning laboratoriyamiz{' '}
+                      <a 
+                        href="https://pedu.fi/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-white font-semibold hover:text-white/90 transition-colors underline decoration-2 underline-offset-4 decoration-white/50 hover:decoration-white"
+                      >
+                        Prime Education Finland
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                      {' '}bilan rasmiy hamkorlik ostida faoliyat yuritadi va dunyodagi eng ilg'or ta'lim texnologiyalarini O'zbekistonga olib keladi. Biz har bir o'quvchining individual ehtiyojlarini hisobga olgan holda, zamonaviy VR/AR texnologiyalar, 3D printing va robototexnika orqali ta'lim beramiz.
+                    </>
+                  )}
+                  {language === 'ru' && (
+                    <>
+                      Наша лаборатория работает под официальным партнерством с{' '}
+                      <a 
+                        href="https://pedu.fi/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-white font-semibold hover:text-white/90 transition-colors underline decoration-2 underline-offset-4 decoration-white/50 hover:decoration-white"
+                      >
+                        Prime Education Finland
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                      {' '}и привносит самые передовые образовательные технологии в Узбекистан. Мы обучаем с учетом индивидуальных потребностей каждого студента, используя современные VR/AR технологии, 3D-печать и робототехнику.
+                    </>
+                  )}
+                  {language === 'en' && (
+                    <>
+                      Our laboratory operates under the official partnership with{' '}
+                      <a 
+                        href="https://pedu.fi/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-white font-semibold hover:text-white/90 transition-colors underline decoration-2 underline-offset-4 decoration-white/50 hover:decoration-white"
+                      >
+                        Prime Education Finland
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                      {' '}and brings the most advanced educational technologies to Uzbekistan. We teach considering the individual needs of each student, using modern VR/AR technologies, 3D printing and robotics.
+                    </>
+                  )}
                 </p>
 
                 <p className="text-base text-white/80 leading-relaxed">
